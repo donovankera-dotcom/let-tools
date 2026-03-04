@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Data Overview Tool â Hawken</title>
+<title>Student Data Overview Tool — Hawken</title>
 <style>
   :root {
     --hawken-red: #EB1923;
@@ -73,7 +73,7 @@
   /* === BULLET LIST ENTRY === */
   .bullet-list { list-style: none; padding: 0; }
   .bullet-list li { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
-  .bullet-list li::before { content: "â¢"; color: var(--hawken-gray); font-size: 18px; flex-shrink: 0; }
+  .bullet-list li::before { content: "•"; color: var(--hawken-gray); font-size: 18px; flex-shrink: 0; }
   .bullet-list input { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; font-family: var(--font-body); }
   .bullet-list input:focus { outline: none; border-color: var(--hawken-red); }
 
@@ -133,11 +133,11 @@
 <div class="app-header">
   <div>
     <h1>Student Data Overview</h1>
-    <div class="subtitle">Hawken School â Pre-Evaluation & Team Review Tool</div>
+    <div class="subtitle">Hawken School — Pre-Evaluation & Team Review Tool</div>
   </div>
   <div class="view-toggle">
-    <button id="btn-form" class="active" onclick="showView('form')">âï¸ Enter Data</button>
-    <button id="btn-output" onclick="showView('output')">ð View Overview</button>
+    <button id="btn-form" class="active" onclick="showView('form')">✏️ Enter Data</button>
+    <button id="btn-output" onclick="showView('output')">📄 View Overview</button>
   </div>
 </div>
 
@@ -153,13 +153,13 @@
   <div class="form-section" data-section="info">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Student Information</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron open">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron open">›</span></div>
     </div>
     <div class="form-section-body open">
       <div class="form-row">
         <div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="e.g., Addison Taber" oninput="updateProgress()"></div>
         <div class="form-group"><label>Grade</label>
-          <select id="grade" onchange="updateProgress()"><option value="">Selectâ¦</option><option>Pre-K</option><option>Kindergarten</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>
+          <select id="grade" onchange="updateProgress()"><option value="">Select…</option><option>Pre-K</option><option>Kindergarten</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>
         </div>
       </div>
       <div class="form-row">
@@ -168,11 +168,11 @@
       </div>
       <div class="form-row">
         <div class="form-group"><label>Reason for Review</label>
-          <select id="reason" onchange="updateProgress()"><option value="">Selectâ¦</option><option>LET First Discussion</option><option>Pre-Evaluation Data Review</option><option>Progress Monitoring Check-In</option><option>Parent Conference Prep</option><option>Annual Review / Staffing</option><option>Other</option></select>
+          <select id="reason" onchange="updateProgress()"><option value="">Select…</option><option>LET First Discussion</option><option>Pre-Evaluation Data Review</option><option>Progress Monitoring Check-In</option><option>Parent Conference Prep</option><option>Annual Review / Staffing</option><option>Other</option></select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Reason Details (optional)</label><textarea id="reasonDetails" placeholder="Brief context for why this data is being compiled nowâ¦" oninput="updateProgress()"></textarea></div>
+        <div class="form-group"><label>Reason Details (optional)</label><textarea id="reasonDetails" placeholder="Brief context for why this data is being compiled now…" oninput="updateProgress()"></textarea></div>
       </div>
     </div>
   </div>
@@ -181,11 +181,11 @@
   <div class="form-section" data-section="snapshot">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Snapshot Summary</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
-      <div class="form-group"><label>3â5 sentence synthesis of the most important patterns</label>
-        <textarea id="snapshot" rows="5" placeholder="Synthesize key patterns across the data â concerns, strengths, and the overall picture. This should stand alone as a quick read before a meeting." oninput="updateProgress()"></textarea>
+      <div class="form-group"><label>3–5 sentence synthesis of the most important patterns</label>
+        <textarea id="snapshot" rows="5" placeholder="Synthesize key patterns across the data — concerns, strengths, and the overall picture. This should stand alone as a quick read before a meeting." oninput="updateProgress()"></textarea>
       </div>
     </div>
   </div>
@@ -194,13 +194,13 @@
   <div class="form-section" data-section="strengths">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Strengths & Protective Factors</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <ul class="bullet-list" id="strengths-list">
-        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
-        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
-        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="Strength or protective factor…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
+        <li><input type="text" placeholder="Strength or protective factor…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
+        <li><input type="text" placeholder="Strength or protective factor…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
       </ul>
       <button class="add-row-btn" onclick="addListItem('strengths-list')">+ Add strength</button>
     </div>
@@ -210,153 +210,153 @@
   <div class="form-section" data-section="concerns">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Areas of Concern</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <ul class="bullet-list" id="concerns-list">
-        <li><input type="text" placeholder="Concern area and brief elaborationâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
-        <li><input type="text" placeholder="Concern area and brief elaborationâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="Concern area and brief elaboration…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
+        <li><input type="text" placeholder="Concern area and brief elaboration…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
       </ul>
       <button class="add-row-btn" onclick="addListItem('concerns-list')">+ Add concern</button>
     </div>
   </div>
 
-  <!-- ASSESSMENT DOMAINS â each as a section -->
+  <!-- ASSESSMENT DOMAINS — each as a section -->
   <div class="form-section" data-section="reading">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>ð Reading / Literacy</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>📖 Reading / Literacy</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="reading-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., DIBELS ORF â Fall 2025"></td><td><input placeholder="e.g., 78 wcpm â at benchmark"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
-          <tr><td><input placeholder="e.g., iReady Reading â Winter 2026"></td><td><input placeholder="e.g., 412 â early 3rd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., DIBELS ORF — Fall 2025"></td><td><input placeholder="e.g., 78 wcpm — at benchmark"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
+          <tr><td><input placeholder="e.g., iReady Reading — Winter 2026"></td><td><input placeholder="e.g., 412 — early 3rd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('reading-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional reading/literacy observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="reading"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional reading/literacy observations…" oninput="updateProgress()" class="domain-notes" data-domain="reading"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="math">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>ð¢ Mathematics</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>🔢 Mathematics</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="math-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., Reflex Fluency â Fall 2025"></td><td><input placeholder="e.g., 32% fluent"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
-          <tr><td><input placeholder="e.g., iReady Math â Winter 2026"></td><td><input placeholder="e.g., 385 â mid 2nd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., Reflex Fluency — Fall 2025"></td><td><input placeholder="e.g., 32% fluent"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
+          <tr><td><input placeholder="e.g., iReady Math — Winter 2026"></td><td><input placeholder="e.g., 385 — mid 2nd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('math-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional math observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="math"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional math observations…" oninput="updateProgress()" class="domain-notes" data-domain="math"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="writing">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>âï¸ Writing & Word Study</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>✍️ Writing & Word Study</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="writing-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., Spelling Inventory â Fall 2025"></td><td><input placeholder="e.g., Within Words stage"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., Spelling Inventory — Fall 2025"></td><td><input placeholder="e.g., Within Words stage"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('writing-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional writing observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="writing"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional writing observations…" oninput="updateProgress()" class="domain-notes" data-domain="writing"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="cognitive">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>ð§  Cognitive / Processing</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>🧠 Cognitive / Processing</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="cognitive-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., WISC-V FSIQ â Jan 2026"></td><td><input placeholder="e.g., SS 95 â average range"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., WISC-V FSIQ — Jan 2026"></td><td><input placeholder="e.g., SS 95 — average range"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('cognitive-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional cognitive/processing observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="cognitive"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional cognitive/processing observations…" oninput="updateProgress()" class="domain-notes" data-domain="cognitive"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="attention">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>â¡ Attention & Executive Function</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>⚡ Attention & Executive Function</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="attention-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., BASC-3 Teacher â Fall 2025"></td><td><input placeholder="e.g., Attention T=62, At-Risk"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., BASC-3 Teacher — Fall 2025"></td><td><input placeholder="e.g., Attention T=62, At-Risk"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('attention-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Teacher reports, classroom observation notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="attention"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Teacher reports, classroom observation notes…" oninput="updateProgress()" class="domain-notes" data-domain="attention"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="sel">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>ð Social-Emotional / Behavioral</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>💛 Social-Emotional / Behavioral</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="sel-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., BASC-3 Parent â Fall 2025"></td><td><input placeholder="e.g., Adaptive Skills Composite: Average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., BASC-3 Parent — Fall 2025"></td><td><input placeholder="e.g., Adaptive Skills Composite: Average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('sel-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Counselor input, Zones of Reg observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="sel"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Counselor input, Zones of Reg observations…" oninput="updateProgress()" class="domain-notes" data-domain="sel"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="language">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>ð£ï¸ Language / Speech</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>🗣️ Language / Speech</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="language-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., CELF-5 Core â Dec 2025"></td><td><input placeholder="e.g., SS 88 â low average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., CELF-5 Core — Dec 2025"></td><td><input placeholder="e.g., SS 88 — low average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('language-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="SLP observations, articulation notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="language"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="SLP observations, articulation notes…" oninput="updateProgress()" class="domain-notes" data-domain="language"></textarea></div>
     </div>
   </div>
 
   <div class="form-section" data-section="motor">
     <div class="form-section-header" onclick="toggleSection(this)">
-      <h2>â Motor</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <h2>✋ Motor</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="motor-table">
         <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., OT Screener â Oct 2025"></td><td><input placeholder="e.g., Fine motor within functional limits"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., OT Screener — Oct 2025"></td><td><input placeholder="e.g., Fine motor within functional limits"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('motor-table')">+ Add data point</button>
-      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Handwriting, fine/gross motor notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="motor"></textarea></div>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Handwriting, fine/gross motor notes…" oninput="updateProgress()" class="domain-notes" data-domain="motor"></textarea></div>
     </div>
   </div>
 
@@ -364,12 +364,12 @@
   <div class="form-section" data-section="supports">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Current Supports & Interventions</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <ul class="bullet-list" id="supports-list">
-        <li><input type="text" placeholder="e.g., Math Lab with Mrs. DiNallo 3x/week since Sept 2025" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
-        <li><input type="text" placeholder="e.g., Reflex Math for fact fluency practice" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="e.g., Math Lab with Mrs. DiNallo 3x/week since Sept 2025" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
+        <li><input type="text" placeholder="e.g., Reflex Math for fact fluency practice" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button></li>
       </ul>
       <button class="add-row-btn" onclick="addListItem('supports-list')">+ Add support</button>
     </div>
@@ -379,7 +379,7 @@
   <div class="form-section" data-section="parent">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Parent / Family Input</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <div class="form-group"><label>Summary of family input</label><textarea id="parentInput" placeholder="What has the family shared? Date of most recent contact?" oninput="updateProgress()"></textarea></div>
@@ -390,10 +390,10 @@
   <div class="form-section" data-section="background">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Relevant Background</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
-      <div class="form-group"><label>Developmental history, prior schools, language, medical, prior evaluations</label><textarea id="background" placeholder="Brief bullets on relevant background informationâ¦" oninput="updateProgress()"></textarea></div>
+      <div class="form-group"><label>Developmental history, prior schools, language, medical, prior evaluations</label><textarea id="background" placeholder="Brief bullets on relevant background information…" oninput="updateProgress()"></textarea></div>
     </div>
   </div>
 
@@ -401,14 +401,14 @@
   <div class="form-section" data-section="gaps">
     <div class="form-section-header" onclick="toggleSection(this)">
       <h2>Data Gaps & Next Steps</h2>
-      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">✓</span><span class="chevron">›</span></div>
     </div>
     <div class="form-section-body">
       <table class="assessment-table" id="gaps-table">
         <thead><tr><th style="width:40%">Data Gap</th><th style="width:50%">Recommended Action</th><th style="width:10%"></th></tr></thead>
         <tbody>
-          <tr><td><input placeholder="e.g., No cognitive assessment"></td><td><input placeholder="e.g., Administer WISC-V"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
-          <tr><td><input placeholder="e.g., No parent input yet"></td><td><input placeholder="e.g., Schedule parent meeting by 3/15"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., No cognitive assessment"></td><td><input placeholder="e.g., Administer WISC-V"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
+          <tr><td><input placeholder="e.g., No parent input yet"></td><td><input placeholder="e.g., Schedule parent meeting by 3/15"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addTableRow('gaps-table')">+ Add gap</button>
@@ -416,7 +416,7 @@
   </div>
 
   <div class="generate-bar">
-    <button class="generate-btn" onclick="generateOverview()">Generate Overview â</button>
+    <button class="generate-btn" onclick="generateOverview()">Generate Overview →</button>
   </div>
 </div>
 
@@ -443,7 +443,7 @@ function toggleSection(header) {
 function addListItem(listId) {
   const list = document.getElementById(listId);
   const li = document.createElement('li');
-  li.innerHTML = '<input type="text" placeholder="â¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button>';
+  li.innerHTML = '<input type="text" placeholder="…" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">×</button>';
   list.appendChild(li);
 }
 function removeListItem(btn) {
@@ -461,7 +461,7 @@ function addTableRow(tableId) {
   for (let i = 0; i < cols - 1; i++) {
     tr.innerHTML += '<td><input placeholder=""></td>';
   }
-  tr.innerHTML += '<td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td>';
+  tr.innerHTML += '<td><button class="remove-row-btn" onclick="removeTableRow(this)">×</button></td>';
   tbody.appendChild(tr);
 }
 function removeTableRow(btn) {
@@ -484,7 +484,7 @@ function updateProgress() {
     const badge = sec.querySelector('.badge');
     if (hasData) {
       filled++;
-      if (badge) { badge.style.display = 'inline'; badge.textContent = 'â'; }
+      if (badge) { badge.style.display = 'inline'; badge.textContent = '✓'; }
     } else {
       if (badge) badge.style.display = 'none';
     }
@@ -641,8 +641,8 @@ function generateOverview() {
 
   // Action buttons
   html += `<div class="output-actions no-print">`;
-  html += `<button class="btn-print" onclick="window.print()">ð¨ï¸ Print / Save PDF</button>`;
-  html += `<button class="btn-edit" onclick="showView('form')">âï¸ Back to Edit</button>`;
+  html += `<button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>`;
+  html += `<button class="btn-edit" onclick="showView('form')">✏️ Back to Edit</button>`;
   html += `</div>`;
 
   document.getElementById('output-content').innerHTML = html;
