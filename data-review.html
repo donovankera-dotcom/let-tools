@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Data Overview Tool â Hawken</title>
+<style>
+  :root {
+    --hawken-red: #EB1923;
+    --hawken-gray: #827D7D;
+    --light-gray: #f5f5f5;
+    --border: #e0dede;
+    --text: #2c2c2c;
+    --text-muted: #6b6b6b;
+    --white: #fff;
+    --success: #2e7d32;
+    --success-bg: #e8f5e9;
+    --warning: #f57c00;
+    --warning-bg: #fff3e0;
+    --font-heading: Georgia, 'Times New Roman', serif;
+    --font-body: Calibri, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); color: var(--text); background: #f9f9f9; line-height: 1.5; }
+
+  /* === LAYOUT === */
+  .app-header { background: var(--white); border-bottom: 3px solid var(--hawken-red); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .app-header h1 { font-family: var(--font-heading); color: var(--hawken-red); font-size: 20px; }
+  .app-header .subtitle { color: var(--hawken-gray); font-size: 13px; margin-top: 2px; }
+  .view-toggle { display: flex; gap: 4px; }
+  .view-toggle button { padding: 8px 18px; border: 1px solid var(--border); background: var(--white); border-radius: 6px; cursor: pointer; font-size: 13px; font-family: var(--font-body); transition: all 0.2s; }
+  .view-toggle button.active { background: var(--hawken-red); color: var(--white); border-color: var(--hawken-red); }
+  .view-toggle button:hover:not(.active) { background: var(--light-gray); }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+  /* === PROGRESS === */
+  .progress-bar-container { background: var(--white); border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; border: 1px solid var(--border); }
+  .progress-bar-container .label { font-size: 13px; color: var(--hawken-gray); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-track { height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--hawken-red); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* === FORM SECTIONS === */
+  .form-section { background: var(--white); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden; }
+  .form-section-header { padding: 14px 20px; background: var(--light-gray); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .form-section-header h2 { font-family: var(--font-heading); font-size: 15px; color: var(--hawken-gray); }
+  .form-section-header .chevron { transition: transform 0.2s; font-size: 18px; color: var(--hawken-gray); }
+  .form-section-header .chevron.open { transform: rotate(90deg); }
+  .form-section-header .badge { font-size: 11px; background: var(--success-bg); color: var(--success); padding: 2px 8px; border-radius: 10px; font-family: var(--font-body); }
+  .form-section-body { padding: 20px; display: none; }
+  .form-section-body.open { display: block; }
+
+  /* === FORM ELEMENTS === */
+  .form-row { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+  .form-group { flex: 1; min-width: 200px; }
+  .form-group label { display: block; font-size: 12px; color: var(--hawken-gray); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font-body); font-size: 14px; background: var(--white); transition: border-color 0.2s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--hawken-red); box-shadow: 0 0 0 2px rgba(235,25,35,0.1); }
+  .form-group textarea { min-height: 70px; resize: vertical; }
+
+  /* === ASSESSMENT ROWS === */
+  .assessment-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .assessment-table th { text-align: left; font-size: 11px; color: var(--hawken-gray); text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 8px; border-bottom: 2px solid var(--border); }
+  .assessment-table td { padding: 4px 8px; vertical-align: top; }
+  .assessment-table input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; font-family: var(--font-body); }
+  .assessment-table input:focus { outline: none; border-color: var(--hawken-red); }
+  .assessment-table tr:nth-child(even) td { background: var(--light-gray); }
+  .add-row-btn { margin-top: 8px; padding: 6px 14px; border: 1px dashed var(--border); background: var(--white); border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--hawken-gray); transition: all 0.2s; }
+  .add-row-btn:hover { border-color: var(--hawken-red); color: var(--hawken-red); }
+  .remove-row-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 2px 6px; }
+  .remove-row-btn:hover { color: var(--hawken-red); }
+
+  /* === BULLET LIST ENTRY === */
+  .bullet-list { list-style: none; padding: 0; }
+  .bullet-list li { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+  .bullet-list li::before { content: "â¢"; color: var(--hawken-gray); font-size: 18px; flex-shrink: 0; }
+  .bullet-list input { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; font-family: var(--font-body); }
+  .bullet-list input:focus { outline: none; border-color: var(--hawken-red); }
+
+  /* === GENERATE BUTTON === */
+  .generate-bar { text-align: center; padding: 20px 0; }
+  .generate-btn { background: var(--hawken-red); color: var(--white); border: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-family: var(--font-body); font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .generate-btn:hover { background: #c91520; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(235,25,35,0.3); }
+
+  /* === OUTPUT VIEW === */
+  .output-container { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 48px; max-width: 800px; margin: 0 auto; }
+  .output-container .doc-title { font-family: var(--font-heading); color: var(--hawken-red); font-size: 24px; margin-bottom: 4px; }
+  .output-container .doc-subtitle { font-family: var(--font-heading); color: var(--hawken-gray); font-size: 14px; margin-bottom: 12px; }
+  .output-container .doc-divider { border: none; border-top: 2px solid var(--hawken-gray); margin: 12px 0 16px 0; }
+  .output-container .doc-note { font-size: 12px; color: var(--hawken-gray); font-style: italic; margin-bottom: 16px; }
+  .output-container .section-heading { font-family: var(--font-heading); color: var(--hawken-gray); font-size: 16px; margin-top: 24px; margin-bottom: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .output-container p { margin-bottom: 10px; font-size: 13px; line-height: 1.6; }
+  .output-container ul { margin: 6px 0 12px 20px; font-size: 13px; }
+  .output-container ul li { margin-bottom: 4px; line-height: 1.5; }
+  .output-container table { width: 100%; border-collapse: collapse; margin: 8px 0 16px 0; font-size: 12px; }
+  .output-container table th { background: var(--hawken-gray); color: var(--white); padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .output-container table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .output-container table tr:nth-child(even) td { background: var(--light-gray); }
+  .output-container .doc-footer { font-size: 10px; color: var(--hawken-gray); font-style: italic; margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .output-actions { text-align: center; margin: 20px 0; display: flex; gap: 12px; justify-content: center; }
+  .output-actions button { padding: 10px 24px; border-radius: 6px; font-size: 14px; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; }
+  .btn-print { background: var(--hawken-red); color: var(--white); border: none; }
+  .btn-print:hover { background: #c91520; }
+  .btn-edit { background: var(--white); color: var(--hawken-gray); border: 1px solid var(--border); }
+  .btn-edit:hover { background: var(--light-gray); }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--hawken-gray); }
+  .empty-state h3 { font-family: var(--font-heading); margin-bottom: 8px; }
+
+  /* === PRINT === */
+  @media print {
+    body { background: white; }
+    .app-header, .output-actions, .no-print { display: none !important; }
+    .container { max-width: 100%; padding: 0; }
+    .output-container { border: none; padding: 20px 40px; box-shadow: none; }
+    .output-container .section-heading { break-after: avoid; }
+    .output-container table { break-inside: avoid; }
+    .output-container .doc-title { font-size: 20px; }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    .form-row { flex-direction: column; }
+    .form-group { min-width: 100%; }
+    .app-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .container { padding: 12px; }
+    .output-container { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>Student Data Overview</h1>
+    <div class="subtitle">Hawken School â Pre-Evaluation & Team Review Tool</div>
+  </div>
+  <div class="view-toggle">
+    <button id="btn-form" class="active" onclick="showView('form')">âï¸ Enter Data</button>
+    <button id="btn-output" onclick="showView('output')">ð View Overview</button>
+  </div>
+</div>
+
+<!-- ============ FORM VIEW ============ -->
+<div id="form-view" class="container">
+
+  <div class="progress-bar-container no-print">
+    <div class="label"><span>Sections completed</span><span id="progress-text">0 / 10</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- STUDENT INFO -->
+  <div class="form-section" data-section="info">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Student Information</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron open">âº</span></div>
+    </div>
+    <div class="form-section-body open">
+      <div class="form-row">
+        <div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="e.g., Addison Taber" oninput="updateProgress()"></div>
+        <div class="form-group"><label>Grade</label>
+          <select id="grade" onchange="updateProgress()"><option value="">Selectâ¦</option><option>Pre-K</option><option>Kindergarten</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date</label><input type="date" id="reviewDate" oninput="updateProgress()"></div>
+        <div class="form-group"><label>Prepared By</label><input type="text" id="preparedBy" placeholder="e.g., Kera Donovan" oninput="updateProgress()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Reason for Review</label>
+          <select id="reason" onchange="updateProgress()"><option value="">Selectâ¦</option><option>LET First Discussion</option><option>Pre-Evaluation Data Review</option><option>Progress Monitoring Check-In</option><option>Parent Conference Prep</option><option>Annual Review / Staffing</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Reason Details (optional)</label><textarea id="reasonDetails" placeholder="Brief context for why this data is being compiled nowâ¦" oninput="updateProgress()"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SNAPSHOT -->
+  <div class="form-section" data-section="snapshot">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Snapshot Summary</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <div class="form-group"><label>3â5 sentence synthesis of the most important patterns</label>
+        <textarea id="snapshot" rows="5" placeholder="Synthesize key patterns across the data â concerns, strengths, and the overall picture. This should stand alone as a quick read before a meeting." oninput="updateProgress()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRENGTHS -->
+  <div class="form-section" data-section="strengths">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Strengths & Protective Factors</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <ul class="bullet-list" id="strengths-list">
+        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="Strength or protective factorâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+      </ul>
+      <button class="add-row-btn" onclick="addListItem('strengths-list')">+ Add strength</button>
+    </div>
+  </div>
+
+  <!-- CONCERNS -->
+  <div class="form-section" data-section="concerns">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Areas of Concern</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <ul class="bullet-list" id="concerns-list">
+        <li><input type="text" placeholder="Concern area and brief elaborationâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="Concern area and brief elaborationâ¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+      </ul>
+      <button class="add-row-btn" onclick="addListItem('concerns-list')">+ Add concern</button>
+    </div>
+  </div>
+
+  <!-- ASSESSMENT DOMAINS â each as a section -->
+  <div class="form-section" data-section="reading">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>ð Reading / Literacy</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="reading-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., DIBELS ORF â Fall 2025"></td><td><input placeholder="e.g., 78 wcpm â at benchmark"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., iReady Reading â Winter 2026"></td><td><input placeholder="e.g., 412 â early 3rd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('reading-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional reading/literacy observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="reading"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="math">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>ð¢ Mathematics</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="math-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., Reflex Fluency â Fall 2025"></td><td><input placeholder="e.g., 32% fluent"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., iReady Math â Winter 2026"></td><td><input placeholder="e.g., 385 â mid 2nd grade"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('math-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional math observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="math"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="writing">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>âï¸ Writing & Word Study</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="writing-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., Spelling Inventory â Fall 2025"></td><td><input placeholder="e.g., Within Words stage"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('writing-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional writing observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="writing"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="cognitive">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>ð§  Cognitive / Processing</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="cognitive-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., WISC-V FSIQ â Jan 2026"></td><td><input placeholder="e.g., SS 95 â average range"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('cognitive-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Additional cognitive/processing observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="cognitive"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="attention">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>â¡ Attention & Executive Function</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="attention-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., BASC-3 Teacher â Fall 2025"></td><td><input placeholder="e.g., Attention T=62, At-Risk"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('attention-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Teacher reports, classroom observation notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="attention"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="sel">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>ð Social-Emotional / Behavioral</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="sel-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., BASC-3 Parent â Fall 2025"></td><td><input placeholder="e.g., Adaptive Skills Composite: Average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('sel-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Counselor input, Zones of Reg observationsâ¦" oninput="updateProgress()" class="domain-notes" data-domain="sel"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="language">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>ð£ï¸ Language / Speech</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="language-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., CELF-5 Core â Dec 2025"></td><td><input placeholder="e.g., SS 88 â low average"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('language-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="SLP observations, articulation notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="language"></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section" data-section="motor">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>â Motor</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="motor-table">
+        <thead><tr><th style="width:35%">Measure / Date</th><th style="width:55%">Score / Result / Interpretation</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., OT Screener â Oct 2025"></td><td><input placeholder="e.g., Fine motor within functional limits"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('motor-table')">+ Add data point</button>
+      <div class="form-group" style="margin-top:12px"><label>Notes / Observations</label><textarea placeholder="Handwriting, fine/gross motor notesâ¦" oninput="updateProgress()" class="domain-notes" data-domain="motor"></textarea></div>
+    </div>
+  </div>
+
+  <!-- SUPPORTS -->
+  <div class="form-section" data-section="supports">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Current Supports & Interventions</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <ul class="bullet-list" id="supports-list">
+        <li><input type="text" placeholder="e.g., Math Lab with Mrs. DiNallo 3x/week since Sept 2025" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+        <li><input type="text" placeholder="e.g., Reflex Math for fact fluency practice" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button></li>
+      </ul>
+      <button class="add-row-btn" onclick="addListItem('supports-list')">+ Add support</button>
+    </div>
+  </div>
+
+  <!-- PARENT INPUT -->
+  <div class="form-section" data-section="parent">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Parent / Family Input</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <div class="form-group"><label>Summary of family input</label><textarea id="parentInput" placeholder="What has the family shared? Date of most recent contact?" oninput="updateProgress()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- BACKGROUND -->
+  <div class="form-section" data-section="background">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Relevant Background</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <div class="form-group"><label>Developmental history, prior schools, language, medical, prior evaluations</label><textarea id="background" placeholder="Brief bullets on relevant background informationâ¦" oninput="updateProgress()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- DATA GAPS -->
+  <div class="form-section" data-section="gaps">
+    <div class="form-section-header" onclick="toggleSection(this)">
+      <h2>Data Gaps & Next Steps</h2>
+      <div style="display:flex;align-items:center;gap:8px"><span class="badge" style="display:none">â</span><span class="chevron">âº</span></div>
+    </div>
+    <div class="form-section-body">
+      <table class="assessment-table" id="gaps-table">
+        <thead><tr><th style="width:40%">Data Gap</th><th style="width:50%">Recommended Action</th><th style="width:10%"></th></tr></thead>
+        <tbody>
+          <tr><td><input placeholder="e.g., No cognitive assessment"></td><td><input placeholder="e.g., Administer WISC-V"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+          <tr><td><input placeholder="e.g., No parent input yet"></td><td><input placeholder="e.g., Schedule parent meeting by 3/15"></td><td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addTableRow('gaps-table')">+ Add gap</button>
+    </div>
+  </div>
+
+  <div class="generate-bar">
+    <button class="generate-btn" onclick="generateOverview()">Generate Overview â</button>
+  </div>
+</div>
+
+<!-- ============ OUTPUT VIEW ============ -->
+<div id="output-view" class="container" style="display:none">
+  <div id="output-content">
+    <div class="empty-state">
+      <h3>No overview generated yet</h3>
+      <p>Switch to "Enter Data" to fill in student information, then click "Generate Overview."</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// === SECTION TOGGLE ===
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+// === LIST ITEMS ===
+function addListItem(listId) {
+  const list = document.getElementById(listId);
+  const li = document.createElement('li');
+  li.innerHTML = '<input type="text" placeholder="â¦" oninput="updateProgress()"><button class="remove-row-btn" onclick="removeListItem(this)" title="Remove">Ã</button>';
+  list.appendChild(li);
+}
+function removeListItem(btn) {
+  const li = btn.closest('li');
+  const list = li.parentElement;
+  if (list.children.length > 1) li.remove();
+}
+
+// === TABLE ROWS ===
+function addTableRow(tableId) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const cols = table.querySelectorAll('thead th').length;
+  const tr = document.createElement('tr');
+  for (let i = 0; i < cols - 1; i++) {
+    tr.innerHTML += '<td><input placeholder=""></td>';
+  }
+  tr.innerHTML += '<td><button class="remove-row-btn" onclick="removeTableRow(this)">Ã</button></td>';
+  tbody.appendChild(tr);
+}
+function removeTableRow(btn) {
+  const tr = btn.closest('tr');
+  const tbody = tr.parentElement;
+  if (tbody.children.length > 1) tr.remove();
+}
+
+// === PROGRESS ===
+function updateProgress() {
+  const sections = document.querySelectorAll('.form-section');
+  let filled = 0;
+  let total = sections.length;
+  sections.forEach(sec => {
+    const inputs = sec.querySelectorAll('input, textarea, select');
+    let hasData = false;
+    inputs.forEach(inp => {
+      if (inp.value && inp.value.trim()) hasData = true;
+    });
+    const badge = sec.querySelector('.badge');
+    if (hasData) {
+      filled++;
+      if (badge) { badge.style.display = 'inline'; badge.textContent = 'â'; }
+    } else {
+      if (badge) badge.style.display = 'none';
+    }
+  });
+  document.getElementById('progress-text').textContent = filled + ' / ' + total;
+  document.getElementById('progress-fill').style.width = (filled / total * 100) + '%';
+}
+
+// === VIEW TOGGLE ===
+function showView(view) {
+  document.getElementById('form-view').style.display = view === 'form' ? 'block' : 'none';
+  document.getElementById('output-view').style.display = view === 'output' ? 'block' : 'none';
+  document.getElementById('btn-form').classList.toggle('active', view === 'form');
+  document.getElementById('btn-output').classList.toggle('active', view === 'output');
+}
+
+// === HELPERS ===
+function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+function getListItems(listId) {
+  const items = [];
+  document.querySelectorAll('#' + listId + ' input').forEach(inp => {
+    if (inp.value.trim()) items.push(inp.value.trim());
+  });
+  return items;
+}
+function getTableData(tableId) {
+  const rows = [];
+  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(tr => {
+    const cells = tr.querySelectorAll('input');
+    if (cells.length >= 2 && (cells[0].value.trim() || cells[1].value.trim())) {
+      rows.push([cells[0].value.trim(), cells[1].value.trim()]);
+    }
+  });
+  return rows;
+}
+function getDomainNotes(domain) {
+  const el = document.querySelector(`.domain-notes[data-domain="${domain}"]`);
+  return el ? el.value.trim() : '';
+}
+
+// === GENERATE ===
+function generateOverview() {
+  const name = val('studentName') || '[Student Name]';
+  const grade = val('grade') || '[Grade]';
+  const date = val('reviewDate') ? new Date(val('reviewDate') + 'T12:00:00').toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '[Date]';
+  const preparedBy = val('preparedBy');
+  const reason = val('reason');
+  const reasonDetails = val('reasonDetails');
+  const snapshot = val('snapshot');
+  const strengths = getListItems('strengths-list');
+  const concerns = getListItems('concerns-list');
+  const supports = getListItems('supports-list');
+  const parentInput = val('parentInput');
+  const background = val('background');
+
+  const domains = [
+    { key: 'reading', label: 'Reading / Literacy', table: 'reading-table' },
+    { key: 'math', label: 'Mathematics', table: 'math-table' },
+    { key: 'writing', label: 'Writing & Word Study', table: 'writing-table' },
+    { key: 'cognitive', label: 'Cognitive / Processing', table: 'cognitive-table' },
+    { key: 'attention', label: 'Attention & Executive Function', table: 'attention-table' },
+    { key: 'sel', label: 'Social-Emotional / Behavioral', table: 'sel-table' },
+    { key: 'language', label: 'Language / Speech', table: 'language-table' },
+    { key: 'motor', label: 'Motor', table: 'motor-table' },
+  ];
+
+  const gaps = getTableData('gaps-table');
+
+  // Build HTML
+  let html = `<div class="output-container">`;
+  html += `<div class="doc-title">Student Data Overview</div>`;
+  html += `<div class="doc-subtitle">${name}  |  Grade ${grade}  |  ${date}</div>`;
+  html += `<hr class="doc-divider">`;
+
+  // Partial data note
+  html += `<div class="doc-note">This overview is based on data entered at the time of creation. Verify all scores against original source documents.</div>`;
+
+  // Snapshot
+  if (snapshot) {
+    html += `<div class="section-heading">Snapshot Summary</div>`;
+    html += `<p>${snapshot}</p>`;
+  }
+
+  // Reason
+  if (reason || reasonDetails) {
+    html += `<div class="section-heading">Reason for Review</div>`;
+    html += `<p>${reason}${reasonDetails ? '. ' + reasonDetails : ''}</p>`;
+  }
+
+  // Strengths
+  if (strengths.length > 0) {
+    html += `<div class="section-heading">Strengths & Protective Factors</div><ul>`;
+    strengths.forEach(s => html += `<li>${s}</li>`);
+    html += `</ul>`;
+  }
+
+  // Concerns
+  if (concerns.length > 0) {
+    html += `<div class="section-heading">Areas of Concern</div><ul>`;
+    concerns.forEach(c => html += `<li>${c}</li>`);
+    html += `</ul>`;
+  }
+
+  // Assessment Domains
+  let hasDomainData = false;
+  domains.forEach(d => {
+    const data = getTableData(d.table);
+    const notes = getDomainNotes(d.key);
+    if (data.length > 0 || notes) {
+      if (!hasDomainData) {
+        html += `<div class="section-heading">Assessment & Screening Data</div>`;
+        hasDomainData = true;
+      }
+      html += `<p style="font-family:var(--font-heading);color:var(--hawken-gray);font-size:14px;margin-top:14px;margin-bottom:4px;font-weight:bold;">${d.label}</p>`;
+      if (data.length > 0) {
+        html += `<table><thead><tr><th>Measure / Date</th><th>Result / Interpretation</th></tr></thead><tbody>`;
+        data.forEach(row => html += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`);
+        html += `</tbody></table>`;
+      }
+      if (notes) html += `<p style="font-size:12px;color:var(--text-muted);margin-top:4px;">${notes}</p>`;
+    }
+  });
+
+  // Supports
+  if (supports.length > 0) {
+    html += `<div class="section-heading">Current Supports & Interventions</div><ul>`;
+    supports.forEach(s => html += `<li>${s}</li>`);
+    html += `</ul>`;
+  }
+
+  // Parent input
+  if (parentInput) {
+    html += `<div class="section-heading">Parent / Family Input</div>`;
+    html += `<p>${parentInput}</p>`;
+  }
+
+  // Background
+  if (background) {
+    html += `<div class="section-heading">Relevant Background</div>`;
+    html += `<p>${background}</p>`;
+  }
+
+  // Gaps
+  if (gaps.length > 0) {
+    html += `<div class="section-heading">Data Gaps & Next Steps</div>`;
+    html += `<table><thead><tr><th>Data Gap</th><th>Recommended Action</th></tr></thead><tbody>`;
+    gaps.forEach(row => html += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`);
+    html += `</tbody></table>`;
+  }
+
+  // Footer
+  html += `<div class="doc-footer">This document is for internal LET/team use.${preparedBy ? ' Prepared by ' + preparedBy + '.' : ''} Confidential.</div>`;
+  html += `</div>`;
+
+  // Action buttons
+  html += `<div class="output-actions no-print">`;
+  html += `<button class="btn-print" onclick="window.print()">ð¨ï¸ Print / Save PDF</button>`;
+  html += `<button class="btn-edit" onclick="showView('form')">âï¸ Back to Edit</button>`;
+  html += `</div>`;
+
+  document.getElementById('output-content').innerHTML = html;
+  showView('output');
+}
+
+// Set today's date
+document.getElementById('reviewDate').valueAsDate = new Date();
+updateProgress();
+</script>
+</body>
+</html>
+
