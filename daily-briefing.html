@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Briefing -- Hawken LET</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --navy: #1B4965;
+    --navy-dark: #132F44;
+    --maroon: #A41E35;
+    --teal: #4A8DAD;
+    --teal-light: #D6E8F0;
+    --green: #3E8278;
+    --green-bg: #EDF4F0;
+    --yellow: #AA9428;
+    --yellow-bg: #FBF6E6;
+    --red: #A5645F;
+    --red-bg: #F5EDEC;
+    --orange: #B87D4A;
+    --bg: #F4F6F8;
+    --card: #ffffff;
+    --border: #E2E8F0;
+    --text: #1E293B;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+.header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: #fff;
+    padding: 2rem 2rem 1.6rem;
+    text-align: center;
+    position: relative;
+}
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--maroon));
+}
+.header-sub {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 0.5rem;
+}
+.header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+.header-date { font-size: 0.95rem; color: rgba(255,255,255,0.8); }
+.header-generated { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
+.container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+.empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.empty-state h2 { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+.empty-state p { font-size: 0.9rem; max-width: 500px; margin: 0 auto; line-height: 1.6; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+.stat-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem 1.2rem; text-align: center; }
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 0.3rem; }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+.section { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
+.section-header {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.9rem 1.2rem; font-weight: 600; font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+}
+.section-header .icon { font-size: 1.1rem; }
+.section-header .count {
+    margin-left: auto; background: var(--bg); color: var(--text-muted);
+    font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 20px;
+}
+.section-header.red { color: var(--maroon); background: #FDF2F2; }
+.section-header.red .count { background: var(--maroon); color: #fff; }
+.section-header.orange { color: var(--red); background: var(--red-bg); }
+.section-header.orange .count { background: var(--red); color: #fff; }
+.section-header.yellow { color: var(--yellow); background: var(--yellow-bg); }
+.section-header.yellow .count { background: var(--yellow); color: #fff; }
+.section-header.teal { color: var(--teal); background: var(--teal-light); }
+.section-header.teal .count { background: var(--teal); color: #fff; }
+.section-header.green { color: var(--green); background: var(--green-bg); }
+.section-header.green .count { background: var(--green); color: #fff; }
+.section-header.navy { color: var(--navy); background: #E8EEF3; }
+.section-header.navy .count { background: var(--navy); color: #fff; }
+.item {
+    padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 0.8rem;
+}
+.item:last-child { border-bottom: none; }
+.item-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 0.35rem; flex-shrink: 0; }
+.item-dot.red { background: var(--maroon); }
+.item-dot.orange { background: var(--red); }
+.item-dot.yellow { background: var(--yellow); }
+.item-dot.teal { background: var(--teal); }
+.item-dot.green { background: var(--green); }
+.item-dot.navy { background: var(--navy); }
+.item-content { flex: 1; min-width: 0; }
+.item-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 0.15rem; }
+.item-meta { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+.item-meta strong { color: var(--text); font-weight: 500; }
+.badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 600;
+    padding: 0.1rem 0.45rem; border-radius: 4px; margin-left: 0.3rem; vertical-align: middle;
+}
+.badge.overdue { background: #FDF2F2; color: var(--maroon); }
+.badge.urgent { background: var(--red-bg); color: var(--red); }
+.badge.approaching { background: var(--yellow-bg); color: var(--yellow); }
+.badge.info { background: var(--teal-light); color: var(--teal); }
+.badge.high { background: #FDF2F2; color: var(--maroon); }
+.badge.moderate { background: var(--yellow-bg); color: var(--yellow); }
+.draft-toggle { font-size: 0.75rem; color: var(--teal); cursor: pointer; font-weight: 500; margin-top: 0.3rem; }
+.draft-toggle:hover { text-decoration: underline; }
+.draft-content {
+    display: none; margin-top: 0.4rem; padding: 0.6rem 0.8rem;
+    background: var(--bg); border-radius: 6px; font-size: 0.8rem;
+    line-height: 1.5; color: var(--text); white-space: pre-wrap;
+}
+.draft-content.open { display: block; }
+.activity-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; padding: 1rem 1.2rem; }
+.activity-tag {
+    font-size: 0.78rem; color: var(--text-muted); background: var(--bg);
+    padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 500;
+}
+.activity-tag strong { color: var(--text); }
+.footer { text-align: center; padding: 1.5rem; font-size: 0.72rem; color: var(--text-light); }
+@media print {
+    body { background: #fff; }
+    .container { max-width: 100%; padding: 0; }
+    .section, .stat-card { box-shadow: none; border: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="header-sub">Learning Enhancement Team</div>
+    <h1>Daily Briefing</h1>
+    <div class="header-date" id="briefing-date"></div>
+    <div class="header-generated" id="generated-at"></div>
+</div>
+<div class="container" id="content">
+    <div class="empty-state">
+        <div class="icon">📋</div>
+        <h2>No briefing data loaded</h2>
+        <p>This page is populated automatically by your 7:00 AM scheduled task.<br>
+        If you're seeing this, the task hasn't run yet today or the file wasn't updated.</p>
+        <p style="margin-top: 1rem; font-size: 0.82rem;">
+            You can also ask Claude: <strong>"Daily briefing"</strong> to generate one on demand.
+        </p>
+    </div>
+</div>
+<div class="footer">
+    Hawken School -- Student Support Services -- Confidential
+</div>
+<script>
+const today = new Date();
+const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById('briefing-date').textContent = today.toLocaleDateString('en-US', opts);
+/*__BRIEFING_DATA_START__*/
+const BRIEFING_DATA = null;
+/*__BRIEFING_DATA_END__*/
+function renderBriefing(data) {
+    if (!data) return;
+    const c = document.getElementById('content');
+    c.innerHTML = '';
+    if (data.generatedAt) {
+        document.getElementById('generated-at').textContent = 'Generated ' + data.generatedAt;
+    }
+    if (data.stats) {
+        const row = document.createElement('div');
+        row.className = 'stats-row';
+        data.stats.forEach(s => {
+            row.innerHTML += '<div class="stat-card"><div class="stat-value">'+s.value+'</div><div class="stat-label">'+s.label+'</div></div>';
+        });
+        c.appendChild(row);
+    }
+    function addSection(items, icon, title, color) {
+        if (!items || !items.length) return;
+        const sec = document.createElement('div');
+        sec.className = 'section';
+        sec.innerHTML = '<div class="section-header '+color+'"><span class="icon">'+icon+'</span>'+title+'<span class="count">'+items.length+'</span></div>';
+        items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'item';
+            let badgeHtml = item.badge ? ' <span class="badge '+(item.badgeClass||'')+'">'+item.badge+'</span>' : '';
+            let draftHtml = '';
+            if (item.draft) {
+                const draftId = 'draft-' + Math.random().toString(36).substr(2,6);
+                draftHtml = '<div class="draft-toggle" onclick="document.getElementById(\''+draftId+'\').classList.toggle(\'open\')">Show draft reply</div><div class="draft-content" id="'+draftId+'">'+item.draft+'</div>';
+            }
+            el.innerHTML = '<div class="item-dot '+color+'"></div><div class="item-content"><div class="item-title">'+item.title+badgeHtml+'</div><div class="item-meta">'+item.detail+'</div>'+draftHtml+'</div>';
+            sec.appendChild(el);
+        });
+        c.appendChild(sec);
+    }
+    addSection(data.schedule, '📅', "Today's Schedule", 'navy');
+    addSection(data.emailsHigh, '📧', 'Emails -- High Priority', 'red');
+    addSection(data.emailsModerate, '📧', 'Emails -- Moderate Priority', 'yellow');
+    addSection(data.tasksOverdue, '✅', 'Overdue Tasks', 'red');
+    addSection(data.tasksDueToday, '✅', 'Tasks Due Today', 'orange');
+    addSection(data.tasksInProgress, '✅', 'Tasks In Progress', 'teal');
+    addSection(data.followups, '⏰', 'Follow-Ups Due', 'red');
+    addSection(data.overdue, '🔴', 'Overdue Deadlines', 'red');
+    addSection(data.urgent, '🟡', 'Urgent -- Next 30 Days', 'orange');
+    addSection(data.approaching, '🟠', 'Approaching -- 31-60 Days', 'yellow');
+    addSection(data.weekAhead, '📆', 'This Week', 'teal');
+    if (data.activity) {
+        const sec = document.createElement('div');
+        sec.className = 'section';
+        sec.innerHTML = '<div class="section-header green"><span class="icon">📊</span>Recent Activity</div><div class="activity-bar">'+data.activity.map(a => '<span class="activity-tag"><strong>'+a.count+'</strong> '+a.type+'</span>').join('')+'</div>';
+        c.appendChild(sec);
+    }
+}
+if (BRIEFING_DATA) renderBriefing(BRIEFING_DATA);
+window.loadBriefing = renderBriefing;
+</script>
+</body>
+</html>
