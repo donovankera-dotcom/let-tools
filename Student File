@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LET Student File — Hawken School</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#EB1923;--red-t:rgba(235,25,35,.10);--red-g:rgba(235,25,35,.04);
+  --ink:#1e1b1b;--ink2:#4a4545;--ink3:#7a7373;--ink4:#b0a9a9;
+  --bg:#edebeb;--bg2:#f5f3f3;--white:#fefefe;
+  --bdr:#e0dcda;--bdr2:#cdc8c6;
+  --grn:#1e6e48;--grn-t:#eaf4ee;--amb:#9a6200;--amb-t:#fdf4e3;
+  --blu:#1a4e8c;--blu-t:#eaf0fa;
+  --ff-s:'Libre Baskerville',Georgia,serif;
+  --ff-m:'DM Mono',monospace;
+  --ff:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+
+/* TOPBAR */
+.topbar{height:46px;background:var(--ink);display:flex;align-items:center;padding:0 22px;gap:9px;position:sticky;top:0;z-index:400}
+.tp{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
+.tt{font-family:var(--ff-s);font-size:13px;color:#fff}
+.tsep{color:#444;font-size:11px}
+.tname{font-size:12px;color:#999;font-weight:300}
+.tr{margin-left:auto;display:flex;gap:6px;align-items:center}
+.tbtn{font-family:var(--ff);font-size:11px;font-weight:500;padding:5px 11px;border-radius:3px;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.55);background:transparent;cursor:pointer;transition:all .14s}
+.tbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+.tbtn.red{background:var(--red);border-color:var(--red);color:#fff}
+.tbtn.red:hover{background:#c8151e}
+.sstatus{font-family:var(--ff-m);font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.04em;transition:color .3s}
+.sstatus.ok{color:#6fcf97}.sstatus.err{color:#f87171}.sstatus.ing{color:rgba(255,255,255,.5)}
+
+/* PAGE */
+.page{max-width:720px;margin:0 auto;padding:28px 22px 90px}
+
+/* STUDENT HEADER */
+.shead{background:var(--white);border:1px solid var(--bdr);border-radius:6px;padding:22px 26px;margin-bottom:20px}
+.sey{font-family:var(--ff-m);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.sname-input{font-family:var(--ff-s);font-size:24px;color:var(--ink);border:none;border-bottom:2px solid var(--bdr2);background:transparent;outline:none;width:100%;padding-bottom:3px;transition:border-color .15s}
+.sname-input:focus{border-bottom-color:var(--red)}
+.sname-input::placeholder{color:var(--ink4);font-style:italic}
+.smeta{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap}
+.smf{display:flex;flex-direction:column;gap:3px}
+.sml{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4)}
+.smi,.sms{font-family:var(--ff);font-size:13px;color:var(--ink);background:transparent;border:none;border-bottom:1px solid var(--bdr2);outline:none;padding:2px 0;-webkit-appearance:none;min-width:90px;transition:border-color .15s}
+.smi:focus,.sms:focus{border-bottom-color:var(--red)}
+.sms{padding-right:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23b0a9a9' d='M4 5L0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;cursor:pointer}
+
+/* MEETING LOG LABEL */
+.log-lbl{font-family:var(--ff-m);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.log-lbl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+/* MEETING CARD */
+.mc{background:var(--white);border:1px solid var(--bdr);border-radius:6px;margin-bottom:12px;overflow:hidden}
+.mc.active{border-color:var(--red);box-shadow:0 0 0 3px var(--red-t)}
+.mc-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .14s}
+.mc-hd:hover{background:var(--bg2)}
+.mc.open .mc-hd{border-bottom:1px solid var(--bdr)}
+.mc-num{font-family:var(--ff-m);font-size:10px;color:var(--ink4);width:20px;flex-shrink:0}
+.mc-type{font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;letter-spacing:.03em;flex-shrink:0}
+.t-ref{background:var(--amb-t);color:var(--amb);border:1px solid #e8c97a}
+.t-ps{background:#fdf0f0;color:var(--red);border:1px solid #f5bcbe}
+.t-up{background:var(--blu-t);color:var(--blu);border:1px solid #b8d0ed}
+.t-pm{background:var(--grn-t);color:var(--grn);border:1px solid #b8ddc8}
+.mc-date{font-size:12px;font-weight:500;color:var(--ink2)}
+.mc-dec{font-size:11.5px;color:var(--ink4);font-style:italic;margin-left:4px}
+.mc-pill{font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:auto;flex-shrink:0}
+.pill-active{background:var(--red-t);color:var(--red);border:1px solid #f5bcbe}
+.pill-prior{background:var(--bg);color:var(--ink4);border:1px solid var(--bdr)}
+.mc-arr{font-size:10px;color:var(--ink4);transition:transform .18s;flex-shrink:0}
+.mc.open .mc-arr{transform:rotate(90deg)}
+.mc-body{display:none}
+.mc.open .mc-body{display:block}
+
+/* PRIOR VIEW */
+.prior{padding:16px 18px;background:var(--bg2)}
+.prior-lbl{font-family:var(--ff-m);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:10px}
+.prow{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.pf{flex:1;min-width:140px}
+.pf-l{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
+.pf-v{font-size:13px;color:var(--ink2);line-height:1.5;white-space:pre-wrap}
+.pf-v:empty::before{content:'—';color:var(--ink4)}
+.pdec{display:inline-block;padding:2px 10px;border-radius:2px;font-size:11px;font-weight:700;margin-top:2px}
+.pacts{margin-top:8px}
+.pact-row{font-size:12.5px;color:var(--ink2);padding:3px 0;border-bottom:1px solid var(--bdr)}
+
+/* ACTIVE MEETING FORM */
+.mform{padding:18px 20px}
+
+/* FIELD */
+.field{margin-bottom:16px}
+.field-top{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.field label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+.guiding{font-size:11.5px;color:var(--ink4);font-style:italic;font-weight:300;line-height:1.4}
+.field textarea,.field input[type=text],.field input[type=date],.field select{width:100%;font-family:var(--ff);font-size:13.5px;color:var(--ink);background:var(--white);border:1px solid var(--bdr2);border-radius:3px;padding:8px 10px;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;resize:vertical}
+.field textarea{min-height:74px;line-height:1.55}
+.field textarea.short{min-height:50px}
+.field textarea::placeholder,.field input::placeholder{color:var(--ink4);font-weight:300;font-size:13px}
+.field textarea:focus,.field input:focus,.field select:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-t)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23827D7D' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px;cursor:pointer;min-height:38px}
+.frow{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+
+/* DIVIDER */
+.fdiv{display:flex;align-items:center;gap:9px;margin:18px 0 14px}
+.fdiv::before,.fdiv::after{content:'';flex:1;height:1px;background:var(--bdr)}
+.fdiv-txt{font-family:var(--ff-m);font-size:9px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink4);white-space:nowrap}
+
+/* STRATEGY ENTRY */
+.strat-wrap{border:1px solid var(--bdr2);border-radius:3px;overflow:hidden;background:var(--white)}
+.strat-list{min-height:60px;padding:6px}
+.strat-item{display:flex;align-items:flex-start;gap:7px;padding:5px 6px;border-radius:3px;margin-bottom:3px;background:var(--bg2);border:1px solid var(--bdr)}
+.strat-item:last-child{margin-bottom:0}
+.strat-tier{font-family:var(--ff-m);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap;flex-shrink:0;margin-top:2px;cursor:pointer;user-select:none}
+.st1{background:#fdf0f0;color:var(--red);border:1px solid #f5bcbe}
+.st2{background:var(--blu-t);color:var(--blu);border:1px solid #b8d0ed}
+.st3{background:var(--grn-t);color:var(--grn);border:1px solid #b8ddc8}
+.st-none{background:var(--bg);color:var(--ink4);border:1px solid var(--bdr)}
+.strat-txt{flex:1;font-size:13px;color:var(--ink2);line-height:1.45;padding-top:2px}
+.strat-del{font-size:13px;color:var(--ink4);cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1;margin-top:3px}
+.strat-del:hover{color:var(--red)}
+.strat-add{display:flex;gap:6px;padding:8px;border-top:1px solid var(--bdr);background:var(--bg2)}
+.strat-add input{flex:1;font-family:var(--ff);font-size:13px;color:var(--ink);background:var(--white);border:1px solid var(--bdr2);border-radius:3px;padding:6px 9px;outline:none;transition:border-color .15s}
+.strat-add input:focus{border-color:var(--red)}
+.strat-add input::placeholder{color:var(--ink4);font-weight:300}
+.tier-btns{display:flex;gap:4px;flex-shrink:0}
+.tb-btn{font-family:var(--ff-m);font-size:9.5px;font-weight:700;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .12s;border:1px solid var(--bdr)}
+.tb-btn.sel-t1{background:#fdf0f0;color:var(--red);border-color:#f5bcbe}
+.tb-btn.sel-t2{background:var(--blu-t);color:var(--blu);border-color:#b8d0ed}
+.tb-btn.sel-t3{background:var(--grn-t);color:var(--grn);border-color:#b8ddc8}
+.tb-btn:not(.sel-t1):not(.sel-t2):not(.sel-t3){background:var(--white);color:var(--ink4)}
+.strat-go{font-family:var(--ff);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:3px;background:var(--ink);color:#fff;border:none;cursor:pointer;flex-shrink:0;transition:background .14s}
+.strat-go:hover{background:#2e2929}
+.strat-hint{font-size:11px;color:var(--ink4);font-style:italic;padding:6px 8px 2px}
+
+/* DECISION */
+.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.di{display:none}
+.di+label{display:block;padding:10px 12px;border-radius:4px;border:1.5px solid var(--bdr);cursor:pointer;transition:all .13s;background:var(--white)}
+.di+label:hover{background:var(--bg2)}
+.dn{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:1px}
+.dd{font-size:11px;color:var(--ink3);font-weight:300;line-height:1.3}
+.di[value="Close — graduate from support"]+label{border-color:#b8ddc8}
+.di[value="Close — graduate from support"]:checked+label{background:var(--grn-t);border-color:var(--grn)}
+.di[value="Close — graduate from support"]:checked+label .dn{color:var(--grn)}
+.di[value="Continue — maintain current plan"]+label{border-color:#b8d0ed}
+.di[value="Continue — maintain current plan"]:checked+label{background:var(--blu-t);border-color:var(--blu)}
+.di[value="Continue — maintain current plan"]:checked+label .dn{color:var(--blu)}
+.di[value="Intensify — increase support"]+label{border-color:#f0d4a0}
+.di[value="Intensify — increase support"]:checked+label{background:var(--amb-t);border-color:var(--amb)}
+.di[value="Intensify — increase support"]:checked+label .dn{color:var(--amb)}
+.di[value="Refer for evaluation"]+label{border-color:#f0b8bb}
+.di[value="Refer for evaluation"]:checked+label{background:#fdf0f0;border-color:var(--red)}
+.di[value="Refer for evaluation"]:checked+label .dn{color:var(--red)}
+
+/* ACTION TABLE */
+.act-wrap{border:1px solid var(--bdr);border-radius:3px;overflow:hidden}
+.act-tbl{width:100%;border-collapse:collapse}
+.act-tbl th{background:var(--bg2);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:6px 8px;border-bottom:1px solid var(--bdr);text-align:left}
+.act-tbl td{padding:3px 5px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+.act-tbl tr:last-child td{border-bottom:none}
+.act-tbl input,.act-tbl select{width:100%;font-family:var(--ff);font-size:13px;color:var(--ink);background:transparent;border:none;padding:4px 5px;outline:none;-webkit-appearance:none}
+.act-tbl input:focus,.act-tbl select:focus{background:var(--bg2)}
+.act-add{width:100%;text-align:center;padding:6px;font-size:11px;font-weight:600;color:var(--ink3);background:var(--bg2);border:none;border-top:1px solid var(--bdr);cursor:pointer;font-family:var(--ff);transition:all .13s}
+.act-add:hover{background:var(--bg);color:var(--ink)}
+
+/* MEETING FOOTER */
+.mfoot{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--bdr);background:var(--bg2)}
+.mfmeta{font-size:11.5px;color:var(--ink3);font-style:italic}
+.mfbtns{display:flex;gap:7px}
+.mfbtn{font-family:var(--ff);font-size:12px;font-weight:600;padding:7px 15px;border-radius:3px;cursor:pointer;transition:all .13s}
+.mfbtn.save{background:var(--ink);color:#fff;border:none}
+.mfbtn.save:hover{background:#2e2929}
+.mfbtn.del{background:transparent;color:var(--red);border:1px solid #f5bcbe}
+.mfbtn.del:hover{background:#fdf0f0}
+
+/* ADD MEETING */
+.add-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;background:var(--white);border:1.5px dashed var(--bdr2);border-radius:6px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;color:var(--ink3);transition:all .14s;margin-bottom:12px}
+.add-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-g)}
+.add-panel{background:var(--white);border:1px solid var(--bdr);border-radius:6px;padding:18px 20px;margin-bottom:12px;display:none}
+.add-panel.vis{display:block}
+.add-panel-title{font-family:var(--ff-s);font-size:14px;color:var(--ink);margin-bottom:12px}
+.add-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.add-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:130px}
+.add-field label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.add-field select,.add-field input{font-family:var(--ff);font-size:13.5px;color:var(--ink);background:var(--white);border:1px solid var(--bdr2);border-radius:3px;padding:7px 10px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+.add-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23827D7D' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px;cursor:pointer}
+.add-field select:focus,.add-field input:focus{border-color:var(--red)}
+.add-btns{display:flex;gap:7px;margin-top:12px}
+.apbtn{font-family:var(--ff);font-size:12.5px;font-weight:600;padding:8px 18px;border-radius:3px;cursor:pointer;transition:all .13s}
+.apbtn.go{background:var(--red);color:#fff;border:none}
+.apbtn.go:hover{background:#c8151e}
+.apbtn.cancel{background:transparent;color:var(--ink3);border:1px solid var(--bdr)}
+.apbtn.cancel:hover{background:var(--bg2)}
+
+/* BOTTOM BTNS */
+.bot-btns{display:flex;gap:8px;margin-top:4px}
+.bot-btn{display:flex;align-items:center;gap:6px;flex:1;padding:13px 16px;background:var(--white);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-family:var(--ff);font-size:12.5px;font-weight:600;color:var(--ink2);transition:all .13s}
+.bot-btn:hover{background:var(--bg2)}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;color:var(--ink3)}
+.empty-icon{font-size:28px;margin-bottom:8px;opacity:.35}
+.empty-txt{font-size:13.5px;font-style:italic}
+
+@media print{
+  .topbar,.add-btn,.add-panel,.mfbtns,.bot-btns,.mc-arr,.mc-pill{display:none!important}
+  .mc-body{display:block!important}
+  .mc{border:1px solid #ccc;margin-bottom:18px;page-break-inside:avoid}
+  body{background:#fff;font-size:10pt}
+  .page{padding:14px}
+}
+@media(max-width:560px){
+  .frow{grid-template-columns:1fr}
+  .dec-grid{grid-template-columns:1fr}
+  .smeta{gap:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tp"></div>
+  <span class="tt">Hawken LET</span>
+  <span class="tsep">·</span>
+  <span class="tname" id="topName">Student File</span>
+  <div class="tr">
+    <span class="sstatus" id="sstatus"></span>
+    <button class="tbtn" onclick="openFile()">↑ Open</button>
+    <button class="tbtn" onclick="manualSave()">↓ Save</button>
+    <button class="tbtn" onclick="showSummary()">⊞ Summary</button>
+    <button class="tbtn red" onclick="showAdd()">+ Meeting</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- STUDENT HEADER -->
+  <div class="shead">
+    <div class="sey">Learning Enhancement Team · Hawken School</div>
+    <input class="sname-input" id="sName" placeholder="Student name" oninput="onName()" autocomplete="off">
+    <div class="smeta">
+      <div class="smf"><span class="sml">Grade</span>
+        <select class="sms" id="sGrade" onchange="save()">
+          <option value="">—</option>
+          <option>PK3</option><option>PK4</option><option>K</option>
+          <option>1st</option><option>2nd</option><option>3rd</option>
+          <option>4th</option><option>5th</option>
+        </select>
+      </div>
+      <div class="smf"><span class="sml">Teacher(s)</span><input class="smi" id="sTeacher" placeholder="—" oninput="save()"></div>
+      <div class="smf"><span class="sml">Coordinator</span><input class="smi" id="sCoord" placeholder="—" oninput="save()"></div>
+      <div class="smf"><span class="sml">File opened</span><input class="smi" type="date" id="sOpened" oninput="save()"></div>
+    </div>
+  </div>
+
+  <!-- LOG LABEL -->
+  <div class="log-lbl">Meeting Log</div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">📋</div>
+    <div class="empty-txt">No meetings yet. Add the first one to begin.</div>
+  </div>
+
+  <!-- MEETINGS -->
+  <div id="meetings"></div>
+
+  <!-- ADD PANEL -->
+  <div class="add-panel" id="addPanel">
+    <div class="add-panel-title">Add a meeting</div>
+    <div class="add-row">
+      <div class="add-field"><label>Type</label>
+        <select id="newType">
+          <option value="ref">Initial Referral</option>
+          <option value="ps">Problem-Solving</option>
+          <option value="up">Update</option>
+          <option value="pm">Progress Monitoring</option>
+        </select>
+      </div>
+      <div class="add-field"><label>Date</label><input type="date" id="newDate"></div>
+      <div class="add-field"><label>Team present</label><input type="text" id="newTeam" placeholder="Names / roles"></div>
+    </div>
+    <div class="add-btns">
+      <button class="apbtn go" onclick="createMeeting()">Create</button>
+      <button class="apbtn cancel" onclick="hideAdd()">Cancel</button>
+    </div>
+  </div>
+
+  <button class="add-btn" onclick="showAdd()"><span style="font-size:17px">+</span> Add Meeting</button>
+
+  <div class="bot-btns">
+    <button class="bot-btn" onclick="window.print()"><span>⎙</span> Print full file</button>
+    <button class="bot-btn" onclick="manualSave()"><span>↓</span> Download backup</button>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──
+let state = {
+  name:'', grade:'', teacher:'', coord:'', opened:'',
+  meetings:[]
+};
+
+const TYPES = {
+  ref:{label:'Initial Referral', cls:'t-ref'},
+  ps: {label:'Problem-Solving',  cls:'t-ps'},
+  up: {label:'Update',           cls:'t-up'},
+  pm: {label:'Progress Monitor', cls:'t-pm'}
+};
+
+const DEC_COLORS = {
+  'Close — graduate from support':   ['var(--grn-t)','var(--grn)'],
+  'Continue — maintain current plan':['var(--blu-t)','var(--blu)'],
+  'Intensify — increase support':    ['var(--amb-t)','var(--amb)'],
+  'Refer for evaluation':            ['#fdf0f0','var(--red)']
+};
+
+// ── PERSISTENCE ──
+const KEY = 'let-file-v2';
+let fileHandle = null, saveTimer = null;
+
+function setSS(msg, cls){
+  const el = document.getElementById('sstatus');
+  el.textContent = msg; el.className = 'sstatus ' + (cls||'');
+}
+
+function collectState(){
+  state.name    = val('sName');
+  state.grade   = val('sGrade');
+  state.teacher = val('sTeacher');
+  state.coord   = val('sCoord');
+  state.opened  = val('sOpened');
+}
+
+function save(){
+  collectState();
+  try { sessionStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  clearTimeout(saveTimer);
+  if(fileHandle){
+    setSS('saving…','ing');
+    saveTimer = setTimeout(async()=>{
+      try {
+        const w = await fileHandle.createWritable();
+        await w.write(JSON.stringify(state,null,2));
+        await w.close();
+        setSS('✓ saved','ok');
+        setTimeout(()=>setSS('',''), 2500);
+      } catch(e){ setSS('⚠ save failed','err'); }
+    }, 700);
+  }
+}
+
+function loadSaved(){
+  try {
+    const r = sessionStorage.getItem(KEY);
+    if(!r) return false;
+    state = JSON.parse(r);
+    return true;
+  } catch(e){ return false; }
+}
+
+async function openFile(){
+  if(!window.showOpenFilePicker){
+    const inp = document.createElement('input');
+    inp.type='file'; inp.accept='.json';
+    inp.onchange = async()=>{
+      try {
+        const t = await inp.files[0].text();
+        state = JSON.parse(t);
+        sessionStorage.setItem(KEY,JSON.stringify(state));
+        restoreForm(); renderMeetings();
+        setSS('opened','ok'); setTimeout(()=>setSS('',''),2500);
+      } catch(e){ alert('Could not read file.'); }
+    };
+    inp.click(); return;
+  }
+  try {
+    [fileHandle] = await window.showOpenFilePicker({
+      types:[{description:'LET File',accept:{'application/json':['.json']}}]
+    });
+    const t = await (await fileHandle.getFile()).text();
+    state = JSON.parse(t);
+    sessionStorage.setItem(KEY,JSON.stringify(state));
+    restoreForm(); renderMeetings();
+    setSS('✓ auto-saving','ok'); setTimeout(()=>setSS('',''),3000);
+  } catch(e){ if(e.name!=='AbortError') alert('Could not open file.'); }
+}
+
+async function createFile(name){
+  if(!window.showSaveFilePicker){ setSS('use Download to save','err'); return; }
+  try {
+    fileHandle = await window.showSaveFilePicker({
+      suggestedName:`LET-${(name||'student').replace(/\s+/g,'-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`,
+      types:[{description:'LET File',accept:{'application/json':['.json']}}]
+    });
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(state,null,2)); await w.close();
+    setSS('✓ auto-saving','ok'); setTimeout(()=>setSS('',''),3000);
+  } catch(e){ if(e.name!=='AbortError') setSS('',''); }
+}
+
+function manualSave(){
+  collectState();
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `LET-${(state.name||'student').replace(/\s+/g,'-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// ── MEETING DATA ──
+function collectMtg(id){
+  const p = id+'_', d = {};
+  document.querySelectorAll(`[id^="${p}"]`).forEach(el=>{
+    const k = el.id.slice(p.length);
+    if(el.type==='radio'){ if(el.checked) d[k]=el.value; }
+    else d[k] = el.value;
+  });
+  // strategies
+  const strats = [];
+  document.querySelectorAll(`#stlist_${id} .strat-item`).forEach(item=>{
+    strats.push({
+      tier: item.dataset.tier||'',
+      txt:  item.querySelector('.strat-txt').textContent
+    });
+  });
+  d._strats = strats;
+  // actions
+  const acts = [];
+  document.querySelectorAll(`#act_${id} tr`).forEach(row=>{
+    const vals = [...row.querySelectorAll('input,select')].map(i=>i.value.trim());
+    if(vals.some(v=>v&&v!=='—')) acts.push(vals);
+  });
+  d._acts = acts;
+  return d;
+}
+
+function saveMtg(id){
+  const mtg = state.meetings.find(m=>m.id===id);
+  if(!mtg) return;
+  mtg.data = collectMtg(id);
+  save();
+  const b = document.getElementById('savebtn_'+id);
+  if(b){ b.textContent='✓ Saved'; setTimeout(()=>b.textContent='Save',1800); }
+}
+
+let autoTimers={};
+function autoSave(id){ clearTimeout(autoTimers[id]); autoTimers[id]=setTimeout(()=>saveMtg(id),900); }
+
+// ── HELPERS ──
+function val(id){ const e=document.getElementById(id); return e?e.value:''; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc2(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(v){
+  if(!v) return '—';
+  try{ return new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  catch(e){ return v; }
+}
+
+// ── UI ──
+function onName(){
+  const n = document.getElementById('sName').value.trim();
+  document.getElementById('topName').textContent = n||'Student File';
+  save();
+}
+function showAdd(){
+  document.getElementById('addPanel').classList.add('vis');
+  if(!document.getElementById('newDate').value)
+    document.getElementById('newDate').valueAsDate = new Date();
+  document.getElementById('addPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function hideAdd(){ document.getElementById('addPanel').classList.remove('vis'); }
+
+function toggleMtg(id){
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ── CREATE MEETING ──
+function createMeeting(){
+  const type = val('newType'), date = val('newDate'), team = val('newTeam').trim();
+  if(!date){ alert('Please set a date.'); return; }
+  const id = 'm'+Date.now();
+  state.meetings.push({id,type,date,team,data:{},createdAt:new Date().toISOString()});
+  save(); hideAdd();
+  document.getElementById('newTeam').value='';
+  renderMeetings();
+  setTimeout(()=>{
+    const c=document.getElementById(id);
+    if(c){ c.classList.add('open','active'); c.scrollIntoView({behavior:'smooth',block:'start'}); }
+  },80);
+}
+
+// ── RENDER ──
+function renderMeetings(){
+  const con = document.getElementById('meetings');
+  const emp = document.getElementById('emptyState');
+  con.innerHTML='';
+  if(!state.meetings.length){ emp.style.display=''; return; }
+  emp.style.display='none';
+  const sorted = [...state.meetings].sort((a,b)=>a.date.localeCompare(b.date));
+  sorted.forEach((mtg,idx)=>{
+    const isLast = idx===sorted.length-1;
+    const ti = TYPES[mtg.type]||TYPES.ps;
+    const dec = mtg.data&&mtg.data.decision ? mtg.data.decision : '';
+    const card = document.createElement('div');
+    card.className = 'mc'+(isLast?' active':'');
+    card.id = mtg.id;
+    if(isLast) card.classList.add('open');
+    card.innerHTML = `
+      <div class="mc-hd" onclick="toggleMtg('${mtg.id}')">
+        <span class="mc-num">#${idx+1}</span>
+        <span class="mc-type ${ti.cls}">${ti.label}</span>
+        <span class="mc-date">${fmtDate(mtg.date)}</span>
+        ${dec?`<span class="mc-dec">→ ${esc(dec.split('—')[0].trim())}</span>`:''}
+        <span class="mc-pill ${isLast?'pill-active':'pill-prior'}">${isLast?'Active':'Prior'}</span>
+        <span class="mc-arr">▶</span>
+      </div>
+      <div class="mc-body">
+        ${isLast ? renderForm(mtg) : renderPrior(mtg)}
+      </div>`;
+    con.appendChild(card);
+    if(isLast && mtg.data && mtg.data._strats){
+      mtg.data._strats.forEach(s=>addStratItem(mtg.id, s.tier, s.txt));
+    }
+    if(isLast && mtg.data && mtg.data._acts){
+      rebuildActs(mtg.id, mtg.data._acts);
+    }
+  });
+}
+
+// ── PRIOR VIEW ──
+function renderPrior(mtg){
+  const d = mtg.data||{};
+  const ti = TYPES[mtg.type]||TYPES.ps;
+  const strats = (d._strats||[]);
+  const acts = (d._acts||[]).filter(r=>r.some(v=>v&&v!=='—'));
+  const [dbg,dcol] = DEC_COLORS[d.decision]||['var(--bg2)','var(--ink3)'];
+  return `
+  <div class="prior">
+    <div class="prior-lbl">Prior meeting — read only</div>
+    <div class="prow">
+      <div class="pf"><div class="pf-l">Date</div><div class="pf-v">${fmtDate(mtg.date)}</div></div>
+      <div class="pf"><div class="pf-l">Type</div><div class="pf-v">${ti.label}</div></div>
+      <div class="pf"><div class="pf-l">Team</div><div class="pf-v">${esc(mtg.team||d.team||'')}</div></div>
+    </div>
+    ${d.challenge?`<div class="prow"><div class="pf"><div class="pf-l">Challenge</div><div class="pf-v">${esc(d.challenge)}</div></div></div>`:''}
+    ${d.whenSuccessful?`<div class="prow"><div class="pf"><div class="pf-l">When successful</div><div class="pf-v">${esc(d.whenSuccessful)}</div></div></div>`:''}
+    ${d.tried?`<div class="prow"><div class="pf"><div class="pf-l">What's been tried</div><div class="pf-v">${esc(d.tried)}</div></div></div>`:''}
+    ${strats.length?`<div class="prow"><div class="pf"><div class="pf-l">Strategies</div><div class="pf-v">${strats.map(s=>`<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:2px;margin-right:4px;background:${s.tier==='T1'?'#fdf0f0':s.tier==='T2'?'var(--blu-t)':'var(--grn-t)'};color:${s.tier==='T1'?'var(--red)':s.tier==='T2'?'var(--blu)':'var(--grn)'}">${esc(s.tier||'—')}</span>${esc(s.txt)}`).join('<br>')}</div></div></div>`:''}
+    ${d.decision?`<div class="prow"><div class="pf"><div class="pf-l">Decision</div><div class="pf-v"><span class="pdec" style="background:${dbg};color:${dcol};border:1px solid ${dcol}">${esc(d.decision)}</span></div></div></div>`:''}
+    ${acts.length?`<div class="pacts"><div class="pf-l" style="margin-bottom:5px">Actions</div>${acts.map(r=>`<div class="pact-row"><strong>${esc(r[0])}</strong> · ${esc(r[1])} · ${esc(r[2])}</div>`).join('')}</div>`:''}
+  </div>`;
+}
+
+// ── ACTIVE FORM ──
+function renderForm(mtg){
+  const p = mtg.id+'_', d = mtg.data||{};
+  return `
+  <div class="mform">
+
+    <div class="frow" style="margin-bottom:16px">
+      <div class="field">
+        <div class="field-top"><label>Date</label></div>
+        <input type="date" id="${p}date" value="${d.date||mtg.date}" oninput="autoSave('${mtg.id}')">
+      </div>
+      <div class="field">
+        <div class="field-top"><label>Team present</label></div>
+        <input type="text" id="${p}team" value="${esc2(mtg.team)}" placeholder="Names and roles" oninput="autoSave('${mtg.id}')">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-top"><label>Presenting challenge</label></div>
+      <div class="guiding">What are you specifically seeing? When and where does it show up? How often?</div>
+      <textarea id="${p}challenge" placeholder="Specific, observable, recent — describe what you actually see, not an interpretation…" oninput="autoSave('${mtg.id}')">${esc2(d.challenge||'')}</textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-top"><label>When is this student successful?</label></div>
+      <div class="guiding">What conditions, contexts, or people bring out their best? What's different there?</div>
+      <textarea id="${p}whenSuccessful" class="short" placeholder="Times of day, subjects, settings, relationships, formats that work…" oninput="autoSave('${mtg.id}')">${esc2(d.whenSuccessful||'')}</textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-top"><label>What's been tried</label></div>
+      <div class="guiding">Keep it brief — what helped, what didn't, how long was it in place?</div>
+      <textarea id="${p}tried" class="short" placeholder="Strategies, accommodations, conversations, prior LET involvement…" oninput="autoSave('${mtg.id}')">${esc2(d.tried||'')}</textarea>
+    </div>
+
+    <div class="fdiv"><div class="fdiv-txt">Discussion</div></div>
+
+    <div class="field">
+      <div class="field-top"><label>Clarifying questions, equity &amp; EF lens</label></div>
+      <div class="guiding">Factual questions only first — no proposals. What shifted understanding? What barriers might we be creating? Structure, timing, access, identity, belonging, age-related factors?</div>
+      <textarea id="${p}cq" placeholder="Questions raised, key responses, lens check — what the group surfaces here…" oninput="autoSave('${mtg.id}')">${esc2(d.cq||'')}</textarea>
+    </div>
+
+    <div class="fdiv"><div class="fdiv-txt">Strategies</div></div>
+
+    <div class="field">
+      <div class="field-top"><label>Strategy burst</label></div>
+      <div class="guiding">Tag each idea T1 (universal/structural), T2 (targeted), or T3 (intensive). Generate fast — evaluate later.</div>
+      <div class="strat-wrap">
+        <div class="strat-hint">Tag strategies as Tier 1, 2, or 3 — or leave untagged</div>
+        <div class="strat-list" id="stlist_${mtg.id}"></div>
+        <div class="strat-add">
+          <input type="text" id="stratinput_${mtg.id}" placeholder="Type a strategy and add it…" onkeydown="if(event.key==='Enter'){event.preventDefault();addStrat('${mtg.id}')}">
+          <div class="tier-btns">
+            <button class="tb-btn" id="tb1_${mtg.id}" onclick="selTier('${mtg.id}','T1')">T1</button>
+            <button class="tb-btn" id="tb2_${mtg.id}" onclick="selTier('${mtg.id}','T2')">T2</button>
+            <button class="tb-btn" id="tb3_${mtg.id}" onclick="selTier('${mtg.id}','T3')">T3</button>
+          </div>
+          <button class="strat-go" onclick="addStrat('${mtg.id}')">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fdiv"><div class="fdiv-txt">Decision &amp; Close</div></div>
+
+    <div class="field">
+      <div class="field-top"><label>Team decision</label></div>
+      <div class="dec-grid" style="margin-bottom:12px" id="decgrid_${mtg.id}">
+        <div><input class="di" type="radio" name="${p}dec" id="${p}dC" value="Close — graduate from support" ${d.decision==='Close — graduate from support'?'checked':''}><label for="${p}dC" onclick="toggleDec(event,'${mtg.id}','${p}dC')"><div class="dn">Close / Graduate</div><div class="dd">Goals met. Return to Tier 1.</div></label></div>
+        <div><input class="di" type="radio" name="${p}dec" id="${p}dK" value="Continue — maintain current plan" ${d.decision==='Continue — maintain current plan'?'checked':''}><label for="${p}dK" onclick="toggleDec(event,'${mtg.id}','${p}dK')"><div class="dn">Continue Plan</div><div class="dd">Adequate progress. Maintain and review.</div></label></div>
+        <div><input class="di" type="radio" name="${p}dec" id="${p}dI" value="Intensify — increase support" ${d.decision==='Intensify — increase support'?'checked':''}><label for="${p}dI" onclick="toggleDec(event,'${mtg.id}','${p}dI')"><div class="dn">Intensify</div><div class="dd">Increase intensity or tier.</div></label></div>
+        <div><input class="di" type="radio" name="${p}dec" id="${p}dR" value="Refer for evaluation" ${d.decision==='Refer for evaluation'?'checked':''}><label for="${p}dR" onclick="toggleDec(event,'${mtg.id}','${p}dR')"><div class="dn">Refer for Evaluation</div><div class="dd">Insufficient response warrants evaluation.</div></label></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-top"><label>Action items</label></div>
+      <div class="act-wrap">
+        <table class="act-tbl">
+          <thead><tr><th style="width:44%">Action</th><th style="width:22%">Who</th><th style="width:20%">By when</th><th style="width:14%">Type</th></tr></thead>
+          <tbody id="act_${mtg.id}">
+            <tr><td><input type="text" placeholder="What needs to happen…"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Date"></td><td><select><option value="">—</option><option>Intervention</option><option>Data / monitoring</option><option>Family contact</option><option>Observation</option><option>Documentation</option><option>Referral</option></select></td></tr>
+            <tr><td><input type="text" placeholder="What needs to happen…"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Date"></td><td><select><option value="">—</option><option>Intervention</option><option>Data / monitoring</option><option>Family contact</option><option>Observation</option><option>Documentation</option><option>Referral</option></select></td></tr>
+          </tbody>
+        </table>
+        <button class="act-add" onclick="addActRow('${mtg.id}')">+ Add row</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-top"><label>Notes / next steps</label></div>
+      <div class="guiding">Parking lot items, next meeting date, anything else worth capturing.</div>
+      <textarea id="${p}notes" class="short" placeholder="Open questions, follow-ups, next meeting…" oninput="autoSave('${mtg.id}')">${esc2(d.notes||'')}</textarea>
+    </div>
+
+  </div>
+  <div class="mfoot">
+    <span class="mfmeta">${fmtDate(mtg.date)}</span>
+    <div class="mfbtns">
+      <button class="mfbtn del" onclick="deleteMtg('${mtg.id}')">Delete</button>
+      <button class="mfbtn save" id="savebtn_${mtg.id}" onclick="saveMtg('${mtg.id}')">Save</button>
+    </div>
+  </div>`;
+}
+
+// ── STRATEGY MANAGEMENT ──
+let selectedTiers = {};
+function selTier(id, tier){
+  selectedTiers[id] = selectedTiers[id]===tier ? '' : tier;
+  ['T1','T2','T3'].forEach(t=>{
+    const b = document.getElementById('tb'+t.slice(1)+'_'+id);
+    if(!b) return;
+    b.className = 'tb-btn' + (selectedTiers[id]===t ? ' sel-t'+t.slice(1) : '');
+  });
+}
+
+function addStrat(id){
+  const inp = document.getElementById('stratinput_'+id);
+  const txt = inp.value.trim(); if(!txt) return;
+  const tier = selectedTiers[id]||'';
+  addStratItem(id, tier, txt);
+  inp.value='';
+  selTier(id,''); // deselect
+  autoSave(id);
+}
+
+function addStratItem(id, tier, txt){
+  const list = document.getElementById('stlist_'+id); if(!list) return;
+  const item = document.createElement('div');
+  item.className='strat-item'; item.dataset.tier=tier;
+  const tierCls = tier==='T1'?'st1':tier==='T2'?'st2':tier==='T3'?'st3':'st-none';
+  item.innerHTML = `<span class="strat-tier ${tierCls}" onclick="cycleTier(this,'${id}')">${tier||'—'}</span><span class="strat-txt">${esc(txt)}</span><span class="strat-del" onclick="this.parentElement.remove();autoSave('${id}')">×</span>`;
+  list.appendChild(item);
+}
+
+function cycleTier(el, id){
+  const item = el.parentElement;
+  const cur = item.dataset.tier||'';
+  const next = cur===''?'T1':cur==='T1'?'T2':cur==='T2'?'T3':'';
+  item.dataset.tier = next;
+  el.textContent = next||'—';
+  el.className = 'strat-tier ' + (next==='T1'?'st1':next==='T2'?'st2':next==='T3'?'st3':'st-none');
+  autoSave(id);
+}
+
+// ── ACTION TABLE ──
+function addActRow(id){
+  const tb = document.getElementById('act_'+id); if(!tb) return;
+  const tr = document.createElement('tr');
+  tr.innerHTML='<td><input type="text" placeholder="What needs to happen…"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Date"></td><td><select><option value="">—</option><option>Intervention</option><option>Data / monitoring</option><option>Family contact</option><option>Observation</option><option>Documentation</option><option>Referral</option></select></td>';
+  tb.appendChild(tr);
+}
+
+function rebuildActs(id, rows){
+  const tb = document.getElementById('act_'+id); if(!tb||!rows.length) return;
+  tb.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input type="text" value="${esc2(r[0]||'')}" placeholder="What needs to happen…"></td><td><input type="text" value="${esc2(r[1]||'')}" placeholder="Name"></td><td><input type="text" value="${esc2(r[2]||'')}" placeholder="Date"></td><td><select><option value="">—</option><option ${r[3]==='Intervention'?'selected':''}>Intervention</option><option ${r[3]==='Data / monitoring'?'selected':''}>Data / monitoring</option><option ${r[3]==='Family contact'?'selected':''}>Family contact</option><option ${r[3]==='Observation'?'selected':''}>Observation</option><option ${r[3]==='Documentation'?'selected':''}>Documentation</option><option ${r[3]==='Referral'?'selected':''}>Referral</option></select></td>`;
+    tb.appendChild(tr);
+  });
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td><input type="text" placeholder="What needs to happen…"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Date"></td><td><select><option value="">—</option><option>Intervention</option><option>Data / monitoring</option><option>Family contact</option><option>Observation</option><option>Documentation</option><option>Referral</option></select></td>';
+  tb.appendChild(tr);
+}
+
+function deleteMtg(id){
+  if(!confirm('Delete this meeting? This cannot be undone.')) return;
+  state.meetings = state.meetings.filter(m=>m.id!==id);
+  save(); renderMeetings();
+}
+
+// ── RESTORE ──
+function restoreForm(){
+  document.getElementById('sName').value    = state.name||'';
+  document.getElementById('sGrade').value   = state.grade||'';
+  document.getElementById('sTeacher').value = state.teacher||'';
+  document.getElementById('sCoord').value   = state.coord||'';
+  document.getElementById('sOpened').value  = state.opened||'';
+  document.getElementById('topName').textContent = state.name||'Student File';
+}
+
+// ── TOGGLEABLE DECISION ──
+function toggleDec(e, mtgId, radioId){
+  const radio = document.getElementById(radioId);
+  if(!radio) return;
+  if(radio.checked){
+    e.preventDefault();
+    radio.checked = false;
+    autoSave(mtgId);
+  }
+  // if not checked, default label click will check it — just autosave after
+  setTimeout(()=>autoSave(mtgId), 50);
+}
+
+// ── SUMMARY VIEW ──
+function showSummary(){
+  collectState();
+  // collect active meeting data too
+  const activeMtg = state.meetings.length ? [...state.meetings].sort((a,b)=>a.date.localeCompare(b.date)).slice(-1)[0] : null;
+  if(activeMtg) activeMtg.data = collectMtg(activeMtg.id);
+
+  const sorted = [...state.meetings].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!sorted.length){ alert('No meetings to summarize yet.'); return; }
+
+  const name = state.name||'Student';
+  const grade = state.grade ? ` · ${state.grade}` : '';
+
+  let rows = sorted.map((mtg,i)=>{
+    const d = mtg.data||{};
+    const ti = TYPES[mtg.type]||TYPES.ps;
+    const strats = (d._strats||[]);
+    const acts = (d._acts||[]).filter(r=>r&&r.some(v=>v&&v!=='—'));
+    const [dbg,dcol] = DEC_COLORS[d.decision]||['var(--bg2)','var(--ink3)'];
+    return `
+    <div class="sr-mtg">
+      <div class="sr-mtg-hd">
+        <span class="sr-num">#${i+1}</span>
+        <span class="sr-type ${ti.cls}">${ti.label}</span>
+        <span class="sr-date">${fmtDate(mtg.date)}</span>
+        ${mtg.team||d.team ? `<span class="sr-team">${esc(mtg.team||d.team)}</span>` : ''}
+      </div>
+      <div class="sr-body">
+        ${d.challenge?`<div class="sr-row"><div class="sr-lbl">Challenge</div><div class="sr-val">${esc(d.challenge)}</div></div>`:''}
+        ${d.whenSuccessful?`<div class="sr-row"><div class="sr-lbl">When successful</div><div class="sr-val">${esc(d.whenSuccessful)}</div></div>`:''}
+        ${d.tried?`<div class="sr-row"><div class="sr-lbl">What's been tried</div><div class="sr-val">${esc(d.tried)}</div></div>`:''}
+        ${d.cq?`<div class="sr-row"><div class="sr-lbl">Discussion & lens</div><div class="sr-val">${esc(d.cq)}</div></div>`:''}
+        ${strats.length?`<div class="sr-row"><div class="sr-lbl">Strategies</div><div class="sr-val">${strats.map(s=>`<span style="display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:2px;margin:1px 3px 1px 0;background:${s.tier==='T1'?'#fdf0f0':s.tier==='T2'?'var(--blu-t)':s.tier==='T3'?'var(--grn-t)':'var(--bg)'};color:${s.tier==='T1'?'var(--red)':s.tier==='T2'?'var(--blu)':s.tier==='T3'?'var(--grn)':'var(--ink4)'};border:1px solid ${s.tier==='T1'?'#f5bcbe':s.tier==='T2'?'#b8d0ed':s.tier==='T3'?'#b8ddc8':'var(--bdr)'}">${esc(s.tier||'—')}</span>${esc(s.txt)}`).join('<br style="margin:2px 0">')}</div></div>`:''}
+        ${d.decision?`<div class="sr-row"><div class="sr-lbl">Decision</div><div class="sr-val"><span style="display:inline-block;padding:2px 10px;border-radius:2px;font-size:11px;font-weight:700;background:${dbg};color:${dcol};border:1px solid ${dcol}">${esc(d.decision)}</span></div></div>`:''}
+        ${acts.length?`<div class="sr-row"><div class="sr-lbl">Actions</div><div class="sr-val">${acts.map(r=>`<div style="font-size:12.5px;padding:2px 0;border-bottom:1px solid var(--bdr)"><strong>${esc(r[0])}</strong>${r[1]?' · '+esc(r[1]):''}${r[2]?' · '+esc(r[2]):''}${r[3]&&r[3]!=='—'?' · <em>'+esc(r[3])+'</em>':''}</div>`).join('')}</div></div>`:''}
+        ${d.notes?`<div class="sr-row"><div class="sr-lbl">Notes</div><div class="sr-val">${esc(d.notes)}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <title>LET Summary — ${esc(name)}</title>
+  <style>
+  :root{--red:#EB1923;--ink:#1e1b1b;--ink2:#4a4545;--ink3:#7a7373;--ink4:#b0a9a9;--bg:#edebeb;--bg2:#f5f3f3;--white:#fefefe;--bdr:#e0dcda;--bdr2:#cdc8c6;--grn:#1e6e48;--grn-t:#eaf4ee;--amb:#9a6200;--amb-t:#fdf4e3;--blu:#1a4e8c;--blu-t:#eaf0fa;--ff-s:'Libre Baskerville',Georgia,serif;--ff-m:'DM Mono',monospace;--ff:'DM Sans',system-ui,sans-serif}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ff);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  .sr-page{max-width:700px;margin:0 auto;padding:32px 22px 80px}
+  .sr-hd{background:var(--white);border:1px solid var(--bdr);border-radius:6px;padding:20px 24px;margin-bottom:22px}
+  .sr-ey{font-family:var(--ff-m);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:5px}
+  .sr-name{font-family:var(--ff-s);font-size:22px;color:var(--ink);margin-bottom:4px}
+  .sr-meta{font-size:12px;color:var(--ink3)}
+  .sr-label{font-family:var(--ff-m);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .sr-label::after{content:'';flex:1;height:1px;background:var(--bdr)}
+  .sr-mtg{background:var(--white);border:1px solid var(--bdr);border-radius:6px;margin-bottom:14px;overflow:hidden;page-break-inside:avoid}
+  .sr-mtg-hd{display:flex;align-items:center;gap:9px;padding:11px 15px;border-bottom:1px solid var(--bdr);background:var(--bg2)}
+  .sr-num{font-family:var(--ff-m);font-size:10px;color:var(--ink4);width:20px;flex-shrink:0}
+  .sr-type{font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;flex-shrink:0}
+  .t-ref{background:var(--amb-t);color:var(--amb);border:1px solid #e8c97a}
+  .t-ps{background:#fdf0f0;color:var(--red);border:1px solid #f5bcbe}
+  .t-up{background:var(--blu-t);color:var(--blu);border:1px solid #b8d0ed}
+  .t-pm{background:var(--grn-t);color:var(--grn);border:1px solid #b8ddc8}
+  .sr-date{font-size:12px;font-weight:500;color:var(--ink2)}
+  .sr-team{font-size:11.5px;color:var(--ink4);margin-left:4px}
+  .sr-body{padding:14px 16px}
+  .sr-row{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--bdr)}
+  .sr-row:last-child{border-bottom:none}
+  .sr-lbl{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);width:120px;flex-shrink:0;padding-top:2px}
+  .sr-val{flex:1;font-size:13px;color:var(--ink2);line-height:1.5;white-space:pre-wrap}
+  .no-print{display:flex;gap:8px;margin-bottom:18px}
+  .npbtn{font-family:var(--ff);font-size:12.5px;font-weight:600;padding:8px 16px;border-radius:3px;cursor:pointer;border:1px solid var(--bdr);background:var(--white);color:var(--ink2);transition:all .13s}
+  .npbtn:hover{background:var(--bg2)}
+  .npbtn.red{background:var(--red);color:#fff;border-color:var(--red)}
+  .npbtn.red:hover{background:#c8151e}
+  @media print{.no-print{display:none!important}body{background:#fff}.sr-page{padding:14px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>
+  <div class="sr-page">
+    <div class="no-print">
+      <button class="npbtn red" onclick="window.print()">⎙ Print / Save as PDF</button>
+      <button class="npbtn" onclick="window.close()">← Close</button>
+    </div>
+    <div class="sr-hd">
+      <div class="sr-ey">Learning Enhancement Team · Hawken School · Case Summary</div>
+      <div class="sr-name">${esc(name)}</div>
+      <div class="sr-meta">${esc(state.grade||'')}${state.teacher?' · '+esc(state.teacher):''}${state.coord?' · Coord: '+esc(state.coord):''} · ${sorted.length} meeting${sorted.length!==1?'s':''} · Generated ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+    </div>
+    <div class="sr-label">Meeting Log</div>
+    ${rows}
+  </div></body></html>`;
+
+  const w = window.open('','_blank','width=780,height=900');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  const had = loadSaved();
+  if(had){
+    restoreForm(); renderMeetings();
+    if(state.name && window.showSaveFilePicker) setSS('↑ Open to re-enable auto-save','ing');
+  } else {
+    document.getElementById('sOpened').valueAsDate = new Date();
+    document.getElementById('sName').addEventListener('change', async()=>{
+      const n = document.getElementById('sName').value.trim();
+      if(n && !fileHandle && window.showSaveFilePicker){
+        setSS('Create a file to auto-save →','ing');
+        setTimeout(async()=>{ if(!fileHandle) await createFile(n); }, 600);
+      }
+    },{once:true});
+  }
+  ['sName','sTeacher','sCoord','sOpened'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', save);
+  });
+  document.getElementById('sGrade').addEventListener('change', save);
+});
+</script>
+</body>
+</html>
