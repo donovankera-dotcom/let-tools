@@ -231,6 +231,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--ink);font-size:14px;
     <span class="sstatus" id="sstatus"></span>
     <button class="tbtn" onclick="openFile()">↑ Open</button>
     <button class="tbtn" onclick="manualSave()">↓ Save</button>
+    <button class="tbtn" onclick="mergeFile()">⊕ Merge</button>
     <button class="tbtn" onclick="showSummary()">⊞ Summary</button>
     <button class="tbtn red" onclick="showAdd()">+ Meeting</button>
   </div>
@@ -840,7 +841,19 @@ function showSummary(){
     </div>
     <div class="sr-label">Meeting Log</div>
     ${rows}
-  </div></body></html>`;
+  </div>
+<!-- MERGE MODAL -->
+<div id="mergeModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+  <div style="background:var(--white);border-radius:8px;padding:28px 32px;max-width:480px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2)">
+    <h3 style="font-family:var(--ff-s);font-size:16px;margin-bottom:14px">Merge Meeting Data</h3>
+    <div id="mergeBody" style="font-size:13px;line-height:1.7;color:var(--ink2)"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+      <button class="tbtn" style="color:var(--ink);border-color:var(--bdr)" onclick="closeMerge()">Cancel</button>
+      <button class="tbtn red" onclick="confirmMerge()">Merge</button>
+    </div>
+  </div>
+</div>
+</body></html>`;
 
   const w = window.open('','_blank','width=780,height=900');
   w.document.write(html);
@@ -868,6 +881,62 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   document.getElementById('sGrade').addEventListener('change', save);
 });
+
+
+  /* ── MERGE FILE ── */
+  let _pendingMerge = null;
+
+  async function mergeFile(){
+    try {
+      const [fh] = await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      const file = await fh.getFile();
+      const t = await file.text();
+      let incoming;
+      try { incoming = JSON.parse(t); } catch(e){ alert('Could not parse file. Is it valid JSON?'); return; }
+      if(!incoming.meetings || !Array.isArray(incoming.meetings)){ alert('This file does not contain meeting data to merge.'); return; }
+      const cur = JSON.parse(sessionStorage.getItem('let-file-v2')||'null');
+      if(!cur || !cur.name){
+        sessionStorage.setItem('let-file-v2', JSON.stringify(incoming));
+        loadSaved(); setSS('Loaded','ok'); return;
+      }
+      const existingIds = new Set((cur.meetings||[]).map(m=>m.id));
+      const newMeetings = incoming.meetings.filter(m=>!existingIds.has(m.id));
+      if(newMeetings.length===0){ alert('No new meetings to merge. All meetings in this file already exist.'); return; }
+      _pendingMerge = { incoming, newMeetings };
+      const nameMatch = incoming.name && cur.name && incoming.name.toLowerCase()===cur.name.toLowerCase();
+      let body = '';
+      if(!nameMatch && incoming.name){
+        body += '<div style="background:var(--amb-t);border:1px solid #e6d5a8;border-radius:4px;padding:10px 12px;margin-bottom:12px;font-size:12px"><strong>Note:</strong> Incoming file is for <strong>'+esc(incoming.name)+'</strong> but current file is for <strong>'+esc(cur.name)+'</strong>.</div>';
+      }
+      body += '<p><strong>'+newMeetings.length+'</strong> new meeting'+(newMeetings.length===1?'':'s')+' will be added:</p><ul style="margin:8px 0 0 18px;font-size:12px">';
+      newMeetings.forEach(m=>{
+        const tl={ref:'Referral',ps:'Problem-Solving',up:'Update',pm:'Progress Monitoring'}[m.type]||m.type;
+        body+='<li><strong>'+(m.date||'no date')+'</strong> \u2014 '+tl+'</li>';
+      });
+      body+='</ul>';
+      const skipped=incoming.meetings.length-newMeetings.length;
+      if(skipped>0) body+='<p style="color:var(--ink3);font-size:11px;margin-top:8px">'+skipped+' duplicate(s) skipped.</p>';
+      document.getElementById('mergeBody').innerHTML=body;
+      document.getElementById('mergeModal').style.display='flex';
+    } catch(e){ if(e.name!=='AbortError') console.error(e); }
+  }
+
+  function confirmMerge(){
+    if(!_pendingMerge) return;
+    const cur = JSON.parse(sessionStorage.getItem('let-file-v2')||'{}');
+    cur.meetings = (cur.meetings||[]).concat(_pendingMerge.newMeetings);
+    cur.meetings.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    sessionStorage.setItem('let-file-v2', JSON.stringify(cur));
+    closeMerge();
+    loadSaved();
+    setSS('Merged '+_pendingMerge.newMeetings.length+' meeting(s)','ok');
+    _pendingMerge = null;
+  }
+
+  function closeMerge(){
+    document.getElementById('mergeModal').style.display='none';
+    _pendingMerge = null;
+  }
 </script>
 </body>
 </html>
