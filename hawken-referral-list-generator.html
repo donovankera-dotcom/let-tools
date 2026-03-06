@@ -1,0 +1,3138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hawken School – Support Services Referral List Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B4965;
+    --navy-dark: #132F44;
+    --maroon: #A41E35;
+    --teal: #4A8DAD;
+    --teal-light: #D6E8F0;
+    --green: #3E8278;
+    --yellow: #D4B847;
+    --red: #A5645F;
+    --orange: #B87D4A;
+    --bg: #F4F6F8;
+    --card: #ffffff;
+    --border: #E2E8F0;
+    --text: #1E293B;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--maroon) 100%); color: white; padding: 16px 24px; display: flex; align-items: center; gap: 16px; height: 68px; flex-shrink: 0; }
+  .header-logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; border: 2px solid rgba(255,255,255,0.7); padding: 4px 10px; }
+  .header-title h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.3px; }
+  .header-title p { font-size: 0.8rem; opacity: 0.8; margin-top: 3px; font-weight: 400; }
+  .app-body { display: flex; height: calc(100vh - 64px); }
+  .sidebar { width: 380px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+  .sidebar-section { padding: 12px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+
+  .sidebar-section h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-light); margin-bottom: 8px; }
+  .student-info input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; margin-bottom: 5px; font-family: inherit; color: var(--text); }
+  .student-info input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,73,101,.1); }
+  .student-info textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; height: 40px; resize: vertical; font-family: inherit; color: var(--text); }
+  .student-info textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,73,101,.1); }
+  .search-wrap { position: relative; }
+  .search-wrap input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px 7px 28px; font-size: 12px; font-family: inherit; color: var(--text); }
+  .search-wrap input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,73,101,.1); }
+  .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 12px; pointer-events: none; }
+  .category-dropdown { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: inherit; color: var(--text); background: var(--card); cursor: pointer; outline: none; }
+  .category-dropdown:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,73,101,.1); }
+
+
+
+  .resource-list { flex: 1; overflow-y: auto; padding: 6px; min-height: 0; }
+  .resource-group { margin-bottom: 6px; }
+  .group-header { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--navy); padding: 6px 8px 5px; background: var(--teal-light); border-radius: 6px; margin-bottom: 3px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+  .group-header:hover { background: #c8dde8; }
+  .group-count { background: var(--navy); color: white; border-radius: 8px; padding: 1px 6px; font-size: 9px; flex-shrink: 0; }
+  .select-group-btn { font-size: 9px; color: var(--navy); text-decoration: underline; font-weight: 400; text-transform: none; letter-spacing: 0; background: none; border: none; cursor: pointer; flex-shrink: 0; }
+  .resource-item { display: block; padding: 6px 7px; border-radius: 4px; border: 1.5px solid transparent; margin-bottom: 2px; transition: all 0.1s; overflow: hidden; }
+  .resource-item:hover { background: #f8fafc; border-color: var(--border); }
+  .resource-item.selected { background: var(--teal-light); border-color: var(--teal); }
+  .resource-item input[type="checkbox"] { margin-top: 2px; accent-color: var(--navy); width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
+  .resource-name { font-size: 11px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .resource-meta { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .toolbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 10px 18px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .toolbar h2 { font-size: 14px; font-weight: 700; color: var(--text); margin-right: auto; }
+  .selected-count { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .btn { padding: 7px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.12s; font-family: inherit; }
+  .btn-primary { background: var(--navy); color: white; }
+  .btn-primary:hover { background: var(--navy-dark); }
+  .btn-secondary { background: var(--card); color: var(--text-muted); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { background: var(--teal-light); }
+  .btn-danger { background: #fef2f2; color: var(--maroon); border: 1.5px solid #fecaca; }
+  .btn-danger:hover { background: #fecaca; }
+  .preview-area { flex: 1; overflow-y: auto; padding: 20px; }
+  .preview-placeholder { text-align: center; color: #a0aec0; padding: 60px 20px; }
+  .preview-placeholder .icon { font-size: 40px; margin-bottom: 10px; }
+  .preview-placeholder p { font-size: 13px; }
+  .referral-output { max-width: 760px; margin: 0 auto; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-md); border: 1px solid var(--border); overflow: hidden; }
+  .print-header { background: white; color: var(--text); padding: 28px 32px 20px; text-align: center; border-bottom: 3px solid var(--navy); }
+  .print-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .print-title { text-align: center; }
+  .print-title h2 { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--navy); }
+  .print-title p { font-size: 11px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+  .print-student-info { padding: 16px 32px; border-bottom: 1px solid var(--border); background: #f8fafc; }
+  .student-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .info-field label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  .info-field p { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 2px; }
+  .notes-field { margin-top: 8px; }
+  .notes-field label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  .notes-field p { font-size: 12px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+  .print-body { padding: 20px 32px; }
+  .category-section { margin-bottom: 14px; }
+  .category-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: white; background: var(--navy); padding: 5px 10px; border-radius: 3px; margin-bottom: 6px; }
+  .referral-card { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 5px; background: white; }
+  .card-icon { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .card-content { flex: 1; min-width: 0; }
+  .card-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .card-location { font-size: 10px; color: var(--navy); font-weight: 600; margin-top: 1px; }
+  .card-contact { font-size: 10px; color: var(--text-muted); margin-top: 2px; word-break: break-all; }
+  .card-notes { font-size: 10px; color: var(--text-muted); margin-top: 3px; font-style: italic; border-top: 1px dashed var(--border); padding-top: 3px; }
+  .print-footer { border-top: 1px solid var(--border); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+  .print-footer p { font-size: 10px; color: var(--text-light); }
+  .print-footer .school { font-size: 11px; font-weight: 700; color: var(--navy); }
+  .empty-state { text-align: center; padding: 20px; color: #a0aec0; font-size: 12px; }
+  .icon-eval { background: var(--teal-light); }
+  .icon-mental { background: #EDF4F0; }
+  .icon-therapy { background: #FBF6E6; }
+  .icon-tutor { background: #F0EDF5; }
+  .icon-support { background: #F5EDEC; }
+  .icon-other { background: #F4F6F8; }
+  @media print {
+    body { height: auto; overflow: visible; background: white; }
+    .header, .sidebar, .toolbar, .inserts-panel { display: none !important; }
+    .app-body { display: block; height: auto; }
+    .main { display: block; overflow: visible; }
+    .preview-area { padding: 0; overflow: visible; }
+    .referral-output { box-shadow: none; border-radius: 0; max-width: 100%; border: none; display: block; min-height: auto; }
+    .print-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .print-body { }
+    .print-footer { margin-top: 24px; }
+    .category-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+    select.category-dropdown optgroup {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: 13px;
+      padding: 4px 0;
+    }
+    select.category-dropdown option {
+      font-weight: 400;
+      color: var(--text);
+      padding-left: 12px;
+    }
+
+
+    /* ─── Expandable Resource Cards ─── */
+    .resource-item { position: relative; transition: all 0.2s; }
+    .resource-item .card-expand {
+      font-size: 11px; color: var(--text-light); transition: transform 0.2s;
+      cursor: pointer; padding: 4px 6px; flex-shrink: 0;
+    }
+    .resource-item .card-expand:hover { color: var(--navy); }
+    .resource-item.expanded .card-expand { transform: rotate(90deg); color: var(--navy); }
+    .resource-item.expanded { background: #FAFBFC; border-left: 3px solid var(--navy); padding-left: 9px; }
+    .card-details {
+      display: none; margin-top: 8px; padding-top: 8px;
+      border-top: 1px solid var(--border); font-size: 0.78rem;
+      max-width: 100%; overflow: hidden; box-sizing: border-box;
+    }
+    .resource-item.expanded .card-details { display: block; }
+    .detail-row { display: flex; gap: 6px; margin-bottom: 4px; }
+    .detail-label { font-weight: 600; color: var(--text-muted); min-width: 58px; flex-shrink: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; }
+    .detail-value { color: var(--text); word-break: break-word; }
+    .detail-value a { color: var(--teal); text-decoration: none; }
+    .detail-value a:hover { text-decoration: underline; }
+    .private-notes-area {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .pn-label {
+      font-size: 0.68rem; font-weight: 700; color: var(--maroon);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;
+    }
+    .pn-textarea {
+      width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 0.78rem; color: var(--text); background: #fff;
+      min-height: 40px; resize: vertical; transition: border-color 0.2s; box-sizing: border-box;
+    }
+    .pn-textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(74,141,173,0.12); }
+    .pn-imported {
+      font-size: 0.72rem; color: var(--text-muted); font-style: italic;
+      margin-top: 3px; padding: 3px 7px; background: #FFF8E1; border-radius: 3px;
+      border-left: 3px solid #D4B847;
+    }
+    
+    /* ─── Edit Mode ─── */
+    .edit-bar { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .edit-bar button { font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-family: inherit; border: 1px solid var(--border); }
+    .btn-edit { background: var(--teal-light); color: var(--navy); }
+    .btn-edit:hover { background: var(--teal); color: #fff; }
+    .btn-save { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .btn-save:hover { opacity: 0.9; }
+    .btn-cancel { background: #fff; color: var(--text-muted); }
+    .btn-cancel:hover { background: #f5f5f5; }
+    .btn-delete { background: #fff; color: var(--maroon); border-color: var(--maroon); }
+    .btn-delete:hover { background: var(--maroon); color: #fff; }
+    .edit-field { margin-bottom: 6px; }
+    .edit-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; margin-bottom: 2px; }
+    .edit-field input, .edit-field select { width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 5px; font-family: inherit; font-size: 12px; color: var(--text); background: #fff; box-sizing: border-box; }
+    .edit-field input:focus, .edit-field select:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(74,141,173,0.12); }
+    .add-entry-btn { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 8px; margin-top: 8px; border: 2px dashed var(--border); border-radius: var(--radius); background: transparent; color: var(--text-muted); font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .add-entry-btn:hover { border-color: var(--teal); color: var(--navy); background: var(--teal-light); }
+
+    /* ─── Info Inserts ─── */
+    .inserts-panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; margin-bottom: 16px; box-shadow: var(--shadow);
+      display: none;
+    }
+    .inserts-panel.visible { display: block; }
+    .inserts-heading {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-light); margin-bottom: 8px;
+    }
+    .insert-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .insert-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 10px; background: #F0F3F7; border: 1px solid var(--border);
+      border-radius: 15px; font-size: 0.72rem; color: var(--text);
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .insert-chip:hover { border-color: var(--teal); background: var(--teal-light); }
+    .insert-chip.selected { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .insert-chip .edit-btn { display:inline-flex;align-items:center;margin-left:4px;padding:0 2px;font-size:10px;opacity:0.5;cursor:pointer; }
+    .insert-chip .edit-btn:hover { opacity:1; }
+    .insert-chip.selected .edit-btn { opacity:0.7; }
+    .insert-chip.selected .edit-btn:hover { opacity:1; }
+    .handout-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center; }
+    .handout-modal { background:#fff;border-radius:12px;width:540px;max-width:92vw;max-height:85vh;overflow:auto;box-shadow:0 12px 40px rgba(0,0,0,0.2); }
+    .handout-modal-header { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+    .handout-modal-header h3 { margin:0;font-size:0.95rem;color:var(--navy); }
+    .handout-modal-body { padding:20px; }
+    .handout-modal-body label { display:block;font-size:0.75rem;font-weight:600;color:var(--text);margin-bottom:4px;margin-top:12px; }
+    .handout-modal-body label:first-child { margin-top:0; }
+    .handout-modal-body input[type="text"] { width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.82rem; }
+    .handout-modal-body textarea { width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.82rem;min-height:140px;resize:vertical;line-height:1.5; }
+    .handout-modal-footer { padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end; }
+    .handout-modal-footer button { padding:6px 16px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1px solid var(--border); }
+    .handout-modal-footer .btn-save { background:var(--navy);color:#fff;border-color:var(--navy); }
+    .handout-modal-footer .btn-reset { background:#fff;color:var(--text-muted);border-color:var(--border); }
+    .handout-modal-footer .btn-delete { background:#fff;color:#dc2626;border-color:#fca5a5; }
+    .handout-modal-footer .btn-cancel { background:#fff;color:var(--text); }
+    .add-handout-chip { display:inline-flex;align-items:center;gap:3px;padding:3px 10px;background:#fff;border:1px dashed var(--border);border-radius:15px;font-size:0.72rem;color:var(--text-muted);cursor:pointer;transition:all 0.15s; }
+    .add-handout-chip:hover { border-color:var(--teal);color:var(--teal);background:var(--teal-light); }
+
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-title">
+    <h1>Support Services Referral List Generator</h1>
+    <p>Select resources to generate a personalized referral list for a student or family</p>
+  </div>
+  <a href="hub.html" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:white;font-size:0.72rem;font-weight:500;padding:0.25rem 0.9rem;border-radius:20px;text-decoration:none;letter-spacing:.3px;margin-left:auto">Back to Hub</a>
+</div>
+<div class="app-body">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h3>Student / Family Information</h3>
+      <div class="student-info">
+        <input type="text" id="studentName" placeholder="Student Name" />
+        <input type="text" id="gradeLevel" placeholder="Grade / Age" />
+        <input type="text" id="counselorName" placeholder="Counselor / Contact Name" />
+        <input type="text" id="referralDate" placeholder="Date" />
+        <textarea id="referralNotes" placeholder="Notes / Reason for Referral (optional)"></textarea>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <h3>Search Resources</h3>
+      <div class="search-wrap">
+        <span class="search-icon" style="font-size:11px;color:var(--text-light)">&#x2315;</span>
+        <input type="text" id="searchInput" placeholder="Search by name, location, notes…" oninput="filterResources()" />
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <h3>Filter by Category</h3>
+      <select class="category-dropdown" id="categoryDropdown" onchange="setCategory(this.value)">
+        <option value="All">All Categories</option>
+      </select>
+    </div>
+    <div class="resource-list" id="resourceList"></div>
+    <button class="add-entry-btn" onclick="addEntry()">+ Add New Entry</button>
+  </div>
+  <div class="main">
+    <div class="toolbar">
+      <h2>Referral List Preview</h2>
+      <span class="selected-count" id="selectedCount">0 resources selected</span>
+      <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+      <button class="btn btn-secondary" onclick="window.print()">Print</button>
+      <button class="btn btn-primary" onclick="generatePreview()">Generate Preview</button>
+    </div>
+    <div class="inserts-panel" id="insertsPanel">
+      <div class="inserts-heading">Include Informational Handouts</div>
+      <div class="insert-chips" id="insertChips"></div>
+    </div>
+
+    <div class="preview-area" id="previewArea">
+      <div class="preview-placeholder">
+        <div class="icon" style="font-size:36px;color:var(--text-light)">&#9776;</div>
+        <p>Select resources from the left panel, then click <strong>Generate Preview</strong> to create a personalized referral list.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const resources = [
+  {
+    "id": 1,
+    "category": "Child Psychiatrists",
+    "name": "Amanda Horrigan",
+    "location": "25101 Chagrin Blvd #100 Beachwood, OH 44122",
+    "notes": "Terrific – Laurel grad, insurance, Lisa Damour recommends",
+    "contact": "(216) 831-6611"
+  },
+  {
+    "id": 2,
+    "category": "Child Psychiatrists",
+    "name": "Barry Simon",
+    "location": "Chagrin Falls Family Health Center",
+    "notes": "Adolescents",
+    "contact": "(216) 445-1954"
+  },
+  {
+    "id": 3,
+    "category": "Child Psychiatrists",
+    "name": "Ben Spinner",
+    "location": "20600 Chagrin Blvd. #900 Beachwood, OH 44122",
+    "notes": "",
+    "contact": "(216) 292-0610"
+  },
+  {
+    "id": 4,
+    "category": "Child Psychiatrists",
+    "name": "Children's Hospital of Akron",
+    "location": "Akron",
+    "notes": "",
+    "contact": "(330) 543-1000 | https://www.akronchildrens.org/cms/home/index.html"
+  },
+  {
+    "id": 5,
+    "category": "Child Psychiatrists",
+    "name": "Janet Kemp",
+    "location": "800 E. Washington Executive Commons, Suite #301, 44124",
+    "notes": "Children and adolescents – Excellent, no insurance (files) smart assessments",
+    "contact": "(216) 292-0610"
+  },
+  {
+    "id": 6,
+    "category": "Child Psychiatrists",
+    "name": "Jenny Rosenberg",
+    "location": "29425 Chagrin Blvd #301 Pepper Pike, OH 44122",
+    "contact": "(216) 595-9955",
+    "notes": "good for women"
+  },
+  {
+    "id": 7,
+    "category": "Child Psychiatrists",
+    "name": "John Hertzer",
+    "location": "UHHS, 11100 Euclid Ave, Cleveland 44106",
+    "notes": "Children and adolescents – Great, Insurance",
+    "contact": "(216) 844-3881"
+  },
+  {
+    "id": 8,
+    "category": "Child Psychiatrists",
+    "name": "Kamal-Neil S. Dass",
+    "location": "25101 Chagrin Blvd, #100, Beachwood, OH",
+    "notes": "Children and adolescents – Casual style, peaceful and kind, Insurance yes",
+    "contact": "(216) 831-6611"
+  },
+  {
+    "id": 9,
+    "category": "Child Psychiatrists",
+    "name": "Mark Warren",
+    "location": "Cleveland Eating Disorder Clinic, 23240 Chargrin Blvd",
+    "notes": "Established eating disorders; adolescents – very good",
+    "contact": "(216) 765-0500"
+  },
+  {
+    "id": 10,
+    "category": "Child Psychiatrists",
+    "name": "Molly McVoy",
+    "location": "UH Case Med Center",
+    "notes": "Children and adolescents (younger children), insurance",
+    "contact": "(216) 844-3881"
+  },
+  {
+    "id": 11,
+    "category": "Child Psychiatrists",
+    "name": "Nora McNamara",
+    "location": "UHHS, 11100 Euclid Ave., Cleveland and 960 Clague Rd., Westlake",
+    "notes": "Children and adolescents – good",
+    "contact": "(216) 844-3881"
+  },
+  {
+    "id": 12,
+    "category": "Child Psychiatrists",
+    "name": "Olga Estrina",
+    "location": "6449 Wilson Mills Rd. Mayfield Village, OH 44143",
+    "notes": "Children and adolescents – Russian students, Therapy with education management, ADHD, stress with medical concerns, Insurance yes",
+    "contact": "(216) 767-0440"
+  },
+  {
+    "id": 13,
+    "category": "Child Psychiatrists",
+    "name": "Peter Geier",
+    "location": "23811 Chagrin Blvd. #310 Beachwood, OH 44122",
+    "notes": "Children and adolescents – Younger set. No insurance, can prescribe meds a lot",
+    "contact": "(216) 464-1277"
+  },
+  {
+    "id": 14,
+    "category": "Child Psychiatrists",
+    "name": "Stephen Levine",
+    "location": "23230 Chagrin Blvd. #350, Beachwood, Oh",
+    "contact": "(216) 831-2900",
+    "notes": "adolescents but more adult"
+  },
+  {
+    "id": 15,
+    "category": "Child Psychiatrists",
+    "name": "Steve Grcevich",
+    "location": "8500 E. Washington, Chagrin Falls 44023",
+    "notes": "Children and adolescents – Used a lot, great",
+    "contact": "(440) 543-3400"
+  },
+  {
+    "id": 16,
+    "category": "Child Psychiatrists",
+    "name": "William Rowane",
+    "location": "Family Center by the Falls, 8401 Chargin Road, # 14B, CF, 44023",
+    "notes": "Children and adolescents – really good, so kind, spends time",
+    "contact": "(440) 543-3400"
+  },
+  {
+    "id": 17,
+    "category": "Therapists – Psychologists",
+    "name": "Amy Lee Ph.D.",
+    "location": "36901 American Way Avon, OH 44011",
+    "contact": "(440) 930-6250",
+    "notes": "children and adolescents - takes insurance"
+  },
+  {
+    "id": 18,
+    "category": "Therapists – Psychologists",
+    "name": "Anna Grossman-McKee, Ph.D.",
+    "location": "Spectrum Psy Assoc, 6690 Beta Dr #312, Mayfield Village 44143",
+    "contact": "(440) 446-9696 x 13",
+    "notes": "adolescents, adults - Insurance yes"
+  },
+  {
+    "id": 19,
+    "category": "Therapists – Psychologists",
+    "name": "Anna Maria Carillo",
+    "location": "23360 Chagrin Blvd. Suite 205 Beachwood, OH 44122",
+    "contact": "(216) 577-7551",
+    "notes": "Terrific - General anxiety class for teenagers, great with feedback, mindfulness groups"
+  },
+  {
+    "id": 20,
+    "category": "Therapists – Psychologists",
+    "name": "Barry H. Gordon, Ph.D.",
+    "location": "3601 S. Green Road, Suite # 200, Beachwood, 44122",
+    "contact": "(440) 886-9655",
+    "notes": "adolescents, adults, couples, families"
+  },
+  {
+    "id": 21,
+    "category": "Therapists – Psychologists",
+    "name": "Becky Hazen Ph.D.",
+    "location": "10524 Euclid Ave. #3150 Cleveland, OH 44106",
+    "contact": "(216) 844-3230",
+    "notes": "Rainbow"
+  },
+  {
+    "id": 22,
+    "category": "Therapists – Psychologists",
+    "name": "Beth Ann Martin, Ph.D.",
+    "location": "Solon Family Health Cntr., 29800 Bainbridge Rd., Solon, OH 44139",
+    "contact": "(440) 519-6800",
+    "notes": "children and adolescents only - really good, specializing in autism"
+  },
+  {
+    "id": 23,
+    "category": "Therapists – Psychologists",
+    "name": "Beth Shapiro",
+    "location": "3733 Park E, #100, Beachwood",
+    "notes": "Good for LGBTQ+ – adolescent to adult",
+    "contact": "(216) 831-6611"
+  },
+  {
+    "id": 24,
+    "category": "Therapists – Psychologists",
+    "name": "Carolyn Landis",
+    "location": "UH 10524 Euclid Ave, Suite 3150 Cleveland, OH",
+    "contact": "(216) 844-7700",
+    "notes": "Sleep - pediatric Obesity"
+  },
+  {
+    "id": 25,
+    "category": "Therapists – Psychologists",
+    "name": "Catherine Gaw, Psy.D.",
+    "location": "2570 SOM Center Rd., Willoughby Hills",
+    "contact": "(440) 943-2500",
+    "notes": "Autism, cognitive behavior intervention…all ages, spectrum"
+  },
+  {
+    "id": 26,
+    "category": "Therapists – Psychologists",
+    "name": "Center for Emotional Wellness",
+    "location": "Beachwood",
+    "notes": "3659 Green Road, Suite 102",
+    "contact": "admin@emotionalwelnesscle.com | (216) 294-2434"
+  },
+  {
+    "id": 27,
+    "category": "Therapists – Psychologists",
+    "name": "Center for Evidence-Based Treatment",
+    "location": "Shaker Heights",
+    "notes": "19910 Malvern Road (in the Hanna Perkins building/former Malvern School)",
+    "contact": "info@cebtohio.com | (216) 544-1321"
+  },
+  {
+    "id": 28,
+    "category": "Therapists – Psychologists",
+    "name": "Cleveland Health and Wellness Center",
+    "location": "Beachwood",
+    "notes": "",
+    "contact": "info@chawc.org | (216) 777-8834"
+  },
+  {
+    "id": 29,
+    "category": "Therapists – Psychologists",
+    "name": "Cleveland Integrative Counseling",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": "(216) 600-8008 | clevelandint.com"
+  },
+  {
+    "id": 30,
+    "category": "Therapists – Psychologists",
+    "name": "CWRU Psychology Clinic",
+    "location": "Cleveland Hearing and Speech Center, Cleveland, OH",
+    "notes": "Reduced rate, good care from trainees",
+    "contact": "(216) 368-0719"
+  },
+  {
+    "id": 31,
+    "category": "Therapists – Psychologists",
+    "name": "Daily Behavioral Health",
+    "location": "14538 Grapeland Ave, Cleveland, OH 44111",
+    "notes": "",
+    "contact": "(216) 252-1399 | dailybh.com"
+  },
+  {
+    "id": 32,
+    "category": "Therapists – Psychologists",
+    "name": "David Granoff, Ph.D.",
+    "location": "21403 Chagrin Blvd., # 210, Beachwood 44122",
+    "contact": "(216) 752-5346",
+    "notes": "adolescents, great, good feedback, hard to get in"
+  },
+  {
+    "id": 33,
+    "category": "Therapists – Psychologists",
+    "name": "David Steinweg Ph.D.",
+    "location": "21625 Chagrin Blvd, #200, Beachwood 44122",
+    "contact": "(216) 283-6852",
+    "notes": "(Ratner); children/adolescents; family therapy, ODD, depression, anxiety"
+  },
+  {
+    "id": 34,
+    "category": "Therapists – Psychologists",
+    "name": "Ebb & Flow Counseling",
+    "location": "Lakewood & Tremont",
+    "notes": "Adult – relationship therapy",
+    "contact": ""
+  },
+  {
+    "id": 35,
+    "category": "Therapists – Psychologists",
+    "name": "Ellen Casper and Associates",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 36,
+    "category": "Therapists – Psychologists",
+    "name": "Emotional Relief Fund",
+    "location": "",
+    "notes": "Funding for 12+",
+    "contact": "https://www.emotionalrelieffund.org/"
+  },
+  {
+    "id": 37,
+    "category": "Therapists – Psychologists",
+    "name": "Farshid Afsarifard",
+    "location": "Premiere Behaviorial Health:8701 Mentor Ave. Mentor, OH, 44060",
+    "contact": "(440) 266-0770 | http://www.pbhsohio.com/",
+    "notes": "Clinical and Forensic Psychologist"
+  },
+  {
+    "id": 38,
+    "category": "Therapists – Psychologists",
+    "name": "Felipe Amunategui, Ph.D.",
+    "location": "UHHS, 11100 Euclid Ave, Cleveland 44106",
+    "contact": "216-844-3881 Ext. 48952",
+    "notes": "CBT, adolescents with comorbid disorders, bad boys, yes for insurance"
+  },
+  {
+    "id": 39,
+    "category": "Therapists – Psychologists",
+    "name": "Fit Mind Cleveland",
+    "location": "",
+    "notes": "Lisa Santorelli – early adolescent and older",
+    "contact": ""
+  },
+  {
+    "id": 40,
+    "category": "Therapists – Psychologists",
+    "name": "Frank Ezzo",
+    "location": "25101 Chagrin Boulevard #100 Beachwood, OH",
+    "contact": "(216) 468-5000 | https://psychbc.com/doctors-and-therapists/frank-ezzo",
+    "notes": "child/adolescent but he specializes in forensic and family work"
+  },
+  {
+    "id": 41,
+    "category": "Therapists – Psychologists",
+    "name": "Georgie Gray Counseling",
+    "location": "27600 Chagrin Blvd, Suite 490, Woodmere, OH 44122",
+    "notes": "",
+    "contact": "(216) 220-2702"
+  },
+  {
+    "id": 42,
+    "category": "Therapists – Psychologists",
+    "name": "Hilary Alexander – Cleveland Clinic",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 43,
+    "category": "Therapists – Psychologists",
+    "name": "Hope Behavioral Health",
+    "location": "",
+    "notes": "Culturally competent",
+    "contact": ""
+  },
+  {
+    "id": 44,
+    "category": "Therapists – Psychologists",
+    "name": "Howard Hall",
+    "location": "10524 Euclid Ave, Suite 3150 Cleveland, OH 44106",
+    "contact": "(216) 844-3230",
+    "notes": "bio feedback, tension headaches, chronic, gastro intestinal - not for therapy only for bio feedback"
+  },
+  {
+    "id": 45,
+    "category": "Therapists – Psychologists",
+    "name": "Jane Buder-Shapiro",
+    "location": "3601 Green Rd. Suite 210 Beachwood, OH 44122",
+    "contact": "(216) 223-8805",
+    "notes": "adolescents"
+  },
+  {
+    "id": 46,
+    "category": "Therapists – Psychologists",
+    "name": "Jason Friedman",
+    "location": "25101 Chagrin Blvd. Suite 100 Beachwood, OH 44122",
+    "contact": "(216) 831-6611",
+    "notes": "Autism, eating disorders, body image issues, mens issues, play therapy, mixed reports"
+  },
+  {
+    "id": 47,
+    "category": "Therapists – Psychologists",
+    "name": "Karen Bardenstein, Ph.D.",
+    "location": "12429 Cedar Road, Cleveland Heights 44106",
+    "contact": "(216) 229-4200",
+    "notes": "Personality disorders/children, divorces - younger kids"
+  },
+  {
+    "id": 48,
+    "category": "Therapists – Psychologists",
+    "name": "Kate Eshelman",
+    "location": "Cle. Clinic main: 9500 Euclid Ave. Cleveland, OH 44195",
+    "contact": "(216) 444-9323",
+    "notes": "Tics, ADHD, Anxiety"
+  },
+  {
+    "id": 49,
+    "category": "Therapists – Psychologists",
+    "name": "Katie Lamparyk",
+    "location": "9500 Euclid Avenue Cleveland, OH 44195",
+    "contact": "(216) 444-4464 | http://my.clevelandclinic.org/staff_directory/staff_display?DoctorID=16252",
+    "notes": "Behavioral GI"
+  },
+  {
+    "id": 50,
+    "category": "Therapists – Psychologists",
+    "name": "Kelly A. Bhatnagar, Ph.D.",
+    "location": "25550 Chagrin Blvd. #200, Beachwood, OH 44122",
+    "contact": "(216) 765-0500",
+    "notes": "children and adolescents, eating disorder"
+  },
+  {
+    "id": 51,
+    "category": "Therapists – Psychologists",
+    "name": "Kelsey MacDougall – Metro Health",
+    "location": "",
+    "notes": "Great with trans or questioning adolescents",
+    "contact": ""
+  },
+  {
+    "id": 52,
+    "category": "Therapists – Psychologists",
+    "name": "Kimberly Bell",
+    "location": "19910 Malvern Rd. Shaker Heights, OH 44122",
+    "contact": "(216) 929-0223",
+    "notes": "mixed opinions - one loved her work, the other felt she was not effective. Ins."
+  },
+  {
+    "id": 53,
+    "category": "Therapists – Psychologists",
+    "name": "Kimberly Koljat Therapy",
+    "location": "",
+    "notes": "Play therapy (child, adolescent, adult)",
+    "contact": ""
+  },
+  {
+    "id": 54,
+    "category": "Therapists – Psychologists",
+    "name": "Kristen Eastman",
+    "location": "805 Columbia Rd. #105 Westlake, OH 44145",
+    "contact": "(440) 835-1445",
+    "notes": "Anxiety disorders, insurance"
+  },
+  {
+    "id": 55,
+    "category": "Therapists – Psychologists",
+    "name": "Kristine Rork, Ph.D.",
+    "location": "Solon",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 56,
+    "category": "Therapists – Psychologists",
+    "name": "Lauren O'Hara",
+    "location": "KIDS Link 2132 Case Pkwy, Twinsburg, OH 44087",
+    "contact": "(330) 963-8600 | http://www.kidslinkohio.com/kidslink-family/lauren-ohara/",
+    "notes": "Calm kids group for anxious kids, pediatric psychologist, medical concerns, school age"
+  },
+  {
+    "id": 57,
+    "category": "Therapists – Psychologists",
+    "name": "Linden Behavioral Pediatrics – Victoria Norton",
+    "location": "Westlake",
+    "notes": "Behavioral Pediatrics - younger children, a go-to regular",
+    "contact": "(440) 250-9880"
+  },
+  {
+    "id": 58,
+    "category": "Therapists – Psychologists",
+    "name": "Lisa Doane",
+    "location": "20220 Center Ridge Rd #355 Rocky River, OH 44116",
+    "contact": "(440) 249-7990",
+    "notes": "focuses on anxiety/PTSD"
+  },
+  {
+    "id": 59,
+    "category": "Therapists – Psychologists",
+    "name": "Lucene Wisnewski, Ph.D.",
+    "location": "23240 Chagrin Blvd, #270, Beachwood, OH",
+    "contact": "(216) 765-0500",
+    "notes": "eating disorders"
+  },
+  {
+    "id": 60,
+    "category": "Therapists – Psychologists",
+    "name": "Mark McConville, Ph.D.",
+    "location": "21403 Chagrin Blvd., Shaker Hts., 44122",
+    "contact": "(216) 751-1007",
+    "notes": "adolescents"
+  },
+  {
+    "id": 61,
+    "category": "Therapists – Psychologists",
+    "name": "Megan Barlow",
+    "location": "2932 Wooster Rd. Rocky River, OH 44116",
+    "contact": "(440) 409-0307",
+    "notes": "social skills groups, well trained, sense of humor, little kids but all over, behavioral issues, spectrum"
+  },
+  {
+    "id": 62,
+    "category": "Therapists – Psychologists",
+    "name": "Melissa Korland",
+    "location": "3659 Green Road Suite 200 Beachwood, OH 44122",
+    "contact": "(216) 342-4221 | http://eastsidepsych.net",
+    "notes": "evaluations, has space, good"
+  },
+  {
+    "id": 63,
+    "category": "Therapists – Psychologists",
+    "name": "Michele DePolo, PsyD",
+    "location": "KIDS Link 2132 Case Pkwy, Twinsburg, OH 44087",
+    "contact": "(330) 963-8600",
+    "notes": "Social Skills Groups, spectrum issues"
+  },
+  {
+    "id": 64,
+    "category": "Therapists – Psychologists",
+    "name": "Nancy Lowery-Bregar",
+    "location": "14701 Detroit Ave. Lakewood, OH 44107",
+    "contact": "(216) 228-0010",
+    "notes": "LGBT issues, marriage and family, mood disorders, sexual abuse and trauma recovery"
+  },
+  {
+    "id": 65,
+    "category": "Therapists – Psychologists",
+    "name": "Oasis Counseling",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 66,
+    "category": "Therapists – Psychologists",
+    "name": "Organization for Psychological Health",
+    "location": "Solon",
+    "notes": "34305 Solon Road, Suites 51, 52 & 54, Solon, OH 44139",
+    "contact": "info@oph-psych.org | (440) 349-3038"
+  },
+  {
+    "id": 67,
+    "category": "Therapists – Psychologists",
+    "name": "PALS for Healing",
+    "location": "",
+    "notes": "Grief focused",
+    "contact": ""
+  },
+  {
+    "id": 68,
+    "category": "Therapists – Psychologists",
+    "name": "Partners for Behavioral Health and Wellness",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 69,
+    "category": "Therapists – Psychologists",
+    "name": "Pathways Family Counseling",
+    "location": "N Royalton",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 70,
+    "category": "Therapists – Psychologists",
+    "name": "Progression Counseling Group",
+    "location": "25221 Miles Road, Suite F Warrensville Heights, OH 44128",
+    "notes": "Takes insurance, ages 5 and up",
+    "contact": "(216) 514-1600 | http://galvintherapycenter.com/"
+  },
+  {
+    "id": 71,
+    "category": "Therapists – Psychologists",
+    "name": "Sarah Cain Spannagel, PhD",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 72,
+    "category": "Therapists – Psychologists",
+    "name": "Sheila Santoro, Ph.D.",
+    "location": "24300 Chagrin Blvd. # 209",
+    "contact": "(440) 821-3070",
+    "notes": "(HB); adolescents, couples, adult women - -older students, understands schools"
+  },
+  {
+    "id": 73,
+    "category": "Therapists – Psychologists",
+    "name": "Sherri McClurg",
+    "location": "3591 Reserve Commons Dr. Medina, OH 44256 and Family Center by the Falls",
+    "contact": "(440) 543-3400",
+    "notes": "children and adolescents, forensic psychology, no ins."
+  },
+  {
+    "id": 74,
+    "category": "Therapists – Psychologists",
+    "name": "Signature",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 75,
+    "category": "Therapists – Psychologists",
+    "name": "Sima Weinberg, LPCC",
+    "location": "",
+    "notes": "",
+    "contact": "simabweinberg@gmail.com | (216) 538-5507"
+  },
+  {
+    "id": 76,
+    "category": "Therapists – Psychologists",
+    "name": "Susan Knell, Ph.D.",
+    "location": "6151 Wilson Mills Rd., #200, Highland Heights, OH. 44143",
+    "contact": "(216) 956-3258",
+    "notes": "Anxiety, depression, parenting, all ages, great"
+  },
+  {
+    "id": 77,
+    "category": "Therapists – Psychologists",
+    "name": "Suzanne Schnepps, Ph.D.",
+    "location": "2 Commerce Park #310 Beachwood, OH 44122",
+    "contact": "(216) 831-1813",
+    "notes": "all ranges, fantastic, no insurance"
+  },
+  {
+    "id": 78,
+    "category": "Therapists – Psychologists",
+    "name": "Talia Master",
+    "location": "21403 Chagrin Blvd. Suite 117 Beachwood, OH 44122",
+    "contact": "(216) 538-9381",
+    "notes": "really good, insurance, adolescents as young as 11"
+  },
+  {
+    "id": 79,
+    "category": "Therapists – Psychologists",
+    "name": "Terry Tobias Ph.D.",
+    "location": "12429 Cedar Road, Cleveland Heights 44106",
+    "contact": "(216) 229-4200",
+    "notes": "adults and older adolescents, couples work"
+  },
+  {
+    "id": 80,
+    "category": "Therapists – Psychologists",
+    "name": "Tira Stebbins Ph.D.",
+    "location": "34305 Solon Rd Suite 52 Solon, OH 44139",
+    "contact": "(440) 349-3038 | http://oph-psych.org/staff-member/dr-tira-stebbins/",
+    "notes": "school age and up, anxiety, adhd, medical mutual, assessments"
+  },
+  {
+    "id": 81,
+    "category": "Therapists – Psychologists",
+    "name": "Tom Rogat",
+    "location": "3601 Green Road #314, Beachwood, OH 44122",
+    "contact": "(510) 915-3252",
+    "notes": "children, adolescents, adults (esp. boys) - Great, adoption work, mixed"
+  },
+  {
+    "id": 82,
+    "category": "Therapists – Psychologists",
+    "name": "Trysa Shullman, PsD.",
+    "location": "21403 Chagrin Blvd. Beachwood, OH 44122",
+    "contact": "(216) 991-4008 | http://www.trysashulman.com/",
+    "notes": "DBT groups"
+  },
+  {
+    "id": 83,
+    "category": "Therapists – Psychologists",
+    "name": "Wellness Center (table entry)",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 84,
+    "category": "Therapists – Psychologists",
+    "name": "Yael Y. Greenberg, Psy.D.",
+    "location": "12429 Cedar Rd. #18, Cleveland Hts., OH 44106",
+    "contact": "(216) 921-1779",
+    "notes": "specializes in females - insurance yes, gender work, israeli, kids"
+  },
+  {
+    "id": 85,
+    "category": "Therapists – Social Workers",
+    "name": "Amy Whitehead",
+    "location": "12429 Cedar Road Suite 17 Cleveland, OH 44106",
+    "contact": "(216) 926-4889",
+    "notes": "eating discorders, teens"
+  },
+  {
+    "id": 86,
+    "category": "Therapists – Social Workers",
+    "name": "Anna Novak",
+    "location": "23425 Commerce Park Suite 104 Beachwood, OH 44122-5848",
+    "contact": "(216) 831-2900",
+    "notes": "couples work as well, gender identification, LGBT, all ages, insurance panel"
+  },
+  {
+    "id": 87,
+    "category": "Therapists – Social Workers",
+    "name": "Barbara Schaefer",
+    "location": "29425 Chagrin Blvd. Beachwood 44124",
+    "contact": "(216) 292-0610",
+    "notes": "parent guidance, straight shooter"
+  },
+  {
+    "id": 88,
+    "category": "Therapists – Social Workers",
+    "name": "Carol Marciano",
+    "location": "24400 Highpoint Road, Beachwood",
+    "contact": "(216) 831-2500",
+    "notes": "Anxiety Disorders, go to person for cbt, very structured"
+  },
+  {
+    "id": 89,
+    "category": "Therapists – Social Workers",
+    "name": "Casey Durkin",
+    "location": "23300 Chagrin Blvd Beachwood",
+    "contact": "(216) 556-4726",
+    "notes": "kids and families, adoption, pragmatic, good follow through"
+  },
+  {
+    "id": 90,
+    "category": "Therapists – Social Workers",
+    "name": "Greg Moses",
+    "location": "8401 Chagrin Rd, Suite 14B Chagin Falls, OH 44023",
+    "contact": "(440) 543-3400 | http://fcbtf.com/",
+    "notes": "younger to teens, Hawken counselor, no insurance"
+  },
+  {
+    "id": 91,
+    "category": "Therapists – Social Workers",
+    "name": "Heidi Abrams",
+    "location": "21403 Chagrin Blvd Suite 210, Beachwood, OH 44122",
+    "contact": "(216) 581-1581 | http://www.heidirabrams.com/about.html",
+    "notes": "2nd grade and up - Gestalt bent"
+  },
+  {
+    "id": 92,
+    "category": "Therapists – Social Workers",
+    "name": "Jody Wainer",
+    "location": "3601 S. Green Road, Suite # 200 , Beachwood, 44122",
+    "contact": "(216) 464-6705",
+    "notes": "Women's empowerment, Jungian, adolescents"
+  },
+  {
+    "id": 93,
+    "category": "Therapists – Social Workers",
+    "name": "Leslie Jevnikar",
+    "location": "8401 Chagrin Rd, Suite 14B Chagin Falls, OH 44023",
+    "contact": "(440) 543-3400",
+    "notes": ""
+  },
+  {
+    "id": 94,
+    "category": "Therapists – Social Workers",
+    "name": "Nancy Lowery - Bregar",
+    "location": "14701 Detroit Lakewood",
+    "contact": "(216) 228-0010",
+    "notes": "good, pep program"
+  },
+  {
+    "id": 95,
+    "category": "Therapists – Social Workers",
+    "name": "Riley McCormick",
+    "location": "24755 Chagrin Blvd. Suite 340 Beachwood, OH 44122",
+    "contact": "(216) 308-9319 | https://www.rileymccormick.org/about.html",
+    "notes": "Adolescent through adult"
+  },
+  {
+    "id": 96,
+    "category": "Therapists – Social Workers",
+    "name": "Ronna Posta",
+    "location": "3659 Green Road #208 Beachwood, OH 44122",
+    "contact": "(216) 462-0539",
+    "notes": "addiction, practical oriented, low key, good"
+  },
+  {
+    "id": 97,
+    "category": "Therapists – Social Workers",
+    "name": "Scott Schlachter",
+    "location": "23875 Commerce Park Cleveland, OH 44122",
+    "contact": "(216) 464-5500",
+    "notes": "children, families"
+  },
+  {
+    "id": 98,
+    "category": "Therapists – Social Workers",
+    "name": "Stephanie Ligget",
+    "location": "Beachwood",
+    "contact": "(212) 464-5500",
+    "notes": "down to age 15, warm, supportive, mom like, yes to insurance"
+  },
+  {
+    "id": 99,
+    "category": "Therapists – Other",
+    "name": "Andrea Mazone - Starfish Learning",
+    "location": "Cleveland Heights, OH/Coventry School Building",
+    "contact": "392-7848 | www.starfishlearning.com",
+    "notes": "speech language 12 week program, elementary"
+  },
+  {
+    "id": 100,
+    "category": "Therapists – Other",
+    "name": "Doug Belcher",
+    "location": "",
+    "contact": "(216) 336-5889 | https://autismpersonalcoach.wordpress.com/staff-coaching-autism-adults/",
+    "notes": "autism personal coach, very helpful, older adolescents, travels, groups, one on one"
+  },
+  {
+    "id": 101,
+    "category": "Therapists – Other",
+    "name": "Kurt Jensen",
+    "location": "2966 Eaton Road, Shaker Heights, OH 44122",
+    "contact": "(216) 751-0710",
+    "notes": ""
+  },
+  {
+    "id": 102,
+    "category": "Therapists – Other",
+    "name": "Starfish Academy",
+    "location": "Mitra Roberts, Director: 7060 Cheyenne Way Mason, OH 45040",
+    "contact": "(513) 398-8332 | http://thestarfishacademy.com/",
+    "notes": ""
+  },
+  {
+    "id": 103,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Charlie Health",
+    "location": "Virtual",
+    "notes": "Virtual; treats children",
+    "contact": "(866) 491-5196 | charliehealth.com"
+  },
+  {
+    "id": 104,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Chris Keiper",
+    "location": "Beachwood",
+    "notes": "Treats teens and adults – not sure whether or not he works w/younger children",
+    "contact": "(216) 202-4022"
+  },
+  {
+    "id": 105,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Cleveland Center for Cognitive Therapy",
+    "location": "Cleveland",
+    "notes": "Specialty in treating specific phobias, OCD, and other anxiety disorders",
+    "contact": "(216) 831-2500"
+  },
+  {
+    "id": 106,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Gabriella Faggella",
+    "location": "Fairlawn",
+    "notes": "OCD specialist; treats children",
+    "contact": ""
+  },
+  {
+    "id": 107,
+    "category": "OCD & Anxiety Specialists",
+    "name": "InStride",
+    "location": "Virtual",
+    "notes": "Virtual; offers a full care team; treats children",
+    "contact": ""
+  },
+  {
+    "id": 108,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Jonah Lakin, Psy.D.",
+    "location": "Virtual",
+    "notes": "Virtual; treats children",
+    "contact": ""
+  },
+  {
+    "id": 109,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Laura Rocker, MD",
+    "location": "",
+    "notes": "Recommended; has successfully treated several complicated cases",
+    "contact": ""
+  },
+  {
+    "id": 110,
+    "category": "OCD & Anxiety Specialists",
+    "name": "OCD & Anxiety Center of Cleveland",
+    "location": "Cleveland",
+    "notes": "Private Pay",
+    "contact": "(216) 393-7749"
+  },
+  {
+    "id": 111,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Suzanne Schneps, Ph.D.",
+    "location": "Highland Heights",
+    "notes": "Does well with adopted kids. Private Pay",
+    "contact": ""
+  },
+  {
+    "id": 112,
+    "category": "OCD & Anxiety Specialists",
+    "name": "Ubuntu Wellness",
+    "location": "Chardon & Chagrin Fall",
+    "notes": "Private Pay",
+    "contact": ""
+  },
+  {
+    "id": 113,
+    "category": "Couples & Family Therapy",
+    "name": "Barry H. Gordon, Ph.D.",
+    "location": "3601 S. Green Road, Suite # 200, Beachwood, 44122",
+    "contact": "(440) 886-9655",
+    "notes": "adolescents, adults, couples, families"
+  },
+  {
+    "id": 114,
+    "category": "Couples & Family Therapy",
+    "name": "Levine Risen and Associates",
+    "location": "23425 Commerce Park Rd. Suite 104 Beachwood, OH 44122",
+    "contact": "(216) 831-2900 | http://levinerisenandassociates.com/",
+    "notes": ""
+  },
+  {
+    "id": 115,
+    "category": "Couples & Family Therapy",
+    "name": "Suzanne Smith",
+    "location": "Linden: 29055 Clemens Road, Suite A Westlake, OH 44145",
+    "contact": "(440) 250-9880 | http://lindenbp.com/ourteam/dr-suzanne-smith/",
+    "notes": "couples"
+  },
+  {
+    "id": 116,
+    "category": "Couples & Family Therapy",
+    "name": "Terry Tobias Ph.D.",
+    "location": "12429 Cedar Road, Cleveland Heights 44106",
+    "contact": "(216) 229-4200",
+    "notes": "adults and older adolescents, couples work"
+  },
+  {
+    "id": 117,
+    "category": "Grief & Loss Counseling",
+    "name": "Cleveland Clinic Grief Support Groups",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": "(216) 444-3230"
+  },
+  {
+    "id": 118,
+    "category": "Grief & Loss Counseling",
+    "name": "Cornerstone of Hope",
+    "location": "5905 Brecksville Road Independence, OH 44131",
+    "notes": "",
+    "contact": "216.524.HOPE(4673)"
+  },
+  {
+    "id": 119,
+    "category": "Grief & Loss Counseling",
+    "name": "Joel's Place for Children",
+    "location": "Bay Presbyterian Church, Cleveland, OH",
+    "notes": "",
+    "contact": "(216) 202-4243 | joelsplaceforchildren.org"
+  },
+  {
+    "id": 120,
+    "category": "Grief & Loss Counseling",
+    "name": "The Gathering Place",
+    "location": "23300 Commerce Park Beachwood 44122",
+    "contact": "216/595-9546",
+    "notes": "free services for children/adults touched by cancer"
+  },
+  {
+    "id": 121,
+    "category": "Crisis & Urgent Mental Health",
+    "name": "Akron Children's PIRC (Psychiatric Intake Response Center)",
+    "location": "Akron",
+    "notes": "https://www.akronchildrens.org/departments/Psychiatric-Intake-Response-Center-PIRC.html?tab=faqs",
+    "contact": "(330) 543-7472"
+  },
+  {
+    "id": 122,
+    "category": "Crisis & Urgent Mental Health",
+    "name": "Frontline Service (Crisis Hotline)",
+    "location": "1744 Payne Ave, Cleveland, OH 44114",
+    "notes": "",
+    "contact": "(216) 623-6888 | frontlineservice.org"
+  },
+  {
+    "id": 123,
+    "category": "Crisis & Urgent Mental Health",
+    "name": "Highland Springs",
+    "location": "",
+    "notes": "Call 24/7",
+    "contact": "(216) 302-3070"
+  },
+  {
+    "id": 124,
+    "category": "Psychoeducational Evaluators",
+    "name": "Barbara Ekelman, PhD & Eric Wonderly, PhD",
+    "location": "Beachwood",
+    "notes": "Inclusive of comprehensive language evaluation",
+    "contact": "(216) 464-9000"
+  },
+  {
+    "id": 125,
+    "category": "Psychoeducational Evaluators",
+    "name": "Becky Hazen Ph.D.",
+    "location": "10524 Euclid Ave. #3150 Cleveland, OH 44106",
+    "contact": "(216) 844-3230",
+    "notes": "Rainbow"
+  },
+  {
+    "id": 126,
+    "category": "Psychoeducational Evaluators",
+    "name": "Cheryl Chase",
+    "location": "6100 Oak Tree Blvd. #200, Independence, OH 44131",
+    "contact": "(216) 328-2045",
+    "notes": "Educational and psychological evaluations"
+  },
+  {
+    "id": 127,
+    "category": "Psychoeducational Evaluators",
+    "name": "Cleveland Clinic ADHD Center for Evaluation and Treatment",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": "(216) 448-6310"
+  },
+  {
+    "id": 128,
+    "category": "Psychoeducational Evaluators",
+    "name": "Ethan D. Schafer Center at Lawrence School",
+    "location": "1551 East Wallings Road. Broadview Heights 44147",
+    "contact": "(440) 832-7850",
+    "notes": "Graduate student administered, new speech evaluation, as young as 4, 850 learning evals, 1050 comprehension - incl. speech"
+  },
+  {
+    "id": 129,
+    "category": "Psychoeducational Evaluators",
+    "name": "Heather Dukes Murray",
+    "location": "20220 Center Ridge Road Suite 165 Rocky River, OH 44116",
+    "contact": "(440) 409-0307 | http://www.meghanbarlowandassociates.com/about-us-2/",
+    "notes": "currently on maternity leave but good"
+  },
+  {
+    "id": 130,
+    "category": "Psychoeducational Evaluators",
+    "name": "Jennifer Anderson, PhD",
+    "location": "Beachwood",
+    "notes": "childlren, adolescents, young adults no insurance, limited",
+    "contact": "(216) 342-4221"
+  },
+  {
+    "id": 131,
+    "category": "Psychoeducational Evaluators",
+    "name": "Jenny Walinsky, PhD",
+    "location": "Beachwood",
+    "notes": "Educational and psychological evaluations",
+    "contact": "(216) 645-1062"
+  },
+  {
+    "id": 132,
+    "category": "Psychoeducational Evaluators",
+    "name": "Karen Bardenstein",
+    "location": "12429 Cedar Rd, Cleveland Heights 44106",
+    "contact": "(216) 229-4200",
+    "notes": "Custody evaluations, dx assessment, could be problem at schools - no diagnoses"
+  },
+  {
+    "id": 133,
+    "category": "Psychoeducational Evaluators",
+    "name": "Karen Burk Paull, PhD",
+    "location": "Beachwood",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 134,
+    "category": "Psychoeducational Evaluators",
+    "name": "Kelly Christian, PhD",
+    "location": "Beachwood",
+    "notes": "children, adolescents, college aged, anxiety, depression, family interactions, assessment",
+    "contact": "(215) 917-4484"
+  },
+  {
+    "id": 135,
+    "category": "Psychoeducational Evaluators",
+    "name": "Learning Evaluation Clinic at Cleveland Clinic Children's Hospital for Rehabilitation",
+    "location": "Cleveland",
+    "notes": "216.448.6310",
+    "contact": "(216) 448-6310"
+  },
+  {
+    "id": 136,
+    "category": "Psychoeducational Evaluators",
+    "name": "Linden Behavioral Pediatrics",
+    "location": "Westlake",
+    "notes": "",
+    "contact": "(440) 250-9880 | lindenbp.com"
+  },
+  {
+    "id": 137,
+    "category": "Psychoeducational Evaluators",
+    "name": "Meghan Barlow",
+    "location": "20220 Center Ridge Rd #156 Rocky River, OH 44116",
+    "contact": "(216) 870-0233",
+    "notes": "Family and Group Therapy, Assessments, social skills groups, well trained, sense of humor, little kids but all over"
+  },
+  {
+    "id": 138,
+    "category": "Psychoeducational Evaluators",
+    "name": "Meghan Barlow & Associates",
+    "location": "Rocky River",
+    "notes": "Not currently diagnosing learning disorders; other evals ok",
+    "contact": ""
+  },
+  {
+    "id": 139,
+    "category": "Psychoeducational Evaluators",
+    "name": "Michael Manos",
+    "location": "Cleveland Clinic Foundation",
+    "contact": "(216) 445-7574",
+    "notes": "ADHD"
+  },
+  {
+    "id": 140,
+    "category": "Psychoeducational Evaluators",
+    "name": "Natalie Reiss, PhD",
+    "location": "Beachwood",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 141,
+    "category": "Psychoeducational Evaluators",
+    "name": "Organization for Psychological Health",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 142,
+    "category": "Psychoeducational Evaluators",
+    "name": "Partners for Behavioral Health & Wellness",
+    "location": "Beachwood",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 143,
+    "category": "Psychoeducational Evaluators",
+    "name": "Schafer Center at Lawrence School",
+    "location": "Brecksville-Broadview Heights",
+    "notes": "",
+    "contact": "(440) 832-7850"
+  },
+  {
+    "id": 144,
+    "category": "Psychoeducational Evaluators",
+    "name": "Sherry McClurg",
+    "location": "3591 Reserve Commons Dr. Medina, OH 44256 and Family Center by the Falls",
+    "contact": "(440) 543-3400",
+    "notes": ""
+  },
+  {
+    "id": 145,
+    "category": "Psychoeducational Evaluators",
+    "name": "Tira Stebbins",
+    "location": "34305 Solon Rd Suite 52 Solon, OH 44139",
+    "contact": "(440) 349-3038",
+    "notes": ""
+  },
+  {
+    "id": 146,
+    "category": "Psychoeducational Evaluators",
+    "name": "Tom Frazier",
+    "location": "9500 Euclid Ave. Cleveland, OH 44106",
+    "contact": "(800) 223-2273",
+    "notes": "PDD, Autism"
+  },
+  {
+    "id": 147,
+    "category": "Psychoeducational Evaluators",
+    "name": "Tori Cordiano, PhD",
+    "location": "Beachwood",
+    "notes": "Assessments, children, adolescents, young adults, families, anxiety, depression, ADHD",
+    "contact": "(440) 554-7572"
+  },
+  {
+    "id": 148,
+    "category": "Neuropsychological Evaluators",
+    "name": "Christine Barry, PhD",
+    "location": "Cleveland - Rainbow Babies",
+    "notes": "PDD and neuropsych evals - gold standard",
+    "contact": "(216) 844-3230"
+  },
+  {
+    "id": 149,
+    "category": "Neuropsychological Evaluators",
+    "name": "Daily Behavioral Health",
+    "location": "Lakewood",
+    "notes": "",
+    "contact": "(216) 252-1399 | dailybh.com"
+  },
+  {
+    "id": 150,
+    "category": "Neuropsychological Evaluators",
+    "name": "Daniel Fishman, Ph.D.",
+    "location": "Northcoast Psychology, Pepper Pike",
+    "notes": "",
+    "contact": "(216) 245-1058"
+  },
+  {
+    "id": 151,
+    "category": "Neuropsychological Evaluators",
+    "name": "Erin Babbit",
+    "location": "UH Rainbow Babies",
+    "notes": "",
+    "contact": "(216) 844-3230"
+  },
+  {
+    "id": 152,
+    "category": "Neuropsychological Evaluators",
+    "name": "Karen Burk Paull, PhD",
+    "location": "Beachwood",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 153,
+    "category": "Neuropsychological Evaluators",
+    "name": "KidsLink",
+    "location": "Twinsburg",
+    "notes": "non spectrum",
+    "contact": "(330) 963-8600"
+  },
+  {
+    "id": 154,
+    "category": "Neuropsychological Evaluators",
+    "name": "Lawrence Melamed",
+    "location": "203 Frances Dr. Kent, OH 44240",
+    "contact": "(330) 673-2986",
+    "notes": "neuro-psych evaluations - no insurance"
+  },
+  {
+    "id": 155,
+    "category": "Neuropsychological Evaluators",
+    "name": "Rachel Tangen, Ph.D.",
+    "location": "UHHS, 10524 Euclid Ave, Cleveland 44106",
+    "contact": "(216) 844-3230",
+    "notes": "Neuropsych evals - errors on report, caution"
+  },
+  {
+    "id": 156,
+    "category": "Neuropsychological Evaluators",
+    "name": "Susan Bowen",
+    "location": "10524 Euclid Ave. Cleveland, OH 44106",
+    "contact": "(216) 844-3230",
+    "notes": ""
+  },
+  {
+    "id": 157,
+    "category": "Neuropsychological Evaluators",
+    "name": "T. Shawn Sullivan",
+    "location": "Cleveland Clinic - Learning Evaluation and Consultation Clinic",
+    "contact": "(216) 445-7574",
+    "notes": "good, Direct, so smart"
+  },
+  {
+    "id": 158,
+    "category": "School Psychologists",
+    "name": "Heather Harris Freiberg",
+    "location": "29055 Clemens Rd, Westlake, OH 44145",
+    "contact": "(440) 250-9880 | http://lindenbp.com/",
+    "notes": "Educational and psychological evaluations (Lake Ridge)"
+  },
+  {
+    "id": 159,
+    "category": "School Psychologists",
+    "name": "Katherine B. Howard, M.A., NCSP",
+    "location": "PO Box 711, Hudson, OH 44236",
+    "contact": "(216) 556-1814",
+    "notes": "(Old Trail);full range of school psychology services, memory, language, executive functioning"
+  },
+  {
+    "id": 160,
+    "category": "School Psychologists",
+    "name": "Marlene Moss Blumenthal, Ph.D.",
+    "location": "21403 Chagrin Blvd., # 210, Beachwood 44122",
+    "contact": "(216) 751-1007",
+    "notes": ""
+  },
+  {
+    "id": 161,
+    "category": "Autism Evaluators",
+    "name": "Cleveland Clinic Autism Center",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": "(216) 448-6440"
+  },
+  {
+    "id": 162,
+    "category": "Autism Evaluators",
+    "name": "Daily Behavioral Health",
+    "location": "14538 Grapeland Ave, Cleveland, OH 44111",
+    "notes": "",
+    "contact": "(216) 252-1399 | dailybh.com"
+  },
+  {
+    "id": 163,
+    "category": "Autism Evaluators",
+    "name": "KidsLink Neurobehavioral Center",
+    "location": "2132 Case Pkwy N, Unit A, Twinsburg, OH 44087",
+    "notes": "",
+    "contact": "(330) 236-5951 | kidslinkohio.com"
+  },
+  {
+    "id": 164,
+    "category": "Autism Evaluators",
+    "name": "Megan Barlow & Associates",
+    "location": "Rocky River",
+    "notes": "Early Childhood Behavioral Clinic – under age 3 Autism evals and Spectrum Clinic for 12 or over (not currently doing psychoed evals)",
+    "contact": ""
+  },
+  {
+    "id": 165,
+    "category": "Autism Evaluators",
+    "name": "Rainbow Babies Autism Center",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 166,
+    "category": "School District Evaluation",
+    "name": "Orange Schools",
+    "location": "Orange",
+    "notes": "Mary Jo Kiss – (216) 831-8600 x6617, Administrator Assistant to Director of Student Support Services",
+    "contact": "(216) 831-8600 x6617"
+  },
+  {
+    "id": 167,
+    "category": "School District Evaluation",
+    "name": "Shaker Heights School District",
+    "location": "Shaker Heights",
+    "notes": "Preschool (Ages 3-5): Contact Noreen Smyth-Morrow at (216) 295-4090",
+    "contact": "(216) 295-4090"
+  },
+  {
+    "id": 168,
+    "category": "School District Evaluation",
+    "name": "South Euclid-Lyndhurst School District",
+    "location": "South Euclid-Lyndhurst",
+    "notes": "Contact: Sandi Battistone, Administrative Assistant to Director of Special Education Services. (216) 691-2026. battistone@selschools.org",
+    "contact": "(216) 691-2026 | battistone@selschools.org"
+  },
+  {
+    "id": 169,
+    "category": "Chemical Dependency Assessment",
+    "name": "New Directions",
+    "location": "30800 Chagrin Blvd. 44124",
+    "contact": "(216) 591-0324",
+    "notes": "Assessment and treatment"
+  },
+  {
+    "id": 170,
+    "category": "Chemical Dependency Assessment",
+    "name": "Ronna Posta",
+    "location": "Beachwood and Indepedence",
+    "contact": "(216) 462-0539",
+    "notes": "Assessment and treatment"
+  },
+  {
+    "id": 171,
+    "category": "Chemical Dependency Assessment",
+    "name": "Susan Salkin",
+    "location": "23360 Chagrin Blvd, Beachwood 44122",
+    "contact": "(440) 460-4575",
+    "notes": "Assessment"
+  },
+  {
+    "id": 172,
+    "category": "Developmental Pediatricians",
+    "name": "Rainbow Babies Developmental-Behavioral Pediatrics & Psychology",
+    "location": "Cleveland",
+    "notes": "CCF which you already indicated (or just DBPeds evaluation? If so, Dr. Kate Myers or Dr. Carrie Cuffman)",
+    "contact": "(216) 844-3230"
+  },
+  {
+    "id": 173,
+    "category": "Developmental Pediatricians",
+    "name": "UH ARC Clinic",
+    "location": "Cleveland",
+    "notes": "For early childhood age. Can also do neuropsych like Dr. Erin Babbit or Developmental Behavioral Pediatrician like Dr. Diekroger, Dr. Nancy Roizen, Dr. Shanna Kralovic; scheduled directly through the department. 216-844-3230",
+    "contact": "(216) 844-3230"
+  },
+  {
+    "id": 174,
+    "category": "Pediatricians",
+    "name": "Andrea Sperduto",
+    "location": "29800 Bainbridge Rd. Solon, OH 44139",
+    "contact": "(440) 519-6900",
+    "notes": ""
+  },
+  {
+    "id": 175,
+    "category": "Pediatricians",
+    "name": "Beth Hellerstein",
+    "location": "1611 South Green Road, # 305, South Euclid 44121",
+    "contact": "(216) 382-3800",
+    "notes": ""
+  },
+  {
+    "id": 176,
+    "category": "Pediatricians",
+    "name": "Ellen Rome",
+    "location": "CCF 9500 Euclid Ave., DESK A120, Cleveland, OH 44195",
+    "contact": "(216) 444-3566",
+    "notes": "adolescents, eating disorders"
+  },
+  {
+    "id": 177,
+    "category": "Pediatricians",
+    "name": "Holly Dickert",
+    "location": "Suburban Pediatrics 3461 Warrensville Road, Shaker Hts., 44122",
+    "contact": "(216) 991-4181",
+    "notes": ""
+  },
+  {
+    "id": 178,
+    "category": "Pediatricians",
+    "name": "Laura Gillespie",
+    "location": "CCF 9500 Euclid Ave., DESK A120, Cleveland, OH 44195",
+    "contact": "(216) 444-3566",
+    "notes": "eating disorders"
+  },
+  {
+    "id": 179,
+    "category": "Pediatricians",
+    "name": "Nevada Reed",
+    "location": "2132 Case Parkway North Units A, B & C Twinsburg, OH 44087",
+    "contact": "(330) 963-8600 | http://www.kidslinkohio.com/",
+    "notes": "great, cutting edge - food connections with ADHD"
+  },
+  {
+    "id": 180,
+    "category": "Pediatricians",
+    "name": "Peter Catanzaro",
+    "location": "Suburban Pediatrics 3461 Warrensville Road, Shaker Hts., 44121",
+    "contact": "(216) 991-4180 | http://suburbanpeds.rainbowbabies.org/Home.aspx",
+    "notes": ""
+  },
+  {
+    "id": 181,
+    "category": "Pediatricians",
+    "name": "Steve Wexberg",
+    "location": "CCF, 26900 Cedar Road, #27 Beachwood 44122",
+    "contact": "(216) 839-3600",
+    "notes": "dyslexia interest, great"
+  },
+  {
+    "id": 182,
+    "category": "Neurologists",
+    "name": "A.David Rothner",
+    "location": "CCF, 9500 Euclid Ave., DESK S71, cleveland, OH 44195",
+    "contact": "(216) 444-5514",
+    "notes": ""
+  },
+  {
+    "id": 183,
+    "category": "Neurologists",
+    "name": "Ajay Gupta",
+    "location": "9500 Euclid Ave, Cleveland, OH 44195",
+    "contact": "(216) 445-7728 | https://my.clevelandclinic.org/staff/4898-ajay-gupta",
+    "notes": ""
+  },
+  {
+    "id": 184,
+    "category": "Neurologists",
+    "name": "Asim Shahid",
+    "location": "UH",
+    "contact": "https://www.uhhospitals.org/doctors/Shahid-Asim-1962616730",
+    "notes": ""
+  },
+  {
+    "id": 185,
+    "category": "Neurologists",
+    "name": "Bruce Cohen",
+    "location": "CCF, 9500 Euclid Ave., DESK S71, cleveland, OH 44195",
+    "contact": "(216) 444-5514",
+    "notes": ""
+  },
+  {
+    "id": 186,
+    "category": "Neurologists",
+    "name": "Jessica Goldstein",
+    "location": "University Hospitals - 11100 Euclid Ave, Cleveland, OH 44106",
+    "contact": "(216) 844-7700",
+    "notes": "Concussion or siezure, med management"
+  },
+  {
+    "id": 187,
+    "category": "Neurologists",
+    "name": "Max Witznitzer",
+    "location": "UHHS",
+    "contact": "(216) 844-3691",
+    "notes": ""
+  },
+  {
+    "id": 188,
+    "category": "Neurologists",
+    "name": "Nancy Bass",
+    "location": "UHHS",
+    "contact": "(216) 844-3691",
+    "notes": ""
+  },
+  {
+    "id": 189,
+    "category": "Occupational Therapy",
+    "name": "A Rhea of Sunshine Pediatric OT Therapy",
+    "location": "Mayfield",
+    "notes": "",
+    "contact": "(216) 417-4748"
+  },
+  {
+    "id": 190,
+    "category": "Occupational Therapy",
+    "name": "Achievement Centers for Children",
+    "location": "Highland Hills/Westlake",
+    "notes": "",
+    "contact": "(216) 292-9700 | achievementcenters.org"
+  },
+  {
+    "id": 191,
+    "category": "Occupational Therapy",
+    "name": "Center for Life Skills (Solon)",
+    "location": "Solon",
+    "notes": "",
+    "contact": "(440) 498-1100 | center4lifeskills.com"
+  },
+  {
+    "id": 192,
+    "category": "Occupational Therapy",
+    "name": "Cleveland Clinic Pediatric Occupational Therapy",
+    "location": "Cleveland",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 193,
+    "category": "Occupational Therapy",
+    "name": "Galvin Therapy Center",
+    "location": "Warrensville Heights",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 194,
+    "category": "Occupational Therapy",
+    "name": "JoAnn Granke",
+    "location": "MetroHealth Medical Center, 2500 MetroHealth Drive",
+    "contact": "778-4700",
+    "notes": ""
+  },
+  {
+    "id": 195,
+    "category": "Occupational Therapy",
+    "name": "Jody Toepke",
+    "location": "UHHS (Main campus); Landerbrook office: 440-995-3881",
+    "contact": "844-5200",
+    "notes": ""
+  },
+  {
+    "id": 196,
+    "category": "Occupational Therapy",
+    "name": "Lynette Scotese",
+    "location": "Integrative Treatment Center, Bedford",
+    "contact": "(216) 786-3786",
+    "notes": ""
+  },
+  {
+    "id": 197,
+    "category": "Occupational Therapy",
+    "name": "McKibben & Monte",
+    "location": "Multiple locations, Cleveland area",
+    "notes": "Community or home-based services",
+    "contact": "(440) 708-3036 | mckibbenandmonte.com"
+  },
+  {
+    "id": 198,
+    "category": "Occupational Therapy",
+    "name": "Rebecca Mohler, MS, OTR/L",
+    "location": "154 E. Aurora Road #218 Northfield, OH 44067",
+    "contact": "(330) 998-2055 | http://senderotherapies.com/",
+    "notes": "range of OT and SLP services in home, in school, and consultation with athletic programming-may be a resource for assessing older students seeking fine motor accommodations on the ACT/SAT"
+  },
+  {
+    "id": 199,
+    "category": "Occupational Therapy",
+    "name": "Rochelle Schiller",
+    "location": "Nicole Gerami LLC 23825 Commerce Park Road Suite B | Beachwood, OH 44122",
+    "contact": "(216) 509-7094",
+    "notes": "Hawken screenings, fine motor work"
+  },
+  {
+    "id": 200,
+    "category": "Occupational Therapy",
+    "name": "Rochelle ShillerOTR/L",
+    "location": "Beachwood",
+    "notes": "JPSN/Autism Scholarship Provider. 23175 Commerce Park Rd Suite D, Beachwood, OH 44122",
+    "contact": "(216) 509-7094"
+  },
+  {
+    "id": 201,
+    "category": "Occupational Therapy",
+    "name": "Therapeds Pediatric Therapy",
+    "location": "Shaker Heights",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 202,
+    "category": "Occupational Therapy",
+    "name": "Therapy and Wellness Connection",
+    "location": "Brecksville/home visits",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 203,
+    "category": "Occupational Therapy",
+    "name": "Therapy Services Medina – Pediatrics | Cleveland Clinic",
+    "location": "Medina",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 204,
+    "category": "Occupational Therapy",
+    "name": "UH Pediatric OT",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 205,
+    "category": "Speech-Language Pathology",
+    "name": "Aleta Sinoff",
+    "location": "Beachwood, Oh",
+    "contact": "(216) 225-1801 | http://www.alettasinoffspeechtherapist.com/index.html",
+    "notes": "former dir. Of autism center at Clinic, social skills, PhD in speech"
+  },
+  {
+    "id": 206,
+    "category": "Speech-Language Pathology",
+    "name": "Barbara Ekelman",
+    "location": "Shaker Building, 3645 Warrensville Center Rd. Suite 215 SH 44122",
+    "notes": "language/learning assessments",
+    "contact": "(216) 991-2020"
+  },
+  {
+    "id": 207,
+    "category": "Speech-Language Pathology",
+    "name": "Center for Life Skills",
+    "location": "Solon",
+    "notes": "6325 Cochran Road, Suite 2, Solon, Ohio 44139",
+    "contact": "(440) 498-1100"
+  },
+  {
+    "id": 208,
+    "category": "Speech-Language Pathology",
+    "name": "Cleveland Clinic Children's Hospital for Rehabilitation",
+    "location": "Cleveland",
+    "notes": "2801 Martin Luther King Jr. Drive, Cleveland, Ohio 44104",
+    "contact": "(216) 444-5437"
+  },
+  {
+    "id": 209,
+    "category": "Speech-Language Pathology",
+    "name": "Cleveland Hearing and Speech",
+    "location": "11635 Euclid Avenue, Cleveland, OH 44106-4319",
+    "contact": "(216) 231-8787 | http://www.chsc.org/Main/Home.aspx",
+    "notes": ""
+  },
+  {
+    "id": 210,
+    "category": "Speech-Language Pathology",
+    "name": "Cleveland Hearing and Speech Center",
+    "location": "Multiple",
+    "notes": "University Circle, Broadview Hts, Lyndhurst, and Westlake locations",
+    "contact": "(216) 231-8787"
+  },
+  {
+    "id": 211,
+    "category": "Speech-Language Pathology",
+    "name": "Debra Durka",
+    "location": "Could not locate",
+    "contact": "382-7771",
+    "notes": "good"
+  },
+  {
+    "id": 212,
+    "category": "Speech-Language Pathology",
+    "name": "Galvin Therapy Center",
+    "location": "Warrensville Hts & Avon",
+    "notes": "",
+    "contact": "(216) 514-1600"
+  },
+  {
+    "id": 213,
+    "category": "Speech-Language Pathology",
+    "name": "Kelly Hilborn, CCC-SLP",
+    "location": "",
+    "notes": "",
+    "contact": "khilbornslp@gmail.com | (440) 554-9778"
+  },
+  {
+    "id": 214,
+    "category": "Speech-Language Pathology",
+    "name": "M. Troy McClowry",
+    "location": "Hudson - 33 Milford Rd.; Fairlawn - 150 N. Miller Rd. Bldg. 150A, Medina - 750 E. Washington St. C3",
+    "contact": "(330) 897-2240 | http://www.llatherapy.org/",
+    "notes": "pediatrics, language processing, reading issues, dyspraxia, OT, PT"
+  },
+  {
+    "id": 215,
+    "category": "Speech-Language Pathology",
+    "name": "Mary Sopko",
+    "location": "3964 Pine Lake Circle, Richfield, OH 44286",
+    "contact": "(330) 687-5680",
+    "notes": "Hawken/tutors as well"
+  },
+  {
+    "id": 216,
+    "category": "Speech-Language Pathology",
+    "name": "McKibben & Monte",
+    "location": "Multiple locations, Cleveland area",
+    "notes": "",
+    "contact": "(440) 708-3036 | mckibbenandmonte.com"
+  },
+  {
+    "id": 217,
+    "category": "Speech-Language Pathology",
+    "name": "Nancy Sloan-Brown",
+    "location": "3690 Orange Place #369, Beachwood, OH 44122",
+    "contact": "765-0115",
+    "notes": ""
+  },
+  {
+    "id": 218,
+    "category": "Speech-Language Pathology",
+    "name": "Nancy Theofrostus",
+    "location": "Western Reserve Speech Partners",
+    "contact": "(216) 292-7370 x 3 | http://wrslp-geauga.com/contact/bios.html",
+    "notes": ""
+  },
+  {
+    "id": 219,
+    "category": "Speech-Language Pathology",
+    "name": "Nicole Gerami",
+    "location": "Nicole Gerami LLC 23825 Commerce Park Road Suite B | Beachwood, OH 44122",
+    "contact": "(216) 292-7370 | http://nicolegerami.com/staff/",
+    "notes": "Social Skills Groups"
+  },
+  {
+    "id": 220,
+    "category": "Speech-Language Pathology",
+    "name": "Nicole Gerami, LLC",
+    "location": "23175 Commerce Park Rd, Suite D, Beachwood, OH 44122",
+    "notes": "",
+    "contact": "(216) 292-7370"
+  },
+  {
+    "id": 221,
+    "category": "Speech-Language Pathology",
+    "name": "Patricia McLaughlin",
+    "location": "25 Milford Drive, Suite 8,Hudson, OH 44236",
+    "contact": "(330) 342-4680 | http://www.hudsonspeechtherapy.com/",
+    "notes": "tongue thrust, swallowing, thumbsucking"
+  },
+  {
+    "id": 222,
+    "category": "Speech-Language Pathology",
+    "name": "Rainbow Babies and Children's Hospital",
+    "location": "Multiple",
+    "notes": "",
+    "contact": "(216) 844-5200"
+  },
+  {
+    "id": 223,
+    "category": "Speech-Language Pathology",
+    "name": "Rita Gregg",
+    "location": "Nicole Gerami LLC 23825 Commerce Park Road Suite B | Beachwood, OH 44122",
+    "contact": "(216) 292-7370 | http://nicolegerami.com/staff/",
+    "notes": "excellent"
+  },
+  {
+    "id": 224,
+    "category": "Speech-Language Pathology",
+    "name": "Western Reserve Speech and Language Partners",
+    "location": "Chardon",
+    "notes": "",
+    "contact": "(440) 285-0775"
+  },
+  {
+    "id": 225,
+    "category": "Social Skills Groups",
+    "name": "Barlow & Adams Behavioral Health",
+    "location": "20220 Center Ridge Rd, Suite 170, Rocky River, OH 44116",
+    "notes": "Offered 1x per month for different ages groups (4-15); open enrollment",
+    "contact": "(440) 409-0307 | barlowandadams.com"
+  },
+  {
+    "id": 226,
+    "category": "Social Skills Groups",
+    "name": "Center for Life Skills Groups (Solon)",
+    "location": "Solon",
+    "notes": "Younger kids",
+    "contact": "(440) 498-1100 | center4lifeskills.com"
+  },
+  {
+    "id": 227,
+    "category": "Social Skills Groups",
+    "name": "Cleveland Clinic Children's Therapeutic Groups",
+    "location": "",
+    "notes": "",
+    "contact": "216.636.KIDS (5437)"
+  },
+  {
+    "id": 228,
+    "category": "Social Skills Groups",
+    "name": "FIT Programs (Friendship In Teams) at Nicole Gerami, LLC",
+    "location": "Beachwood",
+    "notes": "23825 Commerce Park Road, Suite B, Beachwood, Ohio 44122",
+    "contact": "(216) 292-7370 | frontdesk@nicolegerami.com"
+  },
+  {
+    "id": 229,
+    "category": "Social Skills Groups",
+    "name": "Friendship Circle of Cleveland",
+    "location": "Pepper Pike",
+    "notes": "27900 Gates Mills Boulevard, Pepper Pike, OH 44124-4734",
+    "contact": "(216) 377-3000"
+  },
+  {
+    "id": 230,
+    "category": "Social Skills Groups",
+    "name": "Jay Berk",
+    "location": "28001 Chagrin #200, Beachwood, OH 44122",
+    "contact": "(216) 292-7170",
+    "notes": "Social skills acquisition, for kids who are defiant, mixed bag, 3rd g and up"
+  },
+  {
+    "id": 231,
+    "category": "Social Skills Groups",
+    "name": "KidsLink Groups",
+    "location": "Twinsburg",
+    "notes": "",
+    "contact": "(330) 236-5951 | kidslinkohio.com"
+  },
+  {
+    "id": 232,
+    "category": "Social Skills Groups",
+    "name": "Megan Barlow",
+    "location": "20220 Center Ridge Road, Suite 320 Rocky River, OH 44116",
+    "contact": "(440) 409-0307 | https://www.meghanbarlowandassociates.com/",
+    "notes": "Does spectrum and other. On west side. Study skills"
+  },
+  {
+    "id": 233,
+    "category": "Social Skills Groups",
+    "name": "Nicole Gerami",
+    "location": "Western Reserve Speech Partners",
+    "contact": "(216) 292-7370 x 2",
+    "notes": "Social skills groups"
+  },
+  {
+    "id": 234,
+    "category": "Social Skills Groups",
+    "name": "Peak Potential Therapy",
+    "location": "Northfield",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 235,
+    "category": "Social Skills Groups",
+    "name": "PEERS Program at Daily Behavioral Health",
+    "location": "Cleveland",
+    "notes": "14538 Grapeland Ave, Cleveland OH 44111. Office@dailybh.com",
+    "contact": "(216) 252-1399 | Office@dailybh.com"
+  },
+  {
+    "id": 236,
+    "category": "Social Skills Groups",
+    "name": "We Rock the Spectrum",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 237,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Alana Lopez",
+    "location": "9500 Euclid Ave, Cleveland, OH 44195",
+    "notes": "Parenting support",
+    "contact": "(216) 636-0305"
+  },
+  {
+    "id": 238,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Beechbrook",
+    "location": "3737 Lander Rd, Pepper Pike, OH 44124",
+    "notes": "",
+    "contact": "(216) 831-2255 | beechbrook.org"
+  },
+  {
+    "id": 239,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Bright Beginnings",
+    "location": "",
+    "notes": "",
+    "contact": "(216) 698-7500"
+  },
+  {
+    "id": 240,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Georgie Gray Counseling",
+    "location": "27600 Chagrin Blvd, Suite 490, Woodmere, OH 44122",
+    "notes": "",
+    "contact": "(216) 220-2702"
+  },
+  {
+    "id": 241,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Kimberly Koljat Therapy",
+    "location": "",
+    "notes": "Play therapy (child, adolescent, adult)",
+    "contact": ""
+  },
+  {
+    "id": 242,
+    "category": "Early Childhood & Parenting Support",
+    "name": "Senders Pediatrics",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 243,
+    "category": "Early Childhood & Parenting Support",
+    "name": "The Hadden Clinic for Children & Families",
+    "location": "Shaker Heights",
+    "notes": "At Hannah Perkins School",
+    "contact": ""
+  },
+  {
+    "id": 244,
+    "category": "Academic Coaches – Executive Functioning",
+    "name": "Caren Nakhooda",
+    "location": "",
+    "notes": "5th grade and up; some support for seniors transitioning to college",
+    "contact": "cnakhooda@gmail.com | (216) 849-7324"
+  },
+  {
+    "id": 245,
+    "category": "Academic Coaches – Executive Functioning",
+    "name": "Eric Geyer, LPC",
+    "location": "",
+    "notes": "Licensed Professional Counselor specializing in treating students with ADHD",
+    "contact": "(216) 448-6020 | Geyere@ccf.org"
+  },
+  {
+    "id": 246,
+    "category": "Academic Coaches – Executive Functioning",
+    "name": "Grace Willer, PhD",
+    "location": "",
+    "notes": "Director of Learning Strategies @ Laurel School. Organization, time management, attention/focus, individual learning strategy development",
+    "contact": "gracewiller22@gmail.com | https://gracewiller.weebly.com/consulting.html"
+  },
+  {
+    "id": 247,
+    "category": "Academic Coaches – Executive Functioning",
+    "name": "Life Success for Teens",
+    "location": "",
+    "notes": "",
+    "contact": "http://www.lifesuccessforteens.com/"
+  },
+  {
+    "id": 248,
+    "category": "Academic Coaches – Executive Functioning",
+    "name": "Tasha Mixon",
+    "location": "",
+    "notes": "Private tutor, offers ADHD coaching for middle, high school, and college students",
+    "contact": "tasha.efcoaching@gmail.com"
+  },
+  {
+    "id": 249,
+    "category": "Educational Consultants",
+    "name": "Amy Sheeler",
+    "location": "",
+    "contact": "(216) 269-0180",
+    "notes": "former Lawrence faculty, fantastic w/families, understands the process of qualifying for differentiated education"
+  },
+  {
+    "id": 250,
+    "category": "Educational Consultants",
+    "name": "Andrew Erkis",
+    "location": "23293 Commerce Park, Beachwood, OH 44122",
+    "contact": "(216) 201-9153",
+    "notes": "out of home placement, boarding schools"
+  },
+  {
+    "id": 251,
+    "category": "Educational Consultants",
+    "name": "Mary Jo O'Neil",
+    "location": "Creating an Equal Playing Field Company in Cleveland/Akron, Ohio",
+    "contact": "(216) 570-4330 | http://www.mccarthylebit.com/wp-content/uploads/2015/06/MJO-EC-Bio.pdf",
+    "notes": "IEP Meetings, Parent advocacy, dyslexic knowledgable"
+  },
+  {
+    "id": 252,
+    "category": "Tutors – Literacy",
+    "name": "Betsy O'Neill",
+    "location": "Wilson",
+    "notes": "Also Peterson provider. Tutors other language-arts areas (writing, reading comprehension)",
+    "contact": "elizabethoneill5@gmail.com | (216) 509-1523"
+  },
+  {
+    "id": 253,
+    "category": "Tutors – Literacy",
+    "name": "Bill Poynter (Lindamood-Bell)",
+    "location": "",
+    "notes": "Private tutor and reading specialist at A+ Solutions. Lindamood-Bell Learning Processes, LiPS & Seeing Stars (reading), Visualizing & Verbalizing (comprehension), On Cloud 9 (math)",
+    "contact": "wpoynter3@gmail.com | (216) 704-1749"
+  },
+  {
+    "id": 254,
+    "category": "Tutors – Literacy",
+    "name": "Donna Levine M.ED",
+    "location": "",
+    "notes": "Also a Laurel Learning Strategies consultant. Areas: Reading comprehension, written expression, study skills, time management, Wilson trained (Dyslexia). Grades 3rd–college",
+    "contact": "donnalev@aol.com | (216) 470-1357"
+  },
+  {
+    "id": 255,
+    "category": "Tutors – Literacy",
+    "name": "Elizabeth Horvitz",
+    "location": "",
+    "notes": "WRS Level 1 Certified, Wilson Dyslexia Practitioner",
+    "contact": "elizabethjhorvitz@gmail.com | (603) 581-8594"
+  },
+  {
+    "id": 256,
+    "category": "Tutors – Literacy",
+    "name": "Jessie Hubbard – K-8 Literacy Coach",
+    "location": "",
+    "notes": "LETRS trained, Dyslexia Certification (Certified Structured Literacy Dyslexia Interventionist)",
+    "contact": "jessicahubbard89@gmail.com"
+  },
+  {
+    "id": 257,
+    "category": "Tutors – Literacy",
+    "name": "Kask Aid Literacy – Theresa Kaska",
+    "location": "",
+    "notes": "Academic Language Therapist, Licensed Dyslexia Therapist",
+    "contact": "(440) 796-8080 | theresa@kaskaidliteracy.com"
+  },
+  {
+    "id": 258,
+    "category": "Tutors – Literacy",
+    "name": "Katie Bodnovich – Certified Academic Language Therapist",
+    "location": "",
+    "notes": "Orton-Gillingham Approach; Alphabetic Phonics. Reading/Decoding, Spelling, Handwriting, Verbal and Written Expression",
+    "contact": "kkbodnovich@yahoo.com | (440) 391-0687"
+  },
+  {
+    "id": 259,
+    "category": "Tutors – Literacy",
+    "name": "Morgan Amend (Alphabetic Phonics)",
+    "location": "",
+    "notes": "",
+    "contact": "morganamend@gmail.com | (330) 807-3717"
+  },
+  {
+    "id": 260,
+    "category": "Tutors – Literacy",
+    "name": "Schafer Center Tutoring (Intervention)",
+    "location": "1551 E Wallings Rd, Broadview Heights, OH 44147",
+    "notes": "K-5 after school/Saturdays. Chris Brez (1chrisbrez5@gmail.com), Patti Thompson (p12thompson@gmail.com)",
+    "contact": "(440) 832-7850"
+  },
+  {
+    "id": 261,
+    "category": "Tutors – Literacy",
+    "name": "Trish Harpring",
+    "location": "",
+    "notes": "Wilson Dyslexia Practitioner, Lindamood-Bell. Not set up to take Peterson funding",
+    "contact": "pmharpring@gmail.com | (216) 704-1655"
+  },
+  {
+    "id": 262,
+    "category": "Tutors – Math",
+    "name": "Becca Oberfield",
+    "location": "",
+    "notes": "Previous Hawken 5th grade math teacher",
+    "contact": "becca.oberfield@gmail.com | (602) 909-4379"
+  },
+  {
+    "id": 263,
+    "category": "Tutors – Math",
+    "name": "Bridget Uhrich – Tree of Knowledge",
+    "location": "",
+    "notes": "",
+    "contact": "bridgetannemurphy@gmail.com | (216) 559-6688"
+  },
+  {
+    "id": 264,
+    "category": "Tutors – Math",
+    "name": "Hallie Stewart",
+    "location": "",
+    "notes": "",
+    "contact": "js2256@aol.com | (216) 215-8028"
+  },
+  {
+    "id": 265,
+    "category": "Tutors – Math",
+    "name": "Mindy Davidson",
+    "location": "",
+    "notes": "6th grade and older",
+    "contact": "mdavidson0627@gmail.com | (216) 337-2468"
+  },
+  {
+    "id": 266,
+    "category": "Tutors – Language Arts",
+    "name": "Donna Levine M.ED",
+    "location": "",
+    "notes": "Reading comprehension, written expression, study skills, time management, Wilson trained (Dyslexia)",
+    "contact": "donnalev@aol.com | (216) 470-1357"
+  },
+  {
+    "id": 267,
+    "category": "Tutors – Language Arts",
+    "name": "Patti Thompson",
+    "location": "",
+    "notes": "",
+    "contact": "p12thompson@gmail.com | (216) 513-3007"
+  },
+  {
+    "id": 268,
+    "category": "Tutors – Other",
+    "name": "Assistive Tech Tutoring K-12",
+    "location": "Lawrence School - Renee Lewis contact",
+    "contact": "(440) 832-7850 | https://www.lawrenceschool.org/community-outreach/assessment/academic-center-for-enrichment-ace",
+    "notes": "Assistive Tech Tutoring K-12; Jackie Hersh will conduct an assistive tech assessment and then tutor the student, meet with their teacher and parent, and help implement the AT in the classroom itself. She travels to the student's school to conduct the tutoring."
+  },
+  {
+    "id": 269,
+    "category": "Tutors – Other",
+    "name": "Avademic Center for Enrichment",
+    "location": "Lawrence School - Renee Lewis contact",
+    "contact": "(440) 832-7850",
+    "notes": "Lawrence trained tutors assess for gaps in skills and remediate reading, writing, math, and executive function concerns (preK-6). Starting an early literacy program (pre-k) this academic year."
+  },
+  {
+    "id": 270,
+    "category": "Tutors – Other",
+    "name": "CSU Community Learning Center for Children and Youth",
+    "location": "Cleveland State",
+    "notes": "",
+    "contact": "(216) 687-5437"
+  },
+  {
+    "id": 271,
+    "category": "Tutors – Other",
+    "name": "Dan Carr",
+    "location": "",
+    "contact": "(773) 814-3238",
+    "notes": ""
+  },
+  {
+    "id": 272,
+    "category": "Tutors – Other",
+    "name": "Outreach on the Horizon – Tutoring Program",
+    "location": "Cleveland, OH",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 273,
+    "category": "Jon Peterson Scholarship",
+    "name": "Jon Peterson Fact Sheet",
+    "location": "",
+    "notes": "Resource information sheet",
+    "contact": ""
+  },
+  {
+    "id": 274,
+    "category": "Jon Peterson Scholarship",
+    "name": "Jon Peterson Parent Information FAQs",
+    "location": "",
+    "notes": "FAQ resource for parents",
+    "contact": ""
+  },
+  {
+    "id": 275,
+    "category": "Jon Peterson Scholarship",
+    "name": "Jon Peterson Special Needs Scholarship Program",
+    "location": "Ohio",
+    "notes": "State scholarship program for students with disabilities",
+    "contact": ""
+  },
+  {
+    "id": 276,
+    "category": "Summer Programs",
+    "name": "Lion's Leap at Lawrence School",
+    "location": "1551 E Wallings Rd, Broadview Heights, OH 44147",
+    "notes": "",
+    "contact": "(440) 832-7850 | lawrenceschool.org"
+  },
+  {
+    "id": 277,
+    "category": "ADHD Resources",
+    "name": "Executive Skills in Children and Adolescents by Peg Dawson & Richard Guare",
+    "location": "",
+    "notes": "For instructors",
+    "contact": ""
+  },
+  {
+    "id": 278,
+    "category": "ADHD Resources",
+    "name": "Get Organized by Ron Fry",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 279,
+    "category": "ADHD Resources",
+    "name": "Late, Lost, and Unprepared by Joyce Cooper-Kahn & Laurie Dietzel",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 280,
+    "category": "ADHD Resources",
+    "name": "Smart but Scattered by Peg Dawson & Richard Guare",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 281,
+    "category": "ADHD Resources",
+    "name": "Taking Charge of ADHD by Russell Barkley",
+    "location": "",
+    "notes": "",
+    "contact": ""
+  },
+  {
+    "id": 282,
+    "category": "Other Resources",
+    "name": "Amy Speidel",
+    "location": "2054 South Green Road South Euclid, OH 44121",
+    "contact": "(216) 291-9210 | https://www.senderspediatrics.com/services/parent-coaching/",
+    "notes": "Parenting/Parent coach/group classes"
+  },
+  {
+    "id": 283,
+    "category": "Other Resources",
+    "name": "Bill Bingamin",
+    "location": "9500 Euclid Ave, Cleveland, OH 44195",
+    "contact": "(216) 636-5860",
+    "notes": ""
+  },
+  {
+    "id": 284,
+    "category": "Other Resources",
+    "name": "Ethan Benor: Clinic Childrens Hospital for Rehabilitation",
+    "location": "2801 Martin Luther King Jr Drive Cleveland, OH 44104",
+    "contact": "(216) 448-6110",
+    "notes": "chronic pain, chronic injury"
+  },
+  {
+    "id": 285,
+    "category": "Other Resources",
+    "name": "Summer Camp",
+    "location": "Cleveland Clinic",
+    "contact": "(216) 444-2200",
+    "notes": "ADHD/Executive Functining Skills"
+  }
+];
+const categoryDomains = {
+  "Academic Support": [
+    "Academic Coaches – Executive Functioning",
+    "Educational Consultants",
+    "Tutors – Language Arts",
+    "Tutors – Literacy",
+    "Tutors – Math",
+    "Tutors – Other"
+  ],
+  "Assessment & Evaluation": [
+    "Autism Evaluators",
+    "Chemical Dependency Assessment",
+    "Comprehensive Evaluations",
+    "Neuropsychological Evaluators",
+    "Psychoeducational Evaluators",
+    "School District Evaluation",
+    "School Psychologists"
+  ],
+  "Medical & Developmental": [
+    "Developmental Pediatricians",
+    "Neurologists",
+    "Pediatricians"
+  ],
+  "Mental Health & Counseling": [
+    "Child Psychiatrists",
+    "Couples & Family Therapy",
+    "Crisis & Urgent Mental Health",
+    "Grief & Loss Counseling",
+    "OCD & Anxiety Specialists",
+    "Therapists – Other",
+    "Therapists – Psychologists",
+    "Therapists – Social Workers"
+  ],
+  "Programs & Resources": [
+    "ADHD Resources",
+    "Jon Peterson Scholarship",
+    "Other Resources",
+    "Summer Programs"
+  ],
+  "Therapy Services": [
+    "Early Childhood & Parenting Support",
+    "Occupational Therapy",
+    "Social Skills Groups",
+    "Speech-Language Pathology"
+  ]
+};
+
+
+const infoInserts = {
+  "Comprehensive Evaluations": [
+    {id:"what-is-comprehensive", title:"What Is a Comprehensive Evaluation?", content:"A comprehensive evaluation is a multi-disciplinary assessment that combines psychoeducational, neuropsychological, and sometimes speech-language or occupational therapy components into a single, integrated process. It provides a complete picture of a student\u2019s cognitive, academic, social-emotional, and behavioral functioning. These evaluations are typically recommended when concerns span multiple areas, when previous targeted testing hasn\u2019t fully explained a student\u2019s difficulties, or when a thorough baseline is needed for treatment planning. They are conducted by a team or a provider with broad assessment expertise and usually take 8\u201312+ hours across multiple sessions."}
+  ],
+  "Psychoeducational Evaluators": [
+    {id:"what-is-psychoed", title:"What Is a Psychoeducational Evaluation?", content:"A psychoeducational evaluation is a comprehensive assessment that examines how a student learns. It typically includes measures of cognitive ability (IQ), academic achievement, and processing skills such as memory, attention, and processing speed. The results help identify learning disabilities, giftedness, or other factors affecting school performance. Evaluations are conducted by licensed psychologists and usually take 4\u20138 hours across multiple sessions."},
+    {id:"preparing-for-eval", title:"Preparing Your Child for Testing", content:"Before the evaluation, ensure your child gets a good night\u2019s sleep and eats a nutritious breakfast. Explain that they\u2019ll be doing different activities with a doctor who wants to learn about how they think and learn. Reassure them it\u2019s not a pass/fail test. Bring glasses, hearing aids, or any assistive devices they normally use. The evaluator will provide breaks as needed."},
+    {id:"understanding-scores", title:"Understanding Evaluation Scores", content:"Most standardized tests use a scoring system where 100 is the average, with a standard deviation of 15 points. Scores between 90\u2013110 are considered average. Scores above 115 indicate above-average abilities, while scores below 85 suggest below-average performance in that area. Percentile ranks show how a student compares to same-age peers\u00a0\u2014 a 75th percentile means the student scored as well or better than 75% of peers."}
+  ],
+  "Neuropsychological Evaluators": [
+    {id:"neuropsych-vs-psychoed", title:"Neuropsych vs. Psychoeducational Evaluation", content:"A neuropsychological evaluation is more comprehensive than a psychoeducational evaluation. While both assess cognitive and academic functioning, a neuropsych also examines brain-behavior relationships including executive functioning, language processing, visual-spatial skills, sensorimotor function, and social cognition. It is typically recommended when there are concerns about neurological conditions, complex attention issues, or when previous testing hasn\u2019t fully explained a student\u2019s difficulties."}
+  ],
+  "Child Psychiatrists": [
+    {id:"when-psychiatrist", title:"When to Consider a Psychiatrist", content:"A child psychiatrist is a medical doctor who specializes in diagnosing and treating mental health conditions in children and adolescents. Consider a psychiatric evaluation when emotional or behavioral difficulties significantly impact daily functioning, when therapy alone hasn\u2019t been sufficient, or when medication management may be beneficial."},
+    {id:"first-appointment", title:"What to Expect at a First Appointment", content:"An initial psychiatric evaluation typically lasts 60\u201390 minutes. The psychiatrist will review developmental, medical, and family history, and current symptoms. They may speak with your child alone for part of the visit. Bring previous evaluations, report cards, and a list of current concerns."}
+  ],
+  "Therapists \u2013 Psychologists": [
+    {id:"types-of-therapy", title:"Types of Therapy for Children & Adolescents", content:"Common evidence-based approaches include Cognitive Behavioral Therapy (CBT) for anxiety and depression, Dialectical Behavior Therapy (DBT) for emotion regulation, Play Therapy for younger children, and Exposure and Response Prevention (ERP) for OCD. Some therapists specialize in trauma-informed care (EMDR, TF-CBT) or family systems approaches."},
+    {id:"choosing-therapist", title:"How to Choose the Right Therapist", content:"Look for a licensed provider (PhD, PsyD, LPCC, LISW) with experience working with your child\u2019s age group and presenting concern. Consider location, availability, insurance acceptance, and telehealth options. The therapeutic relationship is one of the strongest predictors of positive outcomes\u00a0\u2014 it\u2019s okay to try a few before finding the right match."}
+  ],
+  "Therapists \u2013 Social Workers": [
+    {id:"types-of-therapy-sw", title:"Types of Therapy for Children & Adolescents", content:"Common evidence-based approaches include Cognitive Behavioral Therapy (CBT) for anxiety and depression, Dialectical Behavior Therapy (DBT) for emotion regulation, Play Therapy for younger children, and Exposure and Response Prevention (ERP) for OCD."}
+  ],
+  "OCD & Anxiety Specialists": [
+    {id:"understanding-ocd", title:"Understanding OCD in Children", content:"Obsessive-Compulsive Disorder involves unwanted, intrusive thoughts (obsessions) and repetitive behaviors (compulsions) performed to reduce anxiety. In children, common themes include contamination fears, harm obsessions, symmetry/ordering, and scrupulosity. OCD is highly treatable with Exposure and Response Prevention (ERP), a specific form of CBT. Medication (typically SSRIs) may also be recommended."}
+  ],
+  "Occupational Therapy": [
+    {id:"what-is-ot", title:"What Is Pediatric Occupational Therapy?", content:"Pediatric OT helps children develop skills needed for daily living and school success: fine motor skills (handwriting, cutting), sensory processing, self-regulation, and visual-motor integration. OT can benefit children with developmental delays, sensory processing difficulties, ADHD, autism, or coordination challenges."}
+  ],
+  "Speech-Language Pathology": [
+    {id:"what-is-speech", title:"When Does a Child Need Speech-Language Therapy?", content:"Speech-language therapy addresses articulation, fluency, voice disorders, receptive and expressive language, pragmatic/social language, reading comprehension, and written expression. An evaluation is recommended when a child is difficult to understand, struggles to follow directions, has trouble expressing ideas, or shows reading difficulties that may be language-based."}
+  ],
+  "Social Skills Groups": [
+    {id:"about-social-groups", title:"Benefits of Social Skills Groups", content:"Social skills groups provide a structured, supportive environment where children practice interpersonal skills with peers. Led by licensed therapists or SLPs, groups may focus on conversation skills, perspective-taking, emotional regulation, friendship, or conflict resolution. Particularly helpful for children with autism, ADHD, anxiety, or general social difficulties."}
+  ],
+  "Academic Coaches \u2013 Executive Functioning": [
+    {id:"what-is-ef", title:"Understanding Executive Functioning", content:"Executive functions are the brain\u2019s management system\u00a0\u2014 they help us plan, organize, manage time, pay attention, remember details, and regulate behavior. Students with EF challenges may struggle with starting tasks, staying organized, managing time, or controlling impulses. A coach works one-on-one to build these skills through practical strategies."}
+  ],
+  "Jon Peterson Scholarship": [
+    {id:"jp-overview", title:"About the Jon Peterson Special Needs Scholarship", content:"The Jon Peterson Special Needs Scholarship is an Ohio state program providing funding for students with disabilities to receive special education services from providers outside their school district. Eligible students must have an active IEP. The scholarship covers tutoring, speech therapy, OT, counseling, and specialized instruction. Families choose approved providers and funds are paid directly to those providers."}
+  ],
+  "Crisis & Urgent Mental Health": [
+    {id:"crisis-signs", title:"Recognizing a Mental Health Crisis", content:"A mental health crisis may involve suicidal thoughts or self-harm, severe panic attacks, psychotic symptoms, extreme agitation, or complete inability to function. If a student is in immediate danger, call 911. The 988 Suicide & Crisis Lifeline (call or text 988) provides 24/7 support. Frontline Service (216-623-6888) provides local Cleveland-area crisis assistance."}
+  ]
+};
+
+var selectedInserts = {};
+var privateNotes = JSON.parse(localStorage.getItem('referralPrivateNotes') || '{}');
+
+// Handout edit persistence
+var handoutEdits = JSON.parse(localStorage.getItem('referralHandoutEdits') || '{}');
+var customHandouts = JSON.parse(localStorage.getItem('referralCustomHandouts') || '[]');
+
+// Apply saved edits to infoInserts
+Object.keys(handoutEdits).forEach(function(id) {
+  var edit = handoutEdits[id];
+  Object.keys(infoInserts).forEach(function(cat) {
+    infoInserts[cat].forEach(function(ins) {
+      if (ins.id === id) { ins.title = edit.title; ins.content = edit.content; }
+    });
+  });
+});
+// Add custom handouts
+customHandouts.forEach(function(ch) {
+  if (!infoInserts[ch.category]) infoInserts[ch.category] = [];
+  infoInserts[ch.category].push({id: ch.id, title: ch.title, content: ch.content, custom: true});
+});
+
+function openHandoutEditor(insertId, category) {
+  var ins = null;
+  Object.keys(infoInserts).forEach(function(cat) {
+    infoInserts[cat].forEach(function(i) { if (i.id === insertId) ins = i; });
+  });
+  if (!ins) return;
+  showHandoutModal(ins.title, ins.content, insertId, category, !!ins.custom);
+}
+
+function openNewHandout(category) {
+  showHandoutModal('', '', null, category, true);
+}
+
+function showHandoutModal(title, content, editId, category, isCustom) {
+  var overlay = document.createElement('div');
+  overlay.className = 'handout-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+  var isNew = !editId;
+  var hasEdits = editId && handoutEdits[editId];
+  overlay.innerHTML = '<div class="handout-modal">' +
+    '<div class="handout-modal-header"><h3>' + (isNew ? 'New Handout — ' + escHtml(category) : 'Edit Handout') + '</h3></div>' +
+    '<div class="handout-modal-body">' +
+    '<label>Title</label><input type="text" id="hm_title" value="' + escHtml(title).replace(/"/g,'&quot;') + '" />' +
+    '<label>Content</label><textarea id="hm_content">' + escHtml(content) + '</textarea>' +
+    '</div>' +
+    '<div class="handout-modal-footer">' +
+    (isCustom && !isNew ? '<button class="btn-delete" onclick="deleteHandout(\'' + editId + '\')">Delete</button>' : '') +
+    (hasEdits ? '<button class="btn-reset" onclick="resetHandout(\'' + editId + '\')">Reset to Default</button>' : '') +
+    '<span style="flex:1"></span>' +
+    '<button class="btn-cancel" onclick="this.closest(\'.handout-modal-overlay\').remove()">Cancel</button>' +
+    '<button class="btn-save" onclick="saveHandout(\'' + (editId || '') + '\',\'' + escHtml(category).replace(/'/g,"\\'") + '\',' + isNew + ')">Save</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#hm_title').focus();
+}
+
+function saveHandout(editId, category, isNew) {
+  var t = document.getElementById('hm_title').value.trim();
+  var c = document.getElementById('hm_content').value.trim();
+  if (!t) { alert('Title is required.'); return; }
+  if (isNew) {
+    var newId = 'custom_' + Date.now();
+    if (!infoInserts[category]) infoInserts[category] = [];
+    infoInserts[category].push({id: newId, title: t, content: c, custom: true});
+    customHandouts.push({id: newId, category: category, title: t, content: c});
+    try { localStorage.setItem('referralCustomHandouts', JSON.stringify(customHandouts)); } catch(e){}
+  } else {
+    // Update in infoInserts
+    Object.keys(infoInserts).forEach(function(cat) {
+      infoInserts[cat].forEach(function(ins) {
+        if (ins.id === editId) { ins.title = t; ins.content = c; }
+      });
+    });
+    // Save edit (or update custom)
+    var ci = customHandouts.findIndex(function(ch) { return ch.id === editId; });
+    if (ci >= 0) {
+      customHandouts[ci].title = t; customHandouts[ci].content = c;
+      try { localStorage.setItem('referralCustomHandouts', JSON.stringify(customHandouts)); } catch(e){}
+    } else {
+      handoutEdits[editId] = {title: t, content: c};
+      try { localStorage.setItem('referralHandoutEdits', JSON.stringify(handoutEdits)); } catch(e){}
+    }
+  }
+  document.querySelector('.handout-modal-overlay').remove();
+  updateInserts();
+}
+
+function resetHandout(editId) {
+  delete handoutEdits[editId];
+  try { localStorage.setItem('referralHandoutEdits', JSON.stringify(handoutEdits)); } catch(e){}
+  // Reload to restore defaults — simple approach
+  location.reload();
+}
+
+function deleteHandout(editId) {
+  if (!confirm('Delete this custom handout?')) return;
+  // Remove from infoInserts
+  Object.keys(infoInserts).forEach(function(cat) {
+    infoInserts[cat] = infoInserts[cat].filter(function(ins) { return ins.id !== editId; });
+  });
+  // Remove from customHandouts
+  customHandouts = customHandouts.filter(function(ch) { return ch.id !== editId; });
+  try { localStorage.setItem('referralCustomHandouts', JSON.stringify(customHandouts)); } catch(e){}
+  delete selectedInserts[editId];
+  document.querySelector('.handout-modal-overlay').remove();
+  updateInserts();
+}
+
+
+const categoryIcons = {"Child Psychiatrists": {"cls": "icon-mental"}, "Therapists \u2013 Psychologists": {"cls": "icon-mental"}, "Therapists \u2013 Social Workers": {"cls": "icon-mental"}, "Therapists \u2013 Other": {"cls": "icon-mental"}, "OCD & Anxiety Specialists": {"cls": "icon-mental"}, "Couples & Family Therapy": {"cls": "icon-mental"}, "Grief & Loss Counseling": {"cls": "icon-mental"}, "Crisis & Urgent Mental Health": {"cls": "icon-crisis"}, "Comprehensive Evaluations": {"cls": "icon-assess"}, "Psychoeducational Evaluators": {"cls": "icon-assess"}, "Neuropsychological Evaluators": {"cls": "icon-assess"}, "School Psychologists": {"cls": "icon-assess"}, "Autism Evaluators": {"cls": "icon-assess"}, "School District Evaluation": {"cls": "icon-assess"}, "Chemical Dependency Assessment": {"cls": "icon-assess"}, "Developmental Pediatricians": {"cls": "icon-medical"}, "Pediatricians": {"cls": "icon-medical"}, "Neurologists": {"cls": "icon-medical"}, "Occupational Therapy": {"cls": "icon-therapy"}, "Speech-Language Pathology": {"cls": "icon-therapy"}, "Social Skills Groups": {"cls": "icon-therapy"}, "Early Childhood & Parenting Support": {"cls": "icon-therapy"}, "Academic Coaches \u2013 Executive Functioning": {"cls": "icon-academic"}, "Educational Consultants": {"cls": "icon-academic"}, "Tutors \u2013 Literacy": {"cls": "icon-academic"}, "Tutors \u2013 Math": {"cls": "icon-academic"}, "Tutors \u2013 Language Arts": {"cls": "icon-academic"}, "Tutors \u2013 Other": {"cls": "icon-academic"}, "Jon Peterson Scholarship": {"cls": "icon-program"}, "Summer Programs": {"cls": "icon-program"}, "ADHD Resources": {"cls": "icon-program"}, "Other Resources": {"cls": "icon-program"}};
+
+let selectedIds = new Set();
+let activeCategory = "All";
+let searchQuery = "";
+
+function getCategories() {
+  return [...new Set(resources.map(r => r.category))];
+}
+
+function initFilters() {
+  const dd = document.getElementById('categoryDropdown');
+  const cats = getCategories();
+  dd.innerHTML = '<option value="All">All Categories (' + resources.length + ')</option>' +
+    cats.map(c => {
+      var count = resources.filter(r => r.category === c).length;
+      return '<option value="' + escHtml(c) + '"' + (c === activeCategory ? ' selected' : '') + '>' + escHtml(c) + ' (' + count + ')</option>';
+    }).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  initFilters();
+  renderList();
+}
+
+function filterResources() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase();
+  renderList();
+}
+
+function getFiltered() {
+  return resources.filter(r => {
+    const matchCat = activeCategory === 'All' || r.category === activeCategory;
+    const q = searchQuery;
+    const matchSearch = !q ||
+      r.name.toLowerCase().includes(q) ||
+      r.category.toLowerCase().includes(q) ||
+      (r.location && r.location.toLowerCase().includes(q)) ||
+      (r.notes && r.notes.toLowerCase().includes(q)) ||
+      (r.contact && r.contact.toLowerCase().includes(q));
+    return matchCat && matchSearch;
+  });
+}
+
+var expandedCard = null;
+var editingCard = null;
+var resourceEdits = JSON.parse(localStorage.getItem('referralEdits') || '{}');
+
+// Apply saved edits on load
+(function applyEdits() {
+  Object.keys(resourceEdits).forEach(function(id) {
+    var r = resources.find(function(x) { return x.id === Number(id); });
+    if (r) {
+      var e = resourceEdits[id];
+      if (e.name !== undefined) r.name = e.name;
+      if (e.location !== undefined) r.location = e.location;
+      if (e.contact !== undefined) r.contact = e.contact;
+      if (e.category !== undefined) r.category = e.category;
+    }
+  });
+})();
+
+function expandCard(id) {
+  expandedCard = expandedCard === id ? null : id;
+  if (expandedCard !== id) editingCard = null;
+  renderList();
+}
+
+function startEdit(id) {
+  editingCard = id;
+  expandedCard = id;
+  renderList();
+  event.stopPropagation();
+}
+
+function cancelEdit() {
+  editingCard = null;
+  renderList();
+}
+
+function saveEdit(id) {
+  var r = resources.find(function(x) { return x.id === id; });
+  if (!r) return;
+  var nameEl = document.getElementById('edit-name-' + id);
+  var locEl = document.getElementById('edit-loc-' + id);
+  var conEl = document.getElementById('edit-con-' + id);
+  var catEl = document.getElementById('edit-cat-' + id);
+  if (nameEl) r.name = nameEl.value.trim();
+  if (locEl) r.location = locEl.value.trim();
+  if (conEl) r.contact = conEl.value.trim();
+  if (catEl && catEl.value) r.category = catEl.value;
+  resourceEdits[id] = { name: r.name, location: r.location, contact: r.contact, category: r.category };
+  try { localStorage.setItem('referralEdits', JSON.stringify(resourceEdits)); } catch(ex){}
+  editingCard = null;
+  initFilters();
+  renderList();
+}
+
+function deleteEntry(id) {
+  if (!confirm('Remove this entry from the list?')) return;
+  var idx = resources.findIndex(function(x) { return x.id === id; });
+  if (idx > -1) resources.splice(idx, 1);
+  selectedIds.delete(id);
+  delete resourceEdits[id];
+  delete privateNotes[id];
+  try {
+    localStorage.setItem('referralEdits', JSON.stringify(resourceEdits));
+    localStorage.setItem('referralPrivateNotes', JSON.stringify(privateNotes));
+  } catch(ex){}
+  expandedCard = null;
+  editingCard = null;
+  initFilters();
+  renderList();
+}
+
+function addEntry() {
+  var maxId = resources.reduce(function(mx, r) { return Math.max(mx, r.id); }, 0);
+  var newId = maxId + 1;
+  var cat = activeCategory !== 'All' ? activeCategory : 'Other Resources';
+  resources.push({ id: newId, category: cat, name: 'New Entry', location: '', contact: '', notes: '' });
+  resourceEdits[newId] = { name: 'New Entry', location: '', contact: '', category: cat };
+  try { localStorage.setItem('referralEdits', JSON.stringify(resourceEdits)); } catch(ex){}
+  expandedCard = newId;
+  editingCard = newId;
+  initFilters();
+  renderList();
+  var el = document.getElementById('edit-name-' + newId);
+  if (el) { el.focus(); el.select(); }
+}
+
+function getAllCategories() {
+  var cats = [];
+  Object.keys(categoryDomains).forEach(function(d) {
+    categoryDomains[d].forEach(function(c) { cats.push(c); });
+  });
+  return cats;
+}
+
+function saveNote(id, val) {
+  privateNotes[id] = val;
+  try { localStorage.setItem('referralPrivateNotes', JSON.stringify(privateNotes)); } catch(e){}
+}
+
+function formatContact(c) {
+  if (!c) return '';
+  return c.split('|').map(function(p) {
+    p = p.trim();
+    if (!p) return '';
+    if (p.match(/^https?:\/\//)) return '<a href="' + escHtml(p) + '" target="_blank" onclick="event.stopPropagation()">' + escHtml(p.replace(/^https?:\/\//, '')) + '</a>';
+    if (p.match(/\.[a-z]{2,4}$/i) && !p.match(/^\(/)) return '<a href="https://' + escHtml(p) + '" target="_blank" onclick="event.stopPropagation()">' + escHtml(p) + '</a>';
+    return escHtml(p);
+  }).join(' | ');
+}
+
+function formatContactForPrint(c) {
+  if (!c) return '';
+  return c.split('|').map(function(p) {
+    p = p.trim();
+    if (!p) return '';
+    if (p.match(/^https?:\/\//)) return '<a href="' + escHtml(p) + '" style="color:#4A8DAD;text-decoration:underline">' + escHtml(p.replace(/^https?:\/\/(www\.)?/, '')) + '</a>';
+    if (p.match(/\.[a-z]{2,4}(\/|$)/i) && !p.match(/^\(/) && !p.match(/^\d/)) return '<a href="https://' + escHtml(p) + '" style="color:#4A8DAD;text-decoration:underline">' + escHtml(p) + '</a>';
+    if (p.match(/^\(\d{3}\)\s?\d{3}[-.]\d{4}$/)) return '<a href="tel:' + p.replace(/[^\d]/g,'') + '" style="color:#1E293B">' + escHtml(p) + '</a>';
+    return escHtml(p);
+  }).join(' | ');
+}
+
+function updateInserts() {
+  var cats = {};
+  resources.filter(function(r) { return selectedIds.has(r.id); }).forEach(function(r) { cats[r.category] = true; });
+  var panel = document.getElementById('insertsPanel');
+  var chips = document.getElementById('insertChips');
+  if (!panel || !chips) return;
+  var available = [];
+  Object.keys(cats).forEach(function(cat) {
+    if (infoInserts[cat]) {
+      infoInserts[cat].forEach(function(ins) {
+        available.push({cat: cat, insert: ins});
+      });
+    }
+  });
+  if (available.length === 0) { panel.classList.remove('visible'); return; }
+  panel.classList.add('visible');
+  var activeCats = Object.keys(cats);
+  chips.innerHTML = available.map(function(a) {
+    var sel = selectedInserts[a.insert.id] ? ' selected' : '';
+    return '<span class="insert-chip' + sel + '" onclick="toggleInsert(\'' + a.insert.id + '\')">' +
+      (sel ? '✓ ' : '') + escHtml(a.insert.title) +
+      '<span class="edit-btn" onclick="event.stopPropagation();openHandoutEditor(\'' + a.insert.id + '\',\'' + escHtml(a.cat).replace(/'/g,"\\'") + '\')" title="Edit handout">✏</span>' +
+      '</span>';
+  }).join('') + activeCats.map(function(cat) {
+    return ' <span class="add-handout-chip" onclick="openNewHandout(\'' + escHtml(cat).replace(/'/g,"\\'") + '\')" title="Add handout for ' + escHtml(cat) + '">+ Add</span>';
+  }).join('');
+}
+
+function toggleInsert(id) {
+  if (selectedInserts[id]) delete selectedInserts[id];
+  else selectedInserts[id] = true;
+  updateInserts();
+}
+
+function renderList() {
+  var filtered = getFiltered();
+  var grouped = {};
+  filtered.forEach(function(r) { if(!grouped[r.category]) grouped[r.category]=[]; grouped[r.category].push(r); });
+  var listEl = document.getElementById('resourceList');
+  if (!filtered.length) { listEl.innerHTML='<div class="empty-state">No resources match</div>'; return; }
+  listEl.innerHTML = Object.entries(grouped).map(function(entry) {
+    var cat = entry[0], items = entry[1];
+    var allSel = items.every(function(r) { return selectedIds.has(r.id); });
+    var safeId = cat.replace(/[^a-zA-Z0-9]/g,'_');
+    return '<div class="resource-group"><div class="group-header" onclick="toggleGroup(\'' + safeId + '\')">' +
+      '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(cat) + '</span>' +
+      '<span style="display:flex;align-items:center;gap:5px;flex-shrink:0">' +
+      '<button class="select-group-btn" onclick="event.stopPropagation();selectGroup(' + JSON.stringify(cat) + ')">' + (allSel?'\u2713 All':'Select All') + '</button>' +
+      '<span class="group-count">' + items.length + '</span></span></div>' +
+      '<div id="grp_' + safeId + '">' +
+      items.map(function(r) {
+        var isExpanded = expandedCard === r.id;
+        var isEditing = editingCard === r.id;
+        var isSel = selectedIds.has(r.id);
+        var note = privateNotes[r.id] || '';
+        var html = '<div class="resource-item' + (isSel?' selected':'') + (isExpanded?' expanded':'') + '">' +
+          '<div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggle(' + r.id + ')">' +
+          '<input type="checkbox"' + (isSel?' checked':'') + ' onclick="event.stopPropagation();toggle(' + r.id + ')" />' +
+          '<div style="flex:1;min-width:0"><div class="resource-name">' + escHtml(r.name) + '</div>' +
+          '<div class="resource-meta">' + escHtml([r.location, r.contact].filter(Boolean).join(' \u00b7 ').substring(0,60) || '') + '</div></div>' +
+          '<span class="card-expand" onclick="event.stopPropagation();expandCard(' + r.id + ')" title="Expand details">\u25B6</span></div>';
+        if (isExpanded && isEditing) {
+          var allCats = getAllCategories();
+          html += '<div class="card-details" onclick="event.stopPropagation()">';
+          html += '<div class="edit-field"><label>Name</label><input id="edit-name-' + r.id + '" value="' + escHtml(r.name) + '" /></div>';
+          html += '<div class="edit-field"><label>Location / Address</label><input id="edit-loc-' + r.id + '" value="' + escHtml(r.location || '') + '" /></div>';
+          html += '<div class="edit-field"><label>Contact (phone | website — separate with |)</label><input id="edit-con-' + r.id + '" value="' + escHtml(r.contact || '') + '" /></div>';
+          html += '<div class="edit-field"><label>Category</label><select id="edit-cat-' + r.id + '">';
+          allCats.forEach(function(c) { html += '<option value="' + escHtml(c) + '"' + (c === r.category ? ' selected' : '') + '>' + escHtml(c) + '</option>'; });
+          html += '</select></div>';
+          html += '<div class="edit-bar" style="margin-top:8px">' +
+            '<button class="btn-save" onclick="saveEdit(' + r.id + ')">Save</button>' +
+            '<button class="btn-cancel" onclick="cancelEdit()">Cancel</button>' +
+            '<span style="flex:1"></span>' +
+            '<button class="btn-delete" onclick="deleteEntry(' + r.id + ')">Delete</button></div>';
+          html += '</div>';
+        } else if (isExpanded) {
+          html += '<div class="card-details">';
+          html += '<div class="edit-bar"><button class="btn-edit" onclick="event.stopPropagation();startEdit(' + r.id + ')">Edit</button></div>';
+          if (r.location) html += '<div style="margin-bottom:4px"><strong style="font-size:10px;text-transform:uppercase;color:var(--text-muted)">Location</strong><div style="font-size:12px">' + escHtml(r.location) + '</div></div>';
+          if (r.contact) html += '<div style="margin-bottom:4px"><strong style="font-size:10px;text-transform:uppercase;color:var(--text-muted)">Contact</strong><div style="font-size:12px">' + formatContact(r.contact) + '</div></div>';
+          if (r.notes) html += '<div class="pn-imported" style="margin-bottom:6px"><strong style="font-size:10px">Spreadsheet Notes:</strong> <span style="font-size:11px">' + escHtml(r.notes) + '</span></div>';
+          html += '<div style="margin-top:6px"><strong style="font-size:10px;text-transform:uppercase;color:var(--text-muted)">My Private Notes</strong>' +
+            '<textarea class="pn-textarea" placeholder="Add your private notes here..." onchange="saveNote(' + r.id + ',this.value)" onclick="event.stopPropagation()">' + escHtml(note) + '</textarea></div>';
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      }).join('') + '</div></div>';
+  }).join('');
+  updateCount();
+  updateInserts();
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toggle(id) {
+  if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+  renderList();
+}
+
+function selectGroup(cat) {
+  const items = resources.filter(r => r.category === cat);
+  const allSel = items.every(r => selectedIds.has(r.id));
+  items.forEach(r => { if(allSel) selectedIds.delete(r.id); else selectedIds.add(r.id); });
+  renderList();
+}
+
+function toggleGroup(safeId) {
+  const el = document.getElementById('grp_' + safeId);
+  if(el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+function updateCount() {
+  document.getElementById('selectedCount').textContent = selectedIds.size + ' resource' + (selectedIds.size !== 1 ? 's' : '') + ' selected';
+}
+
+function clearAll() {
+  selectedIds.clear(); renderList();
+  document.getElementById('previewArea').innerHTML = '<div class="preview-placeholder"><div class="icon" style="font-size:36px;color:var(--text-light)">&#9776;</div><p>Select resources from the left panel, then click <strong>Generate Preview</strong> to create a personalized referral list.</p></div>';
+}
+
+function buildInsertsHtml() {
+  var ids = Object.keys(selectedInserts);
+  if (!ids.length) return '';
+  var html = '<div class="info-inserts-section" style="margin-top:20px;padding-top:16px;border-top:2px solid #1B4965">' +
+    '<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1B4965;margin-bottom:12px">Additional Information</div>';
+  Object.keys(infoInserts).forEach(function(cat) {
+    infoInserts[cat].forEach(function(ins) {
+      if (selectedInserts[ins.id]) {
+        html += '<div style="margin-bottom:14px;padding:10px 14px;background:#F8F9FA;border-radius:6px;border-left:3px solid #4A8DAD">' +
+          '<div style="font-size:11px;font-weight:700;color:#1B4965;margin-bottom:4px">' + escHtml(ins.title) + '</div>' +
+          '<div style="font-size:10px;line-height:1.5;color:#1E293B">' + escHtml(ins.content) + '</div></div>';
+      }
+    });
+  });
+  html += '</div>';
+  return html;
+}
+
+function generatePreview() {
+  if(!selectedIds.size) { alert('Please select at least one resource first.'); return; }
+  const student = document.getElementById('studentName').value || 'Student Name';
+  const grade = document.getElementById('gradeLevel').value || '';
+  const counselor = document.getElementById('counselorName').value || '';
+  const date = document.getElementById('referralDate').value || new Date().toLocaleDateString();
+  const notes = document.getElementById('referralNotes').value || '';
+  const selected = resources.filter(r => selectedIds.has(r.id));
+  const grouped = {};
+  selected.forEach(r => { if(!grouped[r.category]) grouped[r.category]=[]; grouped[r.category].push(r); });
+  const bodyHtml = Object.entries(grouped).map(([cat, items]) => {
+    const info = categoryIcons[cat] || {icon:'',cls:'icon-other'};
+    return '<div class="category-section"><div class="category-title">' + escHtml(cat) + '</div>' +
+      items.map(r => {
+        var contactParts = [];
+        if (r.location) contactParts.push(escHtml(r.location));
+        if (r.contact) contactParts.push(formatContactForPrint(r.contact));
+        var contactLine = contactParts.join(' | ');
+        return '<div class="referral-card"><div class="card-icon ' + info.cls + '"></div><div class="card-content">' +
+        '<div class="card-name">' + escHtml(r.name) + '</div>' +
+        (contactLine ? '<div class="card-contact">' + contactLine + '</div>' : '') +
+        
+        '</div></div>';
+      }).join('') + '</div>';
+  }).join('');
+  document.getElementById('previewArea').innerHTML =
+    '<div class="referral-output">' +
+    '<div class="print-header"><div class="print-logo"><img src="data:image/png;base64,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" alt="Hawken School" style="height:48px;width:auto"></div><div class="print-title"><h2>Individualized Resource Guide</h2><p>Hawken Learning Enhancement Team</p></div></div>' +
+    '<div class="print-student-info"><div class="student-info-grid">' +
+    '<div class="info-field"><label>Student</label><p>' + escHtml(student) + '</p></div>' +
+    '<div class="info-field"><label>Grade / Age</label><p>' + escHtml(grade||'—') + '</p></div>' +
+    '<div class="info-field"><label>Date</label><p>' + escHtml(date) + '</p></div></div>' +
+    (counselor ? '<div class="student-info-grid" style="margin-top:7px"><div class="info-field"><label>Counselor / Contact</label><p>' + escHtml(counselor) + '</p></div></div>' : '') +
+    (notes ? '<div class="notes-field"><label>Notes</label><p>' + escHtml(notes) + '</p></div>' : '') +
+    '</div><div class="print-body">' + bodyHtml + buildInsertsHtml() + '</div>' +
+    '<div class="print-footer"><p>' + selected.length + ' resource' + (selected.length!==1?'s':'') + ' listed · Generated ' + new Date().toLocaleDateString() + '</p>' +
+    '<p class="school">Hawken School – Support Services</p></div></div>';
+}
+
+initFilters();
+renderList();
+document.getElementById('referralDate').value = new Date().toLocaleDateString();
+</script>
+</body>
+</html>

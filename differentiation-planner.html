@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Differentiation Planner — Teaching to Every Brain</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0d7377;
+  --teal-dark: #064e50;
+  --teal-light: #e0f5f5;
+  --teal-mid: #14919b;
+  --amber: #f0a500;
+  --amber-light: #fff3d0;
+  --coral: #e05555;
+  --coral-light: #fde8e8;
+  --sage: #5b8c5a;
+  --sage-light: #e8f3e8;
+  --plum: #7c5295;
+  --plum-light: #f0e8f7;
+  --slate: #334155;
+  --slate-light: #f1f5f9;
+  --white: #ffffff;
+  --paper: #faf9f6;
+  --ink: #1e293b;
+  --radius: 14px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.hero {
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 40%, var(--teal-mid) 100%);
+  color: white;
+  padding: 2.5rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.3rem;
+  position: relative;
+}
+.hero p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  max-width: 600px;
+  position: relative;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 100px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+  position: relative;
+}
+
+/* ─── LAYOUT ─── */
+.app { max-width: 1200px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+/* ─── TABS ─── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin: 1.5rem 0 0;
+  background: var(--white);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  border-bottom: 2px solid var(--teal);
+}
+.tab-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--slate);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  text-align: center;
+  white-space: nowrap;
+}
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 0; height: 3px;
+  background: var(--teal);
+  border-radius: 3px 3px 0 0;
+  transition: var(--transition);
+}
+.tab-btn.active { color: var(--teal); background: var(--teal-light); }
+.tab-btn.active::after { width: 70%; }
+.tab-btn:hover:not(.active) { background: var(--slate-light); }
+.tab-icon { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+
+.tab-panel { display: none; }
+.tab-panel.active {
+  display: block;
+  animation: fadeUp 0.35s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CARDS ─── */
+.panel-wrap {
+  background: var(--white);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.35rem;
+  color: var(--teal-dark);
+  margin-bottom: 0.3rem;
+}
+.section-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-bottom: 1.3rem;
+  max-width: 700px;
+}
+
+/* ─── STUDENT PROFILE FORM ─── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--slate);
+  margin-bottom: 0.35rem;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  background: var(--paper);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,115,119,0.12);
+}
+.field textarea { resize: vertical; min-height: 80px; }
+
+/* ─── NEEDS CHECKBOXES ─── */
+.needs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.need-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+.need-card:hover { border-color: #cbd5e1; transform: translateY(-1px); }
+.need-card.selected { border-color: var(--teal); background: var(--teal-light); }
+.need-card .need-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+.need-card .need-name {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--teal-dark);
+}
+.need-card .need-desc {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+  line-height: 1.45;
+}
+.need-card .check-mark {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.need-card.selected .check-mark { display: flex; }
+
+/* ─── STRUGGLES CHECKBOXES ─── */
+.struggles-section { margin-top: 1.5rem; }
+.struggles-category {
+  margin-bottom: 1.2rem;
+}
+.struggles-category h4 {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--slate);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+  background: var(--white);
+}
+.chip:hover { border-color: #cbd5e1; }
+.chip.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+.chip input { display: none; }
+
+/* ─── STRENGTHS ─── */
+.strengths-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+/* ─── RESULTS ─── */
+.results-area { margin-top: 1.5rem; }
+.generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+  color: white;
+  border: none;
+  padding: 0.85rem 2rem;
+  border-radius: 100px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 14px rgba(13,115,119,0.3);
+}
+.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13,115,119,0.4);
+}
+.generate-btn:active { transform: translateY(0); }
+
+/* ─── RECOMMENDATION CARDS ─── */
+.recs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+.rec-category {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid #e2e8f0;
+}
+.rec-header {
+  padding: 1rem 1.2rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+.rec-header:hover { filter: brightness(0.96); }
+.rec-header .arrow {
+  margin-left: auto;
+  transition: transform 0.3s;
+  font-size: 0.8rem;
+}
+.rec-category.open .rec-header .arrow { transform: rotate(180deg); }
+.rec-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.rec-category.open .rec-body { max-height: 2000px; }
+.rec-body-inner { padding: 0.5rem 1.2rem 1.2rem; }
+
+.rec-item {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.rec-item:last-child { border-bottom: none; }
+.rec-item-title {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--teal-dark);
+  margin-bottom: 0.2rem;
+}
+.rec-item-why {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+  margin-bottom: 0.4rem;
+}
+.rec-item-how {
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.55;
+}
+.rec-tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-right: 0.3rem;
+  margin-top: 0.3rem;
+}
+.tag-environment { background: var(--sage-light); color: var(--sage); }
+.tag-instruction { background: var(--amber-light); color: #b47900; }
+.tag-behavior { background: var(--coral-light); color: var(--coral); }
+.tag-culture { background: var(--plum-light); color: var(--plum); }
+
+/* Category colors */
+.cat-environment .rec-header { background: var(--sage-light); color: var(--sage); }
+.cat-instruction .rec-header { background: var(--amber-light); color: #8a5e00; }
+.cat-behavior .rec-header { background: var(--coral-light); color: var(--coral); }
+.cat-culture .rec-header { background: var(--plum-light); color: var(--plum); }
+
+/* ─── STUDENT LIST ─── */
+.student-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.student-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background: var(--teal-light);
+  border: 2px solid var(--teal);
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--teal-dark);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.student-pill:hover { background: var(--teal); color: white; }
+.student-pill.active { background: var(--teal); color: white; }
+.student-pill .remove {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+.student-pill:hover .remove { background: rgba(255,255,255,0.3); }
+
+/* ─── PRINT PLAN ─── */
+.print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--white);
+  border: 2px solid var(--teal);
+  color: var(--teal);
+  padding: 0.6rem 1.5rem;
+  border-radius: 100px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 0.7rem;
+}
+.print-btn:hover { background: var(--teal-light); }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #94a3b8;
+}
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.6rem; }
+.empty-state p { font-size: 0.9rem; max-width: 400px; margin: 0 auto; }
+
+/* ─── QUICK REFERENCE ─── */
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.ref-card {
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  border: 1px solid #e2e8f0;
+  transition: var(--transition);
+}
+.ref-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.ref-card h4 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ref-card ul {
+  list-style: none;
+  padding: 0;
+}
+.ref-card li {
+  padding: 0.3rem 0;
+  font-size: 0.82rem;
+  position: relative;
+  padding-left: 1.1rem;
+}
+.ref-card li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.ref-safety { background: #fef7ee; }
+.ref-safety h4 { color: #b45309; }
+.ref-belonging { background: #f0f4ff; }
+.ref-belonging h4 { color: #3730a3; }
+.ref-autonomy { background: var(--sage-light); }
+.ref-autonomy h4 { color: var(--sage); }
+.ref-competency { background: var(--plum-light); }
+.ref-competency h4 { color: var(--plum); }
+
+/* ─── PRINT STYLES ─── */
+@media print {
+  .hero { padding: 1rem; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .tab-bar, .generate-btn, .print-btn, .student-pill .remove { display: none !important; }
+  .tab-panel { display: block !important; page-break-inside: avoid; }
+  .panel-wrap { box-shadow: none; border: 1px solid #ddd; }
+  .rec-body { max-height: none !important; }
+  body { background: white; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .hero { padding: 1.5rem 1rem; }
+  .panel-wrap { padding: 1rem; }
+  .tab-btn { font-size: 0.72rem; padding: 0.7rem 0.5rem; }
+  .tab-icon { font-size: 1rem; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── TOOLTIP ─── */
+.info-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  cursor: help;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+  position: relative;
+}
+.info-tip:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--slate);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: normal;
+  width: 220px;
+  z-index: 99;
+  box-shadow: var(--shadow-md);
+  line-height: 1.4;
+}
+
+/* ─── PRIORITY BADGE ─── */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--amber-light);
+  color: #92400e;
+}
+.priority-badge.high { background: var(--coral-light); color: var(--coral); }
+.priority-badge.medium { background: var(--amber-light); color: #92400e; }
+.priority-badge.low { background: var(--sage-light); color: var(--sage); }
+
+/* ─── DISCLAIMER ─── */
+.disclaimer {
+  margin-top: 2rem;
+  padding: 1rem 1.2rem;
+  background: var(--amber-light);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.8rem;
+  color: #78350f;
+  line-height: 1.55;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HEADER ════════════════ -->
+<header class="hero">
+  <div class="hero-badge">Differentiation Planner</div>
+  <h1>Teaching to Every Brain</h1>
+  <p>Build student profiles, identify unmet needs & struggles, and generate targeted strategies across instruction, environment, culture, and behavior support.</p>
+</header>
+
+<div class="app">
+
+<!-- ════════════════ TAB BAR ════════════════ -->
+<nav class="tab-bar" role="tablist">
+  <button class="tab-btn active" data-tab="profile" role="tab">
+    <span class="tab-icon">👤</span> Student Profile
+  </button>
+  <button class="tab-btn" data-tab="needs" role="tab">
+    <span class="tab-icon">🧩</span> Needs &amp; Struggles
+  </button>
+  <button class="tab-btn" data-tab="strengths" role="tab">
+    <span class="tab-icon">⭐</span> Strengths
+  </button>
+  <button class="tab-btn" data-tab="plan" role="tab">
+    <span class="tab-icon">📋</span> Differentiation Plan
+  </button>
+  <button class="tab-btn" data-tab="reference" role="tab">
+    <span class="tab-icon">📖</span> Quick Reference
+  </button>
+</nav>
+
+<!-- ════════════════ TAB 1: STUDENT PROFILE ════════════════ -->
+<div class="tab-panel active" id="panel-profile">
+  <div class="panel-wrap">
+    <h2 class="section-title">Student Profile</h2>
+    <p class="section-desc">Create profiles for each student. Behavior is communication — start by understanding the student's world before choosing strategies.</p>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Student Name / Initials</label>
+        <input type="text" id="studentName" placeholder="e.g., Jenna or J.R.">
+      </div>
+      <div class="field">
+        <label>Grade Level</label>
+        <select id="studentGrade">
+          <option value="">Select…</option>
+          <option>Pre-K</option><option>Kindergarten</option>
+          <option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option>
+          <option>6th</option><option>7th</option><option>8th</option>
+          <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Known Diagnoses / IEP / 504 Notes</label>
+        <input type="text" id="studentDiagnosis" placeholder="e.g., ADHD, ASD, processing disorder (optional)">
+      </div>
+      <div class="field" style="grid-column: 1/-1;">
+        <label>Observations / Context <span class="info-tip" data-tip="Include info about home life, triggers, what calms them, sensory preferences, social dynamics, etc.">?</span></label>
+        <textarea id="studentContext" placeholder="What have you observed? What has the family shared? What settings are hard or easy for this student?"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:1.2rem;">
+      <button class="generate-btn" onclick="saveStudent()">＋ Save Student Profile</button>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <label style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate);">Saved Students</label>
+      <div class="student-list" id="studentList">
+        <div class="empty-state" style="padding:1.5rem;width:100%;">
+          <p style="font-size:0.85rem;">No students saved yet. Fill in the form above and click Save.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAB 2: NEEDS & STRUGGLES ════════════════ -->
+<div class="tab-panel" id="panel-needs">
+  <div class="panel-wrap">
+    <h2 class="section-title">Unmet Needs &amp; Struggles</h2>
+    <p class="section-desc">Select the active student, then identify their compromised needs (from Self-Determination Theory & Maslow) and specific struggles. This drives your strategy recommendations.</p>
+
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate);">Select Student</label>
+      <div class="student-list" id="needsStudentList">
+        <p style="color:#94a3b8;font-size:0.85rem;">Save a student profile first.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:0.3rem;color:var(--teal-dark);">Compromised Needs</h3>
+    <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem;">Which fundamental needs are being compromised for this student?</p>
+
+    <div class="needs-grid" id="needsGrid">
+      <div class="need-card" data-need="safety" onclick="toggleNeed(this)">
+        <div class="check-mark">✓</div>
+        <div class="need-icon">🛡️</div>
+        <div class="need-name">Safety &amp; Comfort</div>
+        <div class="need-desc">Physical comfort (temperature, sensory, pain) and emotional comfort (worries, embarrassment, shame, fear). Base of Maslow's hierarchy.</div>
+      </div>
+      <div class="need-card" data-need="belonging" onclick="toggleNeed(this)">
+        <div class="check-mark">✓</div>
+        <div class="need-icon">🤝</div>
+        <div class="need-name">Belonging</div>
+        <div class="need-desc">Positive, mutually satisfying relationships characterized by warmth and trust. Feeling connected, not "othered."</div>
+      </div>
+      <div class="need-card" data-need="autonomy" onclick="toggleNeed(this)">
+        <div class="check-mark">✓</div>
+        <div class="need-icon">🧭</div>
+        <div class="need-name">Autonomy</div>
+        <div class="need-desc">Having control over what one does. Leads to greater intrinsic motivation and involvement.</div>
+      </div>
+      <div class="need-card" data-need="competency" onclick="toggleNeed(this)">
+        <div class="check-mark">✓</div>
+        <div class="need-icon">🏆</div>
+        <div class="need-name">Competency</div>
+        <div class="need-desc">Feelings of effectiveness and confidence in achieving desired outcomes. As learners see progress, motivation grows.</div>
+      </div>
+    </div>
+
+    <div class="struggles-section">
+      <h3 style="font-size:0.95rem;font-weight:800;margin:1.5rem 0 0.3rem;color:var(--teal-dark);">Specific Struggles</h3>
+      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.8rem;">Check all that apply for this student.</p>
+
+      <div class="struggles-category">
+        <h4>🧠 Executive Functioning &amp; Cognition</h4>
+        <div class="checkbox-group" id="struggles-ef">
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="poor_executive_functioning"> Poor executive functioning</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="poor_memory"> Poor working memory</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="focus"> Difficulty focusing / attention</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="directions"> Struggles with directions</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="misplaced_materials"> Misplaces materials</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="cognitive_distortions"> Cognitive distortions</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="learned_helplessness"> Learned helplessness</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="perfectionism"> Perfectionism</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="reading_level"> Below grade reading level</label>
+        </div>
+      </div>
+
+      <div class="struggles-category">
+        <h4>💛 Emotional &amp; Behavioral</h4>
+        <div class="checkbox-group" id="struggles-eb">
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="emotional_dysregulation"> Emotional dysregulation</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="difficulty_transitioning"> Difficulty transitioning</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="reactive"> Reactive behavior</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="difficulty_calming"> Difficulty calming down</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="anxiety"> Anxiety</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="catastrophizing"> Catastrophizing</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="avoidance"> Task avoidance</label>
+        </div>
+      </div>
+
+      <div class="struggles-category">
+        <h4>👥 Social &amp; Communication</h4>
+        <div class="checkbox-group" id="struggles-sc">
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="poor_social_skills"> Poor social skills</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="inhibited_communication"> Inhibited communication</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="unwanted_attention"> Unwanted attention/"othered"</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="peer_conflicts"> Peer conflicts</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="assistive_devices"> Uses assistive devices</label>
+        </div>
+      </div>
+
+      <div class="struggles-category">
+        <h4>🌊 Sensory &amp; Physical</h4>
+        <div class="checkbox-group" id="struggles-sp">
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="sensory_overload"> Sensory overload</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="noise_sensitivity"> Noise sensitivity</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="light_sensitivity"> Light sensitivity</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="needs_movement"> Needs movement</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="physical_comfort"> Physical comfort issues</label>
+        </div>
+      </div>
+
+      <div class="struggles-category">
+        <h4>🏠 Environmental / External</h4>
+        <div class="checkbox-group" id="struggles-env">
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="trauma"> Trauma history</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="homelessness"> Housing instability</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="food_insecurity"> Food insecurity</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="previous_failures"> Previous academic failures</label>
+          <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="talked_down_to"> Adults talk "down" to student</label>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.3rem;">
+      <button class="generate-btn" onclick="saveNeedsAndStruggles()">💾 Save Needs &amp; Struggles</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAB 3: STRENGTHS ════════════════ -->
+<div class="tab-panel" id="panel-strengths">
+  <div class="panel-wrap">
+    <h2 class="section-title">Student Strengths</h2>
+    <p class="section-desc">Strengths determine which strategies to prioritize. Tools that play to a student's strengths should be tried first.</p>
+
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate);">Select Student</label>
+      <div class="student-list" id="strengthsStudentList">
+        <p style="color:#94a3b8;font-size:0.85rem;">Save a student profile first.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:0.5rem;color:var(--teal-dark);">Select Observed Strengths</h3>
+    <div class="checkbox-group strengths-grid" id="strengthsGrid">
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="empathetic"> Empathetic</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="creative"> Creative</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="detail_oriented"> Detail oriented</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="verbal_communicator"> Strong verbal communicator</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="curious"> Curious / loves learning new things</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="visual_learner"> Visual learner</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="kinesthetic_learner"> Kinesthetic / hands-on learner</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="auditory_learner"> Auditory learner</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="humor"> Responds to humor</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="fast_acting"> Fast acting / energetic</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="independent"> Works well independently</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="collaborative"> Works well in groups</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="tech_savvy"> Tech savvy</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="artistic"> Artistic</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="musical"> Musical</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="athletic"> Athletic / physical</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="loyal"> Loyal / trustworthy</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="resilient"> Resilient</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="strong_interests"> Has strong specific interests</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="routine_oriented"> Thrives with routines</label>
+      <label class="chip" onclick="toggleChip(this)"><input type="checkbox" value="environmentally_aware"> Observant / aware of environment</label>
+    </div>
+
+    <div class="field" style="margin-top:1rem;">
+      <label>Additional Strengths / Interests</label>
+      <textarea id="additionalStrengths" placeholder="Describe specific interests (NFL, art, music, bugs, etc.) or other strengths you've noticed…"></textarea>
+    </div>
+
+    <div style="margin-top:1.3rem;">
+      <button class="generate-btn" onclick="saveStrengths()">💾 Save Strengths</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAB 4: DIFFERENTIATION PLAN ════════════════ -->
+<div class="tab-panel" id="panel-plan">
+  <div class="panel-wrap">
+    <h2 class="section-title">Differentiation Plan</h2>
+    <p class="section-desc">Select a student and generate a tailored set of strategies across four categories. Strategies that match the student's strengths are prioritized.</p>
+
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate);">Select Student</label>
+      <div class="student-list" id="planStudentList">
+        <p style="color:#94a3b8;font-size:0.85rem;">Save a student profile first.</p>
+      </div>
+    </div>
+
+    <button class="generate-btn" onclick="generatePlan()">🎯 Generate Differentiation Plan</button>
+    <button class="print-btn" onclick="window.print()">🖨️ Print Plan</button>
+
+    <div class="recs-grid" id="recsGrid">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>Select a student and click "Generate" to see personalized differentiation strategies.</p>
+      </div>
+    </div>
+
+    <div class="disclaimer" id="disclaimer" style="display:none;">
+      <strong>Note:</strong> This tool does not substitute an Individualized Education Program (IEP) or Section 504 plan. It should be utilized in conjunction with instructional supports and the cultivation of positive relationships. It is suggested to keep a tool in place for at least 4 weeks to allow sufficient time for it to be effective.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAB 5: QUICK REFERENCE ════════════════ -->
+<div class="tab-panel" id="panel-reference">
+  <div class="panel-wrap">
+    <h2 class="section-title">Quick Reference — The Four Needs</h2>
+    <p class="section-desc">Grounded in Self-Determination Theory and Maslow's Hierarchy. When students' needs are met, they are intrinsically motivated and behavior improves.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card ref-safety">
+        <h4>🛡️ Safety &amp; Comfort</h4>
+        <ul>
+          <li>Physical: body temperature, sensory stimulation, hygiene, pain</li>
+          <li>Emotional: worries, embarrassment, guilt, shame, fear</li>
+          <li>When students feel safe, stress decreases and focus, memory, and willingness to take risks improve</li>
+          <li>Compromised by: sensory overload, trauma, unpredictable environments, loud noises, large groups</li>
+        </ul>
+      </div>
+      <div class="ref-card ref-belonging">
+        <h4>🤝 Belonging</h4>
+        <ul>
+          <li>Positive, mutually satisfying relationships with warmth and trust</li>
+          <li>When students belong, they feel safe to contribute, experiment, make mistakes, and learn</li>
+          <li>Compromised by: unwanted attention, "othering," poor social skills, inhibited communication, cognitive distortions</li>
+          <li>Support with: restorative practices, SEL, community building, inclusive language</li>
+        </ul>
+      </div>
+      <div class="ref-card ref-autonomy">
+        <h4>🧭 Autonomy</h4>
+        <ul>
+          <li>People experience higher motivation when they feel control over what they do</li>
+          <li>Promotes intrinsic motivation — engaging for inherent satisfaction</li>
+          <li>Compromised by: poor executive functioning, inability to communicate, low organizational skills</li>
+          <li>Support with: checklists, flow charts, visual schedules, predictable routines, choice boards</li>
+        </ul>
+      </div>
+      <div class="ref-card ref-competency">
+        <h4>🏆 Competency</h4>
+        <ul>
+          <li>Feelings of effectiveness and confidence in achieving desired outcomes</li>
+          <li>As learners achieve progress and success, motivation and confidence grow</li>
+          <li>Compromised by: learned helplessness, previous failures, reading level, being talked "down" to</li>
+          <li>Support with: strength-based culture, chunking information, scaffolded tasks, feedback loops</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h2 class="section-title">Toolkit Categories Overview</h2>
+      <p class="section-desc">Strategies are organized into four categories that work together to support the whole student.</p>
+      <div class="ref-grid" style="margin-top:1rem;">
+        <div class="ref-card" style="background:var(--sage-light);border-color:var(--sage);">
+          <h4 style="color:var(--sage);">🏫 Organizing the Space / Environment</h4>
+          <ul>
+            <li>Designated spaces with clear boundaries</li>
+            <li>Materials for differentiation (tactile, visual, auditory)</li>
+            <li>Sensory-friendly adaptations</li>
+            <li>Strategic student seating</li>
+            <li>Student ownership of space</li>
+            <li>Constructivist learning areas</li>
+          </ul>
+        </div>
+        <div class="ref-card" style="background:var(--amber-light);border-color:var(--amber);">
+          <h4 style="color:#8a5e00;">📚 Instruction &amp; Lesson Design</h4>
+          <ul>
+            <li>Organizing the lesson (repetition, soft starts)</li>
+            <li>Executive functioning supports (checklists, flow charts, visuals)</li>
+            <li>Giving directions (clarity, checks for understanding, prompts)</li>
+            <li>Recall &amp; retention (chunking, mnemonics, key words)</li>
+            <li>Attention-grabbing techniques</li>
+          </ul>
+        </div>
+        <div class="ref-card" style="background:var(--plum-light);border-color:var(--plum);">
+          <h4 style="color:var(--plum);">💜 Classroom Culture</h4>
+          <ul>
+            <li>Conscious classroom management</li>
+            <li>Strength-based culture</li>
+            <li>Restorative practices</li>
+            <li>Social emotional learning</li>
+            <li>Joy and community</li>
+          </ul>
+        </div>
+        <div class="ref-card" style="background:var(--coral-light);border-color:var(--coral);">
+          <h4 style="color:var(--coral);">🔧 Infrastructure &amp; Management</h4>
+          <ul>
+            <li>Routines and predictability</li>
+            <li>Feedback systems</li>
+            <li>Alternative seating and fidgets</li>
+            <li>Community building</li>
+            <li>Boundaries and triggers awareness</li>
+            <li>Student interests and humor</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ═══════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════
+let students = [];
+let activeStudentId = null;
+
+function genId() { return 'stu_' + Date.now() + Math.random().toString(36).slice(2,6); }
+
+// ═══════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════
+// SAVE STUDENT
+// ═══════════════════════════════════════
+function saveStudent() {
+  const name = document.getElementById('studentName').value.trim();
+  if (!name) { alert('Please enter a student name.'); return; }
+
+  const student = {
+    id: genId(),
+    name,
+    grade: document.getElementById('studentGrade').value,
+    diagnosis: document.getElementById('studentDiagnosis').value.trim(),
+    context: document.getElementById('studentContext').value.trim(),
+    needs: [],
+    struggles: [],
+    strengths: [],
+    additionalStrengths: ''
+  };
+  students.push(student);
+  // clear form
+  document.getElementById('studentName').value = '';
+  document.getElementById('studentGrade').value = '';
+  document.getElementById('studentDiagnosis').value = '';
+  document.getElementById('studentContext').value = '';
+  renderStudentLists();
+}
+
+function removeStudent(id) {
+  students = students.filter(s => s.id !== id);
+  if (activeStudentId === id) activeStudentId = null;
+  renderStudentLists();
+}
+
+function selectStudent(id) {
+  activeStudentId = id;
+  renderStudentLists();
+  loadStudentData(id);
+}
+
+function renderStudentLists() {
+  const lists = ['studentList','needsStudentList','strengthsStudentList','planStudentList'];
+  lists.forEach(listId => {
+    const el = document.getElementById(listId);
+    if (students.length === 0) {
+      el.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;">No students saved yet.</p>';
+      return;
+    }
+    el.innerHTML = students.map(s => `
+      <div class="student-pill ${activeStudentId === s.id ? 'active' : ''}" onclick="selectStudent('${s.id}')">
+        ${s.name}${s.grade ? ' ('+s.grade+')' : ''}
+        ${listId === 'studentList' ? '<span class="remove" onclick="event.stopPropagation();removeStudent(\''+s.id+'\')">✕</span>' : ''}
+      </div>
+    `).join('');
+  });
+}
+
+function loadStudentData(id) {
+  const stu = students.find(s => s.id === id);
+  if (!stu) return;
+
+  // Load needs
+  document.querySelectorAll('.need-card').forEach(card => {
+    card.classList.toggle('selected', stu.needs.includes(card.dataset.need));
+  });
+
+  // Load struggles
+  document.querySelectorAll('.struggles-section .chip').forEach(chip => {
+    const input = chip.querySelector('input');
+    const isActive = stu.struggles.includes(input.value);
+    input.checked = isActive;
+    chip.classList.toggle('active', isActive);
+  });
+
+  // Load strengths
+  document.querySelectorAll('#strengthsGrid .chip').forEach(chip => {
+    const input = chip.querySelector('input');
+    const isActive = stu.strengths.includes(input.value);
+    input.checked = isActive;
+    chip.classList.toggle('active', isActive);
+  });
+  document.getElementById('additionalStrengths').value = stu.additionalStrengths || '';
+}
+
+// ═══════════════════════════════════════
+// TOGGLE HELPERS
+// ═══════════════════════════════════════
+function toggleNeed(el) {
+  el.classList.toggle('selected');
+}
+function toggleChip(el) {
+  el.classList.toggle('active');
+  const input = el.querySelector('input');
+  input.checked = el.classList.contains('active');
+}
+
+// ═══════════════════════════════════════
+// SAVE NEEDS & STRUGGLES
+// ═══════════════════════════════════════
+function saveNeedsAndStruggles() {
+  if (!activeStudentId) { alert('Please select a student first.'); return; }
+  const stu = students.find(s => s.id === activeStudentId);
+
+  stu.needs = [...document.querySelectorAll('.need-card.selected')].map(c => c.dataset.need);
+  stu.struggles = [...document.querySelectorAll('.struggles-section .chip.active input')].map(i => i.value);
+
+  alert(`Saved needs & struggles for ${stu.name}!`);
+}
+
+// ═══════════════════════════════════════
+// SAVE STRENGTHS
+// ═══════════════════════════════════════
+function saveStrengths() {
+  if (!activeStudentId) { alert('Please select a student first.'); return; }
+  const stu = students.find(s => s.id === activeStudentId);
+
+  stu.strengths = [...document.querySelectorAll('#strengthsGrid .chip.active input')].map(i => i.value);
+  stu.additionalStrengths = document.getElementById('additionalStrengths').value.trim();
+
+  alert(`Saved strengths for ${stu.name}!`);
+}
+
+// ═══════════════════════════════════════
+// STRATEGY DATABASE — informed by TTR Toolkits
+// ═══════════════════════════════════════
+const strategies = {
+  environment: [
+    {
+      title: "Designating Spaces with Clear Boundaries",
+      why: "ND brains benefit from clear physical boundaries. Assigned spaces help students remember routines and expectations, decreasing cognitive load.",
+      how: "Use colored tape on floors to define learning areas, group areas, break areas. Implement a color-coded system for spaces, tools, and materials by subject.",
+      needs: ["safety","autonomy"],
+      struggles: ["focus","poor_executive_functioning","difficulty_transitioning","sensory_overload"],
+      strengths: ["routine_oriented","visual_learner","environmentally_aware"]
+    },
+    {
+      title: "Sensory-Friendly Classroom Setup",
+      why: "Organizing for sensory needs sets up students with sensory processing, ASD, and ADHD to hit the ground running.",
+      how: "Use floor lamps instead of overhead lights, add fluorescent covers, provide sound-deadening headphones, add acoustic panels/rugs/curtains, supply fidgets, weighted blankets, and compression vests.",
+      needs: ["safety"],
+      struggles: ["sensory_overload","noise_sensitivity","light_sensitivity","needs_movement","anxiety"],
+      strengths: ["environmentally_aware","kinesthetic_learner"]
+    },
+    {
+      title: "Strategic Student Seating",
+      why: "Effective seating prevents unnecessary issues and optimizes access to instruction.",
+      how: "Seat focus-struggling students near teacher/screen. For trauma/anxiety, provide view of whole class and door, or wall behind. Consider temperature, sun position, noise. Use assigned seats to alleviate social anxieties.",
+      needs: ["safety","belonging"],
+      struggles: ["focus","anxiety","trauma","sensory_overload","peer_conflicts","noise_sensitivity"],
+      strengths: ["environmentally_aware","routine_oriented"]
+    },
+    {
+      title: "Materials for Differentiation",
+      why: "Diverse materials engage various learning modalities and senses, providing structure and reference points.",
+      how: "Cater to auditory, tactile, visual, and kinesthetic modes. Keep flip charts accessible, use manipulatives for abstract concepts, provide alternative seating (hokki stools, standing desks), use projectors with the 6×6 rule.",
+      needs: ["competency","autonomy"],
+      struggles: ["focus","reading_level","poor_memory","directions"],
+      strengths: ["visual_learner","kinesthetic_learner","auditory_learner","creative","artistic"]
+    },
+    {
+      title: "Student Ownership of Space",
+      why: "When students feel ownership, it increases safety, comfort, and belonging.",
+      how: "Create area for private feedback, display student work/photos/names, prioritize students' culture and interests in decor, designate space for group learning, let students contribute to classroom organization.",
+      needs: ["belonging","safety"],
+      struggles: ["unwanted_attention","anxiety","poor_social_skills","trauma"],
+      strengths: ["creative","artistic","strong_interests","collaborative"]
+    },
+    {
+      title: "Constructivist Learning Areas",
+      why: "Building knowledge upon prior knowledge and learning with others supports students who struggle with focus, retention, and belonging.",
+      how: "Allocate space for hands-on activities, promote collaborative learning areas, provide relevant texts (magazines, biographies, guides), design for project-based learning, emphasize movement and flexibility.",
+      needs: ["belonging","competency"],
+      struggles: ["focus","poor_memory","learned_helplessness"],
+      strengths: ["collaborative","kinesthetic_learner","curious","creative"]
+    },
+    {
+      title: "Alternative Seating & Fidgets",
+      why: "Not every student looks the same when paying attention. Some need to fidget and move while learning.",
+      how: "Create a bucket of quiet sensory tools. Designate fidget pickup times. Model expectations. Use hokki seats, wobble chairs, balance balls. Add bands to chair/desk legs. Add rocking chairs.",
+      needs: ["safety","autonomy"],
+      struggles: ["needs_movement","focus","sensory_overload","physical_comfort"],
+      strengths: ["kinesthetic_learner","athletic","fast_acting"]
+    }
+  ],
+  instruction: [
+    {
+      title: "Soft Starts & Repetition of Activities",
+      why: "Predictable beginnings reduce anxiety and cognitive load, helping students transition into learning mode.",
+      how: "Start with a consistent, calming routine. Repeat familiar activity structures so students know what to expect. Use warm-up activities that are low-stakes and inviting.",
+      needs: ["safety","autonomy"],
+      struggles: ["anxiety","difficulty_transitioning","emotional_dysregulation","trauma","focus"],
+      strengths: ["routine_oriented","creative","curious"]
+    },
+    {
+      title: "Executive Functioning Supports",
+      why: "Checklists, flow charts, and visuals externalize the organization that these students struggle to do internally.",
+      how: "Provide checklists for multi-step tasks, use visual flow charts, create step-by-step slips students can reference, post visual schedules, use countdown timers for transitions.",
+      needs: ["autonomy","competency"],
+      struggles: ["poor_executive_functioning","poor_memory","misplaced_materials","directions","difficulty_transitioning"],
+      strengths: ["visual_learner","routine_oriented","detail_oriented","independent"]
+    },
+    {
+      title: "Clarity in Giving Directions",
+      why: "Merely stating something doesn't guarantee students perceive it as intended.",
+      how: "Break directions into ≤3 steps. Write/display steps. Use visuals for materials. Repeat, don't rephrase. Use body language and pointing. Hold up materials as you name them. Use active voice. Say student's name and wait before giving direction.",
+      needs: ["autonomy","competency"],
+      struggles: ["directions","poor_memory","focus","poor_executive_functioning","inhibited_communication"],
+      strengths: ["visual_learner","auditory_learner","routine_oriented"]
+    },
+    {
+      title: "Checks for Understanding",
+      why: "If one student needs clarification, chances are others do too. Checks give you insight into communication and retention.",
+      how: "Thumbs up when steps are done. Have students point to where they'll go. Use hand gestures for tools needed. Show amounts on fingers. Use green/red cards for stuck/moving/ready.",
+      needs: ["competency","autonomy"],
+      struggles: ["directions","poor_memory","learned_helplessness","inhibited_communication","focus"],
+      strengths: ["kinesthetic_learner","visual_learner","collaborative"]
+    },
+    {
+      title: "Chunking Information",
+      why: "Reducing cognitive load by breaking content into smaller pieces supports memory and retention.",
+      how: "Present information in small, manageable chunks. Pause between concepts. Use graphic organizers. Provide note-taking templates. Summarize before moving on.",
+      needs: ["competency","autonomy"],
+      struggles: ["poor_memory","focus","reading_level","sensory_overload","poor_executive_functioning"],
+      strengths: ["visual_learner","detail_oriented","routine_oriented"]
+    },
+    {
+      title: "Mnemonic Devices & Key Word Emphasis",
+      why: "Tools for long-term memory and connecting important information so it can be recalled when necessary.",
+      how: "Teach mnemonic strategies at start of year. Let students choose which work for them. Emphasize key words with color, bold, or repetition. Use acronyms, songs, or stories to anchor content.",
+      needs: ["competency"],
+      struggles: ["poor_memory","reading_level","learned_helplessness"],
+      strengths: ["creative","musical","verbal_communicator","auditory_learner","humor"]
+    },
+    {
+      title: "Visual Supports & Prompts",
+      why: "Visual supports decrease reliance on auditory processing and provide persistent reference points.",
+      how: "Use visual schedules, anchor charts, picture cues, graphic organizers, and color-coding. Post key information in consistent locations. Use visual timers.",
+      needs: ["autonomy","competency","safety"],
+      struggles: ["directions","poor_memory","focus","inhibited_communication","poor_executive_functioning"],
+      strengths: ["visual_learner","detail_oriented","artistic"]
+    },
+    {
+      title: "Attention-Grabbing Techniques",
+      why: "Engaging distracted students requires creative, multimodal approaches that leverage their interests.",
+      how: "Use student interests (e.g., NFL-themed progress tracking). Incorporate movement breaks. Use call-and-response. Change voice/pacing. Use novelty and surprise. Leverage technology when appropriate.",
+      needs: ["belonging","competency"],
+      struggles: ["focus","avoidance","learned_helplessness"],
+      strengths: ["humor","strong_interests","kinesthetic_learner","musical","athletic","creative","tech_savvy"]
+    },
+    {
+      title: "Avoid Implicit Instruction & Predictability",
+      why: "Many students miss implied expectations. Explicit, predictable instruction removes guesswork.",
+      how: "State expectations explicitly rather than implying them. Keep lesson structure predictable. Announce transitions in advance. Use 'first, then' language. Preview what's coming next.",
+      needs: ["safety","autonomy"],
+      struggles: ["anxiety","difficulty_transitioning","directions","poor_executive_functioning","inhibited_communication"],
+      strengths: ["routine_oriented","independent"]
+    }
+  ],
+  culture: [
+    {
+      title: "Strength-Based Culture",
+      why: "When we lead with strengths, students see themselves as capable. This builds intrinsic motivation and reduces behavior rooted in shame.",
+      how: "Identify and verbalize each student's strengths regularly. Frame challenges as growth areas, not deficits. Display student achievements. Let students teach what they know. Celebrate effort and progress.",
+      needs: ["competency","belonging"],
+      struggles: ["learned_helplessness","previous_failures","talked_down_to","perfectionism","unwanted_attention"],
+      strengths: ["creative","verbal_communicator","artistic","musical","athletic","empathetic","loyal"]
+    },
+    {
+      title: "Conscious Classroom Management",
+      why: "Proactive, relationship-centered management prevents issues rather than reacting to them.",
+      how: "Build genuine relationships first. Use proximity and non-verbal cues before verbal corrections. Maintain calm and consistent tone. Model expected behavior. Use private corrections over public ones.",
+      needs: ["safety","belonging"],
+      struggles: ["reactive","emotional_dysregulation","anxiety","trauma","peer_conflicts","difficulty_calming"],
+      strengths: ["empathetic","loyal","humor","collaborative"]
+    },
+    {
+      title: "Restorative Practices",
+      why: "Restorative approaches repair harm to relationships rather than just punishing behavior.",
+      how: "Use restorative circles for conflict resolution. Ask 'what happened?' not 'what did you do wrong?' Focus on impact and making things right. Build community agreements together.",
+      needs: ["belonging","safety"],
+      struggles: ["reactive","peer_conflicts","poor_social_skills","emotional_dysregulation","difficulty_calming"],
+      strengths: ["empathetic","verbal_communicator","collaborative","loyal"]
+    },
+    {
+      title: "Social Emotional Learning (SEL)",
+      why: "Explicitly teaching emotional literacy gives students the vocabulary and skills to manage themselves and relate to others.",
+      how: "Teach emotion vocabulary. Practice self-regulation strategies as a class. Role-play social situations. Use literature to discuss feelings. Create check-in routines for emotional states.",
+      needs: ["belonging","safety","competency"],
+      struggles: ["emotional_dysregulation","poor_social_skills","difficulty_calming","reactive","anxiety","catastrophizing"],
+      strengths: ["empathetic","creative","collaborative","verbal_communicator","curious"]
+    },
+    {
+      title: "Joy & Community Building",
+      why: "Belonging is incredibly important to the brain, especially for neurodiverse students who often feel 'othered.'",
+      how: "Hold group chats/discussions. Non-contingent celebrations and games. 10-15 min daily team-building. Show and tell. Let students hold you accountable. Celebrate different cultural celebrations. Model handling conflict.",
+      needs: ["belonging"],
+      struggles: ["unwanted_attention","poor_social_skills","anxiety","inhibited_communication","trauma"],
+      strengths: ["humor","collaborative","empathetic","creative","strong_interests","musical","athletic"]
+    }
+  ],
+  management: [
+    {
+      title: "Routines & Predictability",
+      why: "Automaticity decreases cognitive load. When students know what comes next, they can focus on learning instead of worrying.",
+      how: "Establish consistent daily routines. Post visual schedules. Use transition signals. Preview schedule changes in advance. Use first/then boards.",
+      needs: ["safety","autonomy"],
+      struggles: ["anxiety","difficulty_transitioning","poor_executive_functioning","focus","trauma","emotional_dysregulation"],
+      strengths: ["routine_oriented","visual_learner","independent"]
+    },
+    {
+      title: "Feedback Systems",
+      why: "Regular, specific feedback supports both autonomy and competency by helping students know where they stand.",
+      how: "Use private feedback over public. Be specific ('You organized your paragraph with a clear topic sentence') not general ('Good job'). Provide feedback frequently, not just at assessment. Use student conferences.",
+      needs: ["competency","autonomy"],
+      struggles: ["learned_helplessness","previous_failures","perfectionism","talked_down_to","avoidance"],
+      strengths: ["independent","detail_oriented","verbal_communicator","resilient"]
+    },
+    {
+      title: "Student Interests & Humor",
+      why: "Leveraging student interests creates intrinsic motivation. Humor builds rapport and reduces tension.",
+      how: "Survey students for interests early. Integrate interests into examples and materials. Use appropriate humor to build connection. Create interest-based incentive systems (e.g., NFL-themed progress tracking).",
+      needs: ["belonging","competency","autonomy"],
+      struggles: ["avoidance","learned_helplessness","focus","unwanted_attention"],
+      strengths: ["humor","strong_interests","creative","curious","tech_savvy"]
+    },
+    {
+      title: "Boundaries & Trigger Awareness",
+      why: "Understanding your own triggers as a teacher and setting clear, kind boundaries prevents escalation.",
+      how: "Identify your own triggers and plan responses. Set clear, consistent boundaries with warmth. Avoid power struggles. Use 'I notice' language. Know when to step back. Don't take behavior personally.",
+      needs: ["safety","belonging"],
+      struggles: ["reactive","emotional_dysregulation","difficulty_calming","peer_conflicts","trauma"],
+      strengths: ["empathetic","loyal","resilient"]
+    },
+    {
+      title: "Community & Inclusive Language",
+      why: "Students are more likely to engage in learning when they feel they are a valued part of the group.",
+      how: "Display students' names and interests. Use inclusive 'we' language. Make sure students are represented in learning content and classroom decor. Have students share good news. Encourage accountability for all.",
+      needs: ["belonging"],
+      struggles: ["unwanted_attention","inhibited_communication","poor_social_skills","assistive_devices"],
+      strengths: ["collaborative","empathetic","loyal","creative","artistic","strong_interests"]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════
+// GENERATE PLAN
+// ═══════════════════════════════════════
+function generatePlan() {
+  if (!activeStudentId) { alert('Please select a student first.'); return; }
+  const stu = students.find(s => s.id === activeStudentId);
+  if (!stu.needs.length && !stu.struggles.length) {
+    alert('Please fill in needs and struggles for this student first (Tab 2).');
+    return;
+  }
+
+  const grid = document.getElementById('recsGrid');
+  document.getElementById('disclaimer').style.display = 'block';
+
+  const categories = [
+    { key: 'environment', label: '🏫 Organizing the Space / Environment', cls: 'cat-environment', tag: 'tag-environment', tagLabel: 'Environment' },
+    { key: 'instruction', label: '📚 Instruction & Lesson Design', cls: 'cat-instruction', tag: 'tag-instruction', tagLabel: 'Instruction' },
+    { key: 'culture', label: '💜 Classroom Culture', cls: 'cat-culture', tag: 'tag-culture', tagLabel: 'Culture' },
+    { key: 'management', label: '🔧 Infrastructure & Management', cls: 'cat-behavior', tag: 'tag-behavior', tagLabel: 'Management' },
+  ];
+
+  let html = '';
+
+  categories.forEach(cat => {
+    const items = strategies[cat.key];
+    // Score each strategy
+    const scored = items.map(item => {
+      let score = 0;
+      let needMatch = 0, struggleMatch = 0, strengthMatch = 0;
+
+      item.needs.forEach(n => { if (stu.needs.includes(n)) { score += 3; needMatch++; } });
+      item.struggles.forEach(s => { if (stu.struggles.includes(s)) { score += 2; struggleMatch++; } });
+      item.strengths.forEach(s => { if (stu.strengths.includes(s)) { score += 1.5; strengthMatch++; } });
+
+      return { ...item, score, needMatch, struggleMatch, strengthMatch };
+    }).filter(i => i.score > 0).sort((a, b) => b.score - a.score);
+
+    if (scored.length === 0) return;
+
+    html += `<div class="rec-category open ${cat.cls}">
+      <div class="rec-header" onclick="this.parentElement.classList.toggle('open')">
+        ${cat.label} <span style="opacity:0.6;font-weight:500;font-size:0.8rem;">(${scored.length} strategies)</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="rec-body"><div class="rec-body-inner">`;
+
+    scored.forEach((item, idx) => {
+      const priority = item.strengthMatch > 0 ? 'high' : (item.score >= 5 ? 'medium' : 'low');
+      const priorityLabel = item.strengthMatch > 0 ? '⭐ Plays to Strengths — Try First' : (item.score >= 5 ? 'Strong Match' : 'Supporting');
+      html += `
+        <div class="rec-item">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <span class="rec-item-title">${item.title}</span>
+            <span class="priority-badge ${priority}">${priorityLabel}</span>
+          </div>
+          <div class="rec-item-why">${item.why}</div>
+          <div class="rec-item-how">${item.how}</div>
+          <div style="margin-top:0.35rem;">
+            <span class="rec-tag ${cat.tag}">${cat.tagLabel}</span>
+            ${item.needs.filter(n => stu.needs.includes(n)).map(n => `<span class="rec-tag tag-culture">${n}</span>`).join('')}
+          </div>
+        </div>`;
+    });
+
+    html += `</div></div></div>`;
+  });
+
+  if (!html) {
+    html = `<div class="empty-state"><div class="empty-icon">🤔</div><p>No matching strategies found. Make sure you've saved needs and struggles for ${stu.name}.</p></div>`;
+  }
+
+  grid.innerHTML = html;
+}
+</script>
+</body>
+</html>
