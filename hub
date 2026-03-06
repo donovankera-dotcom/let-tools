@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LET Tool Hub — Hawken School</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #EB1923;
+  --red-t: rgba(235,25,35,.10);
+  --red-g: rgba(235,25,35,.04);
+  --ink:  #1e1b1b;
+  --ink2: #4a4545;
+  --ink3: #7a7373;
+  --ink4: #b0a9a9;
+  --bg:    #edebeb;
+  --bg2:   #f5f3f3;
+  --white: #fefefe;
+  --bdr:  #e0dcda;
+  --bdr2: #cdc8c6;
+  --grn:   #1e6e48; --grn-t: #eaf4ee;
+  --amb:   #9a6200; --amb-t: #fdf4e3;
+  --blu:   #1a4e8c; --blu-t: #eaf0fa;
+  --pur:   #5c3d8f; --pur-t: #f0eafa;
+  --ff-s: 'Libre Baskerville', Georgia, serif;
+  --ff-m: 'DM Mono', monospace;
+  --ff:   'DM Sans', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--ff);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14.5px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 46px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 500;
+}
+.topbar-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.topbar-name { font-family: var(--ff-s); font-size: 13px; color: #fff; font-weight: 400; }
+.topbar-dot { font-size: 11px; color: #555; }
+.topbar-sub { font-size: 11.5px; color: #888; font-weight: 300; }
+.topbar-right { margin-left: auto; display: flex; gap: 7px; align-items: center; }
+.topbar-date {
+  font-family: var(--ff-m); font-size: 10px; color: #666; letter-spacing: .05em;
+}
+
+/* PAGE */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+/* HEADER */
+.hub-header {
+  margin-bottom: 36px;
+}
+.hub-eyebrow {
+  font-family: var(--ff-m);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hub-eyebrow::after {
+  content: '';
+  flex: 1;
+  max-width: 40px;
+  height: 1px;
+  background: var(--red);
+  opacity: .3;
+}
+.hub-title {
+  font-family: var(--ff-s);
+  font-size: 28px;
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.hub-title span { color: var(--red); }
+.hub-desc {
+  font-size: 13.5px;
+  color: var(--ink3);
+  font-weight: 300;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* SEARCH / FILTER BAR */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink4);
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  font-family: var(--ff);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--bdr2);
+  border-radius: 3px;
+  padding: 7px 10px 7px 32px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.search-input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-t);
+}
+.search-input::placeholder { color: var(--ink4); font-weight: 300; }
+
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-family: var(--ff);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--bdr2);
+  color: var(--ink3);
+  background: var(--white);
+  cursor: pointer;
+  transition: all .14s;
+  user-select: none;
+}
+.chip:hover { border-color: var(--red); color: var(--red); }
+.chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* SECTION DIVIDER */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--ff-m);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin: 28px 0 16px;
+}
+.section-divider::before, .section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bdr);
+}
+.section-divider::before { max-width: 0; }
+
+/* TOOL GRID */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+/* TOOL CARD */
+.tool-card {
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  padding: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  transition: border-color .16s, box-shadow .16s, transform .12s;
+  position: relative;
+  overflow: hidden;
+}
+.tool-card:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-t), 0 4px 16px rgba(30,27,27,.06);
+  transform: translateY(-1px);
+}
+.tool-card.placeholder {
+  border-style: dashed;
+  border-color: var(--bdr);
+  cursor: default;
+  opacity: .75;
+}
+.tool-card.placeholder:hover {
+  border-color: var(--bdr2);
+  box-shadow: none;
+  transform: none;
+}
+
+.card-accent {
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  margin-bottom: 14px;
+}
+
+.card-icon {
+  font-size: 20px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.card-tag {
+  font-family: var(--ff-m);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 5px;
+}
+
+.card-title {
+  font-family: var(--ff-s);
+  font-size: 15px;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.card-desc {
+  font-size: 12.5px;
+  color: var(--ink3);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 14px;
+  letter-spacing: .03em;
+}
+.status-live { background: var(--grn-t); color: var(--grn); border: 1px solid #b8ddc8; }
+.status-draft { background: var(--amb-t); color: var(--amb); border: 1px solid #e8c97a; }
+.status-planned { background: var(--bg); color: var(--ink4); border: 1px solid var(--bdr); }
+
+.card-arrow {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  font-size: 16px;
+  color: var(--bdr2);
+  transition: color .14s, transform .14s;
+}
+.tool-card:not(.placeholder):hover .card-arrow {
+  color: var(--red);
+  transform: translate(2px, -2px);
+}
+
+/* HIGHLIGHT CARD (LET Hub) */
+.tool-card.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.tool-card.featured:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-t), 0 8px 24px rgba(30,27,27,.12);
+}
+.tool-card.featured .card-tag { color: #666; }
+.tool-card.featured .card-title { color: #fff; font-size: 18px; }
+.tool-card.featured .card-desc { color: #888; }
+.tool-card.featured .card-arrow { color: #444; }
+.tool-card.featured:hover .card-arrow { color: var(--red); }
+
+.featured-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.featured-tool-pill {
+  font-size: 10.5px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+.featured-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.featured-badge {
+  font-family: var(--ff-m);
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+  background: var(--red);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* RECENTLY USED */
+.recents-strip {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.recent-btn {
+  font-family: var(--ff);
+  font-size: 11.5px;
+  color: var(--ink3);
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 3px;
+  padding: 5px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all .14s;
+  text-decoration: none;
+}
+.recent-btn:hover { border-color: var(--red); color: var(--red); }
+.recent-btn span { font-size: 10px; }
+
+/* QUICK STATS */
+.stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 4px;
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 120px;
+}
+.stat-num {
+  font-family: var(--ff-s);
+  font-size: 22px;
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.stat-num span { color: var(--red); }
+.stat-label {
+  font-family: var(--ff-m);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink4);
+  font-size: 13px;
+  display: none;
+}
+.empty-state-icon { font-size: 32px; margin-bottom: 10px; }
+
+/* FADE IN */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tool-card { animation: fadeUp .25s ease both; }
+.tool-card:nth-child(2) { animation-delay: .04s; }
+.tool-card:nth-child(3) { animation-delay: .08s; }
+.tool-card:nth-child(4) { animation-delay: .12s; }
+.tool-card:nth-child(5) { animation-delay: .16s; }
+.tool-card:nth-child(6) { animation-delay: .20s; }
+.tool-card:nth-child(7) { animation-delay: .24s; }
+
+/* HIDDEN CLASS */
+.hidden { display: none !important; }
+
+@media (max-width: 600px) {
+  .tool-card.featured { grid-template-columns: 1fr; }
+  .featured-right { align-items: flex-start; }
+  .hub-title { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-pip"></div>
+  <span class="topbar-name">LET Tool Hub</span>
+  <span class="topbar-dot">·</span>
+  <span class="topbar-sub">Learning Enhancement Team</span>
+  <div class="topbar-right">
+    <span class="topbar-date" id="today-date"></span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hub-header">
+    <div class="hub-eyebrow">Hawken School</div>
+    <h1 class="hub-title">LET <span>Tools</span></h1>
+    <p class="hub-desc">Your central launcher for student support, screening, referral, and team tools. Click any card to open the tool.</p>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-live">4</div>
+      <div class="stat-label">Live Tools</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-draft">3</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-planned">2</div>
+      <div class="stat-label">Planned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num"><span id="stat-total">9</span></div>
+      <div class="stat-label">Total Tools</div>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input class="search-input" type="text" placeholder="Search tools…" id="search-input" oninput="filterTools()">
+    </div>
+    <div class="filter-chips">
+      <div class="chip active" data-filter="all" onclick="setFilter('all', this)">All</div>
+      <div class="chip" data-filter="screening" onclick="setFilter('screening', this)">Screening</div>
+      <div class="chip" data-filter="referral" onclick="setFilter('referral', this)">Referral</div>
+      <div class="chip" data-filter="communication" onclick="setFilter('communication', this)">Communication</div>
+      <div class="chip" data-filter="planning" onclick="setFilter('planning', this)">Planning</div>
+      <div class="chip" data-filter="documentation" onclick="setFilter('documentation', this)">Documentation</div>
+    </div>
+  </div>
+
+  <!-- TOOL GRID -->
+  <div class="tool-grid" id="tool-grid">
+
+    <!-- FEATURED: LET Hub -->
+    <a class="tool-card featured" href="#" data-categories="all screening referral communication planning" data-title="LET Hub" data-status="live" onclick="return openTool(event, 'LET_HUB_URL')">
+      <div>
+        <div class="card-tag">Featured Suite · 5 integrated tools</div>
+        <div class="card-title">LET Hub</div>
+        <div class="card-desc">Your complete daily workflow — briefing, literacy screening, referral generation, email templates, and differentiation planning in one place.</div>
+        <div class="featured-tools">
+          <span class="featured-tool-pill">Daily Briefing</span>
+          <span class="featured-tool-pill">Literacy Screening</span>
+          <span class="featured-tool-pill">Referral Generator</span>
+          <span class="featured-tool-pill">Email Templates</span>
+          <span class="featured-tool-pill">Differentiation Planner</span>
+        </div>
+        <div class="card-status status-live">● Live</div>
+      </div>
+      <div class="featured-right">
+        <span class="featured-badge">Main Suite</span>
+      </div>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <!-- CARD: Referral Generator -->
+    <a class="tool-card" href="#" data-categories="referral documentation" data-title="Referral Generator" data-status="live" onclick="return openTool(event, 'REFERRAL_GENERATOR_URL')">
+      <div class="card-accent" style="background: var(--red);"></div>
+      <div class="card-tag">Referral · Documentation</div>
+      <div class="card-title">Referral Generator</div>
+      <div class="card-desc">Build structured student referrals with concern areas, teacher input, and next-step recommendations.</div>
+      <div class="card-status status-live">● Live</div>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <!-- CARD: Literacy Screening -->
+    <a class="tool-card" href="#" data-categories="screening" data-title="Literacy Screening" data-status="live" onclick="return openTool(event, 'LITERACY_SCREENING_URL')">
+      <div class="card-accent" style="background: var(--blu);"></div>
+      <div class="card-tag">Screening · K–5</div>
+      <div class="card-title">Literacy Screening</div>
+      <div class="card-desc">Log and track literacy screening data across grade levels. Flags students for tiered support.</div>
+      <div class="card-status status-live">● Live</div>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <!-- CARD: Email Template Manager -->
+    <a class="tool-card" href="#" data-categories="communication" data-title="Email Template Manager" data-status="live" onclick="return openTool(event, 'EMAIL_TEMPLATE_URL')">
+      <div class="card-accent" style="background: var(--grn);"></div>
+      <div class="card-tag">Communication · Family</div>
+      <div class="card-title">Email Template Manager</div>
+      <div class="card-desc">Family communication templates for referrals, evaluation notices, and support updates. Auto-fills student details.</div>
+      <div class="card-status status-live">● Live</div>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <!-- CARD: Differentiation Planner -->
+    <a class="tool-card" href="#" data-categories="planning" data-title="Differentiation Planner" data-status="live" onclick="return openTool(event, 'DIFF_PLANNER_URL')">
+      <div class="card-accent" style="background: var(--pur);"></div>
+      <div class="card-tag">Planning · Instruction</div>
+      <div class="card-title">Differentiation Planner</div>
+      <div class="card-desc">Build tiered instructional supports for individuals or small groups. Outputs ready-to-share plans.</div>
+      <div class="card-status status-live">● Live</div>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <!-- DIVIDER: In Progress -->
+    <div class="section-divider" style="grid-column: 1/-1;">In Progress</div>
+
+    <!-- CARD: MTSS Decision Tree -->
+    <div class="tool-card placeholder" data-categories="referral planning" data-title="MTSS Decision Tree" data-status="draft">
+      <div class="card-accent" style="background: var(--amb);"></div>
+      <div class="card-tag">Referral · MTSS</div>
+      <div class="card-title">MTSS Decision Tree</div>
+      <div class="card-desc">Interactive branching guide for determining support tier and referral urgency based on student data.</div>
+      <div class="card-status status-draft">◑ In Progress</div>
+    </div>
+
+    <!-- CARD: Meeting Action Tracker -->
+    <div class="tool-card placeholder" data-categories="documentation planning" data-title="Meeting Action Tracker" data-status="draft">
+      <div class="card-accent" style="background: var(--ink3);"></div>
+      <div class="card-tag">Documentation · Team</div>
+      <div class="card-title">Meeting Action Tracker</div>
+      <div class="card-desc">Log LET meeting action items, owners, and due dates. Carries forward unresolved items automatically.</div>
+      <div class="card-status status-draft">◑ In Progress</div>
+    </div>
+
+    <!-- CARD: Student Data Overview -->
+    <div class="tool-card placeholder" data-categories="documentation screening" data-title="Student Data Overview" data-status="draft">
+      <div class="card-accent" style="background: var(--blu);"></div>
+      <div class="card-tag">Documentation · Evaluation</div>
+      <div class="card-title">Student Data Overview</div>
+      <div class="card-desc">Compile assessment scores, observations, and intervention history into a single readable student profile.</div>
+      <div class="card-status status-draft">◑ In Progress</div>
+    </div>
+
+    <!-- DIVIDER: Planned -->
+    <div class="section-divider" style="grid-column: 1/-1;">Planned</div>
+
+    <!-- CARD: Accommodation Builder -->
+    <div class="tool-card placeholder" data-categories="planning documentation" data-title="Accommodation Builder" data-status="planned">
+      <div class="card-accent" style="background: var(--bdr2);"></div>
+      <div class="card-tag">Planning · Accommodations</div>
+      <div class="card-title">Accommodation Builder</div>
+      <div class="card-desc">Generate individualized accommodation lists from student profile data. Filters for redundancy and relevance.</div>
+      <div class="card-status status-planned">○ Planned</div>
+    </div>
+
+    <!-- CARD: CTP Testing Scheduler -->
+    <div class="tool-card placeholder" data-categories="planning" data-title="CTP Testing Scheduler" data-status="planned">
+      <div class="card-accent" style="background: var(--bdr2);"></div>
+      <div class="card-tag">Planning · Assessment</div>
+      <div class="card-title">CTP Testing Scheduler</div>
+      <div class="card-desc">Build color-coded testing schedules with proctor/room assignments and make-up tracking. Exports to Google Sheets.</div>
+      <div class="card-status status-planned">○ Planned</div>
+    </div>
+
+    <!-- ADD NEW TOOL (always last) -->
+    <div class="tool-card placeholder" style="border-color: var(--bdr); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:32px 20px; min-height:160px;" id="add-card">
+      <div style="font-size:24px; color:var(--bdr2); margin-bottom:10px;">+</div>
+      <div class="card-title" style="font-size:13px; color:var(--ink4);">Add a Tool</div>
+      <div class="card-desc" style="font-size:11.5px; margin-top:4px;">Ask Claude to build a new tool and paste the link here.</div>
+    </div>
+
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <div>No tools match your search.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:60px; padding-top:20px; border-top:1px solid var(--bdr); display:flex; align-items:center; gap:12px;">
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;"></div>
+    <span style="font-family:var(--ff-m);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);">Hawken School · Learning Enhancement Team · PK–5</span>
+  </div>
+
+</div>
+
+<script>
+// Set date
+const d = new Date();
+const opts = { weekday:'short', month:'short', day:'numeric', year:'numeric' };
+document.getElementById('today-date').textContent = d.toLocaleDateString('en-US', opts).toUpperCase();
+
+// ─── TOOL URLS ───────────────────────────────────────────────
+// Replace these placeholder values with your actual tool URLs
+const TOOL_URLS = {
+  LET_HUB_URL:             '#',   // e.g. 'https://claude.ai/chat/your-let-hub-conversation'
+  REFERRAL_GENERATOR_URL:  '#',
+  LITERACY_SCREENING_URL:  '#',
+  EMAIL_TEMPLATE_URL:      '#',
+  DIFF_PLANNER_URL:        '#',
+};
+
+function openTool(e, key) {
+  e.preventDefault();
+  const url = TOOL_URLS[key];
+  if (url && url !== '#') {
+    window.open(url, '_blank');
+  } else {
+    // Show a tooltip-style nudge
+    const card = e.currentTarget;
+    const orig = card.style.borderColor;
+    card.style.borderColor = 'var(--amb)';
+    card.style.boxShadow = '0 0 0 3px rgba(154,98,0,.1)';
+    setTimeout(() => {
+      card.style.borderColor = orig;
+      card.style.boxShadow = '';
+    }, 800);
+    alert('Paste this tool\'s URL into the TOOL_URLS object in the script to link it.');
+  }
+  return false;
+}
+
+// ─── FILTER LOGIC ────────────────────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+
+function setFilter(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterTools();
+}
+
+function filterTools() {
+  currentSearch = document.getElementById('search-input').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.tool-card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    if (card.id === 'add-card') { card.classList.remove('hidden'); return; }
+
+    const cats = (card.dataset.categories || '').split(' ');
+    const title = (card.dataset.title || '').toLowerCase();
+    const desc = (card.querySelector('.card-desc')?.textContent || '').toLowerCase();
+
+    const matchesFilter = currentFilter === 'all' || cats.includes(currentFilter);
+    const matchesSearch = !currentSearch || title.includes(currentSearch) || desc.includes(currentSearch);
+
+    if (matchesFilter && matchesSearch) {
+      card.classList.remove('hidden');
+      visible++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  // Hide section dividers if all cards in section are hidden
+  document.querySelectorAll('.section-divider').forEach(div => {
+    div.classList.remove('hidden');
+  });
+
+  // Show/hide empty state
+  document.getElementById('empty-state').style.display = visible <= 1 ? 'block' : 'none';
+  updateStats();
+}
+
+function updateStats() {
+  const cards = document.querySelectorAll('.tool-card:not(.hidden):not(#add-card)');
+  let live = 0, draft = 0, planned = 0;
+  cards.forEach(c => {
+    const s = c.dataset.status;
+    if (s === 'live') live++;
+    else if (s === 'draft') draft++;
+    else if (s === 'planned') planned++;
+  });
+  document.getElementById('stat-live').textContent = live;
+  document.getElementById('stat-draft').textContent = draft;
+  document.getElementById('stat-planned').textContent = planned;
+  document.getElementById('stat-total').textContent = live + draft + planned;
+}
+</script>
+
+</body>
+</html>
