@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OT Pre-Screening Referral Checklist — Hawken LET</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #EB1923;
+  --red-t: rgba(235,25,35,.10);
+  --red-g: rgba(235,25,35,.04);
+  --ink:  #1e1b1b;
+  --ink2: #4a4545;
+  --ink3: #7a7373;
+  --ink4: #b0a9a9;
+  --bg:    #edebeb;
+  --bg2:   #f5f3f3;
+  --white: #fefefe;
+  --bdr:  #e0dcda;
+  --bdr2: #cdc8c6;
+  --grn:   #1e6e48; --grn-t: #eaf4ee;
+  --amb:   #9a6200; --amb-t: #fdf4e3;
+  --blu:   #1a4e8c; --blu-t: #eaf0fa;
+  --pur:   #5c3d8f; --pur-t: #f0eafa;
+  --ff-s: 'Libre Baskerville', Georgia, serif;
+  --ff-m: 'DM Mono', monospace;
+  --ff:   'DM Sans', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--ff);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 46px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 500;
+}
+.topbar-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.topbar-name { font-family: var(--ff-s); font-size: 13px; color: #fff; font-weight: 400; }
+.topbar-sep { font-size: 11px; color: #555; }
+.topbar-sub { font-size: 11.5px; color: #888; font-weight: 300; }
+.topbar-actions { margin-left: auto; display: flex; gap: 7px; }
+.tb-btn {
+  font-family: var(--ff); font-size: 11px; font-weight: 500;
+  padding: 5px 12px; border-radius: 3px;
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.6); background: transparent; cursor: pointer;
+  transition: all .15s;
+}
+.tb-btn:hover { background: rgba(255,255,255,.09); color: #fff; }
+.tb-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+.tb-btn.primary:hover { background: #c9151d; }
+
+/* PAGE */
+.page { max-width: 780px; margin: 0 auto; padding: 32px 24px 100px; }
+
+/* HEADER CARD */
+.hdr-card {
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.hdr-band {
+  background: var(--ink);
+  padding: 20px 24px 18px;
+}
+.hdr-eyebrow {
+  font-family: var(--ff-m);
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+.hdr-title {
+  font-family: var(--ff-s);
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.hdr-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  margin-top: 4px;
+}
+.hdr-body { padding: 20px 24px; }
+.hdr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+.hdr-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.field { margin-bottom: 0; }
+.field label {
+  display: block; font-size: 10px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 4px;
+}
+.field input[type=text],
+.field input[type=date],
+.field select,
+.field textarea {
+  width: 100%; font-family: var(--ff); font-size: 13.5px;
+  color: var(--ink); background: var(--white);
+  border: 1px solid var(--bdr2); border-radius: 3px;
+  padding: 7px 10px; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none;
+}
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23827D7D' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 26px; cursor: pointer;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(235,25,35,.07);
+}
+::placeholder { color: var(--ink4); font-weight: 300; font-size: 13px; }
+.field textarea { resize: vertical; min-height: 70px; line-height: 1.55; }
+
+/* PROGRESS BAR */
+.progress-wrap {
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-label { font-size: 11px; font-weight: 600; color: var(--ink3); white-space: nowrap; }
+.progress-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--grn); border-radius: 3px; transition: width .3s; }
+.progress-pct { font-family: var(--ff-m); font-size: 11px; color: var(--ink3); white-space: nowrap; min-width: 34px; text-align: right; }
+
+/* SECTION CARD */
+.section-card {
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.section-hd {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  cursor: pointer;
+  background: var(--white);
+  transition: background .14s;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+}
+.section-hd:hover { background: var(--bg2); }
+.section-card.open .section-hd { border-bottom-color: var(--bdr); }
+.section-arr { font-size: 10px; color: var(--ink4); transition: transform .18s; flex-shrink: 0; }
+.section-card.open .section-arr { transform: rotate(90deg); }
+.section-icon { font-size: 16px; flex-shrink: 0; }
+.section-title { font-size: 12.5px; font-weight: 600; color: var(--ink2); flex: 1; }
+.section-count {
+  font-family: var(--ff-m); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink4); background: var(--bg);
+  padding: 2px 8px; border-radius: 10px;
+}
+.section-count.has-checks { background: var(--grn-t); color: var(--grn); }
+.section-body { display: none; padding: 4px 0; }
+.section-card.open .section-body { display: block; }
+
+/* CHECKLIST ITEMS */
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--bdr);
+  transition: background .12s;
+}
+.check-item:last-child { border-bottom: none; }
+.check-item:hover { background: var(--bg2); }
+.check-item.checked { background: var(--grn-t); }
+
+.custom-cb {
+  flex-shrink: 0;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--bdr2);
+  border-radius: 3px;
+  background: var(--white);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+  transition: all .15s;
+}
+.custom-cb.checked {
+  background: var(--grn);
+  border-color: var(--grn);
+}
+.custom-cb .ck { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+.custom-cb.checked .ck { display: block; }
+
+.check-content { flex: 1; min-width: 0; }
+.check-label { font-size: 13px; color: var(--ink); line-height: 1.45; cursor: pointer; }
+.check-item.checked .check-label { color: var(--ink3); text-decoration: line-through; text-decoration-color: var(--grn); }
+.check-desc { font-size: 11.5px; color: var(--ink4); margin-top: 2px; line-height: 1.4; }
+.check-item.checked .check-desc { color: var(--ink4); }
+
+.notes-toggle {
+  font-size: 10.5px; color: var(--ink4); cursor: pointer;
+  margin-top: 4px; display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 500; transition: color .15s;
+}
+.notes-toggle:hover { color: var(--red); }
+.notes-area { display: none; margin-top: 6px; }
+.notes-area.open { display: block; }
+.notes-area textarea {
+  width: 100%; font-family: var(--ff); font-size: 12.5px;
+  color: var(--ink2); background: var(--white);
+  border: 1px solid var(--bdr2); border-radius: 3px;
+  padding: 6px 9px; outline: none; resize: vertical; min-height: 52px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.notes-area textarea:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(235,25,35,.07);
+}
+
+/* FREQUENCY RATING */
+.freq-row { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+.freq-opt input[type=radio] { display: none; }
+.freq-opt label {
+  font-size: 10.5px; padding: 2px 9px;
+  border-radius: 20px; border: 1px solid var(--bdr2);
+  cursor: pointer; color: var(--ink3); background: var(--white);
+  transition: all .14s; user-select: none;
+}
+.freq-opt label:hover { border-color: var(--red); color: var(--red); }
+.freq-opt input:checked + label { background: var(--red); border-color: var(--red); color: #fff; font-weight: 500; }
+
+/* DIVIDER */
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-m); font-size: 9px;
+  font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink4);
+  margin: 20px 0 14px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--bdr);
+}
+
+/* INFO BOX */
+.info-box {
+  background: var(--blu-t);
+  border: 1px solid #b8d0ed;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 12.5px;
+  color: var(--blu);
+  line-height: 1.5;
+}
+.info-box strong { font-weight: 600; }
+
+/* SUMMARY PANEL */
+.summary-panel {
+  display: none;
+  background: var(--white);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.summary-panel.visible { display: block; }
+.summary-hd {
+  background: var(--ink);
+  padding: 16px 20px;
+}
+.summary-hd-title { font-family: var(--ff-s); font-size: 15px; color: #fff; font-weight: 700; }
+.summary-hd-sub { font-size: 11.5px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.summary-body { padding: 20px; }
+.summary-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.sum-stat {
+  background: var(--bg2);
+  border: 1px solid var(--bdr);
+  border-radius: 4px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.sum-stat-val { font-family: var(--ff-s); font-size: 24px; color: var(--ink); font-weight: 700; }
+.sum-stat-val.red { color: var(--red); }
+.sum-stat-val.grn { color: var(--grn); }
+.sum-stat-lbl { font-family: var(--ff-m); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink4); margin-top: 3px; }
+
+.concerns-list { margin-bottom: 16px; }
+.concern-section-title {
+  font-family: var(--ff-m); font-size: 9px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 6px; margin-top: 14px;
+}
+.concern-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12.5px; color: var(--ink2); margin-bottom: 5px; line-height: 1.4;
+}
+.concern-item::before { content: '›'; color: var(--red); flex-shrink: 0; font-size: 14px; line-height: 1.1; }
+.concern-note { font-size: 11.5px; color: var(--ink4); font-style: italic; margin-left: 14px; margin-top: 2px; }
+
+.urgency-band {
+  border-radius: 4px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 16px;
+}
+.urgency-band.routine { background: var(--blu-t); border: 1px solid #b8d0ed; }
+.urgency-band.priority { background: var(--amb-t); border: 1px solid #e8c97a; }
+.urgency-band.urgent { background: #fdf0f0; border: 1px solid #f5bcbe; }
+.urgency-icon { font-size: 20px; flex-shrink: 0; }
+.urgency-content {}
+.urgency-label {
+  font-family: var(--ff-m); font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px;
+}
+.urgency-band.routine .urgency-label { color: var(--blu); }
+.urgency-band.priority .urgency-label { color: var(--amb); }
+.urgency-band.urgent .urgency-label { color: var(--red); }
+.urgency-text { font-size: 12.5px; color: var(--ink2); line-height: 1.4; }
+
+.additional-notes-section { margin-top: 18px; }
+.add-notes-label { font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+.add-notes-text { font-size: 13px; color: var(--ink2); background: var(--bg2); border: 1px solid var(--bdr); border-radius: 4px; padding: 10px 12px; line-height: 1.55; min-height: 48px; }
+
+.print-btn-wrap { display: flex; gap: 10px; margin-top: 20px; }
+.action-btn {
+  font-family: var(--ff); font-size: 12px; font-weight: 600;
+  padding: 8px 18px; border-radius: 3px;
+  cursor: pointer; transition: all .15s;
+}
+.btn-primary { background: var(--red); border: 1px solid var(--red); color: #fff; }
+.btn-primary:hover { background: #c9151d; }
+.btn-ghost { background: transparent; border: 1px solid var(--bdr2); color: var(--ink3); }
+.btn-ghost:hover { background: var(--bg2); color: var(--ink); }
+
+/* PRINT */
+@media print {
+  .topbar, .topbar-actions, .progress-wrap, .notes-toggle,
+  .print-btn-wrap, .tb-btn, .no-print { display: none !important; }
+  body { background: white; font-size: 10pt; }
+  .page { padding: 12px; }
+  .section-card { border: 1px solid #ccc; page-break-inside: avoid; margin-bottom: 8px; }
+  .section-body { display: block !important; }
+  .section-hd { background: #f8f8f8 !important; }
+  .section-arr { display: none; }
+  .summary-panel { border: 1px solid #ccc; }
+  .summary-hd { background: #222 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .notes-area { display: block !important; }
+  .hdr-band { background: #222 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-pip"></div>
+  <span class="topbar-name">Learning Enhancement Team</span>
+  <span class="topbar-sep">·</span>
+  <span class="topbar-sub">OT Pre-Screening Referral Checklist</span>
+  <div class="topbar-actions">
+    <button class="tb-btn" onclick="resetAll()">Reset</button>
+    <button class="tb-btn primary" onclick="generateSummary()">Generate Summary</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER INFO -->
+  <div class="hdr-card">
+    <div class="hdr-band">
+      <div class="hdr-eyebrow">Hawken School · LET Referral Process</div>
+      <div class="hdr-title">OT Pre-Screening Teacher Questionnaire</div>
+      <div class="hdr-subtitle">Complete before the occupational therapy screening appointment</div>
+    </div>
+    <div class="hdr-body">
+      <div class="info-box">
+        <strong>Instructions:</strong> Check any item that applies to this student. You do not need to observe every concern — even a handful of consistently observed behaviors is meaningful. Use the notes fields to add context. This form will be reviewed by the LET prior to and during the OT screening.
+      </div>
+      <div class="hdr-grid" style="margin-bottom:12px;">
+        <div class="field">
+          <label>Student Name</label>
+          <input type="text" id="studentName" placeholder="First Last">
+        </div>
+        <div class="field">
+          <label>Date of Birth</label>
+          <input type="date" id="dob">
+        </div>
+        <div class="field">
+          <label>Grade</label>
+          <select id="grade">
+            <option value="">Select grade</option>
+            <option>Kindergarten</option>
+            <option>Grade 1</option>
+            <option>Grade 2</option>
+            <option>Grade 3</option>
+            <option>Grade 4</option>
+            <option>Grade 5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Teacher Name</label>
+          <input type="text" id="teacherName" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Date Completed</label>
+          <input type="date" id="dateCompleted">
+        </div>
+        <div class="field">
+          <label>How long have you known this student?</label>
+          <select id="duration">
+            <option value="">Select</option>
+            <option>Less than 1 month</option>
+            <option>1–3 months</option>
+            <option>4–6 months</option>
+            <option>Most of this school year</option>
+            <option>More than one school year</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Primary Concern (brief description)</label>
+        <textarea id="primaryConcern" placeholder="What prompted this referral? Describe what you're seeing in your own words..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap no-print">
+    <span class="progress-label">Checklist Progress</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+
+  <!-- SECTION 1: FINE MOTOR -->
+  <div class="section-card open" id="sec-finemotor">
+    <div class="section-hd" onclick="toggleSection('sec-finemotor')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">✏️</span>
+      <span class="section-title">Fine Motor Skills</span>
+      <span class="section-count" id="cnt-finemotor">0 / 10</span>
+    </div>
+    <div class="section-body">
+      <!-- items injected by JS -->
+    </div>
+  </div>
+
+  <!-- SECTION 2: HANDWRITING -->
+  <div class="section-card open" id="sec-handwriting">
+    <div class="section-hd" onclick="toggleSection('sec-handwriting')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">📝</span>
+      <span class="section-title">Handwriting & Written Output</span>
+      <span class="section-count" id="cnt-handwriting">0 / 9</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- SECTION 3: SENSORY -->
+  <div class="section-card" id="sec-sensory">
+    <div class="section-hd" onclick="toggleSection('sec-sensory')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">🌀</span>
+      <span class="section-title">Sensory Processing</span>
+      <span class="section-count" id="cnt-sensory">0 / 11</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- SECTION 4: BODY AWARENESS / MOVEMENT -->
+  <div class="section-card" id="sec-motor">
+    <div class="section-hd" onclick="toggleSection('sec-motor')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">🏃</span>
+      <span class="section-title">Body Awareness & Gross Motor Coordination</span>
+      <span class="section-count" id="cnt-motor">0 / 8</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- SECTION 5: SELF-CARE -->
+  <div class="section-card" id="sec-selfcare">
+    <div class="section-hd" onclick="toggleSection('sec-selfcare')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">🎒</span>
+      <span class="section-title">Self-Care & Daily Living Skills</span>
+      <span class="section-count" id="cnt-selfcare">0 / 7</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- SECTION 6: ATTENTION / REGULATION -->
+  <div class="section-card" id="sec-regulation">
+    <div class="section-hd" onclick="toggleSection('sec-regulation')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">⚡</span>
+      <span class="section-title">Attention, Organization & Self-Regulation</span>
+      <span class="section-count" id="cnt-regulation">0 / 9</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- SECTION 7: SOCIAL / PARTICIPATION -->
+  <div class="section-card" id="sec-social">
+    <div class="section-hd" onclick="toggleSection('sec-social')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">👥</span>
+      <span class="section-title">Social Participation & Learning Environment Engagement</span>
+      <span class="section-count" id="cnt-social">0 / 6</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <!-- ADDITIONAL CONTEXT -->
+  <div class="section-card" id="sec-context">
+    <div class="section-hd" onclick="toggleSection('sec-context')">
+      <span class="section-arr">▶</span>
+      <span class="section-icon">📋</span>
+      <span class="section-title">Additional Context for the Screening Team</span>
+      <span class="section-count" id="cnt-context" style="background:transparent;color:var(--ink4);">Optional</span>
+    </div>
+    <div class="section-body" style="padding:16px;">
+      <div class="hdr-grid" style="margin-bottom:12px;">
+        <div class="field">
+          <label>Has the student received OT services before?</label>
+          <select id="priorOT">
+            <option value="">Unknown / not sure</option>
+            <option>Yes — currently receiving services</option>
+            <option>Yes — received in the past</option>
+            <option>No, not to my knowledge</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Has a parent/guardian raised concerns?</label>
+          <select id="parentConcerns">
+            <option value="">Not discussed</option>
+            <option>Yes — similar concerns at home</option>
+            <option>Yes — different concerns than mine</option>
+            <option>No — parent has not raised concerns</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label>Accommodations / supports already in place</label>
+        <textarea id="accommodations" placeholder="e.g., preferential seating, extra time, pencil grip, slant board, reduced written output..."></textarea>
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label>When are concerns most noticeable? (subjects, times of day, activities)</label>
+        <textarea id="contextWhen" placeholder="e.g., during writing tasks, transitioning to specials, after recess..."></textarea>
+      </div>
+      <div class="field">
+        <label>Anything else the LET should know before the screening?</label>
+        <textarea id="additionalNotes" placeholder="Anything about this student's strengths, history, family context, or specific examples you want to share..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERATE BUTTON -->
+  <div style="text-align:center;margin-top:24px;" class="no-print">
+    <button class="action-btn btn-primary" onclick="generateSummary()" style="padding:11px 30px;font-size:13px;">
+      Generate Referral Summary →
+    </button>
+  </div>
+
+  <!-- SUMMARY PANEL -->
+  <div class="summary-panel" id="summaryPanel">
+    <div class="summary-hd">
+      <div class="summary-hd-title">Referral Summary</div>
+      <div class="summary-hd-sub" id="summarySubtitle">—</div>
+    </div>
+    <div class="summary-body">
+      <div class="summary-meta">
+        <div class="sum-stat">
+          <div class="sum-stat-val" id="sumTotal">0</div>
+          <div class="sum-stat-lbl">Items Flagged</div>
+        </div>
+        <div class="sum-stat">
+          <div class="sum-stat-val" id="sumSections">0</div>
+          <div class="sum-stat-lbl">Areas of Concern</div>
+        </div>
+        <div class="sum-stat">
+          <div class="sum-stat-val" id="sumNotes">0</div>
+          <div class="sum-stat-lbl">Teacher Notes Added</div>
+        </div>
+      </div>
+
+      <div class="concerns-list" id="concernsList"></div>
+
+      <div id="urgencyBand"></div>
+
+      <div class="additional-notes-section" id="additionalContextSection"></div>
+
+      <div class="print-btn-wrap no-print">
+        <button class="action-btn btn-primary" onclick="window.print()">🖨 Print / Save as PDF</button>
+        <button class="action-btn btn-ghost" onclick="resetAll()">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const sections = {
+  'sec-finemotor': {
+    title: 'Fine Motor Skills',
+    items: [
+      { id: 'fm1', label: 'Struggles to hold or control a pencil, crayon, or scissors', desc: 'Immature or inconsistent grip; difficulty adjusting pressure', hasNotes: true },
+      { id: 'fm2', label: 'Difficulty with cutting tasks (scissors use)', desc: 'Difficulty following lines, holding scissors correctly, or controlling blades' },
+      { id: 'fm3', label: 'Avoids fine motor activities (art, manipulatives, building)', desc: 'Shows discomfort or resistance; may say "I can\'t do it" without trying' },
+      { id: 'fm4', label: 'Has difficulty with buttons, zippers, or snaps on clothing', desc: 'Takes significantly longer than peers; may avoid self-fastening', hasNotes: true },
+      { id: 'fm5', label: 'Struggles to open containers, lunch items, or classroom materials' },
+      { id: 'fm6', label: 'Hand or wrist fatigue during writing or fine motor tasks', desc: 'May complain of hand pain, shake hand out, or stop and rest frequently', hasNotes: true },
+      { id: 'fm7', label: 'Poor coordination when coloring within lines or drawing shapes' },
+      { id: 'fm8', label: 'Difficulty using classroom tools (ruler, protractor, compass, keyboard)' },
+      { id: 'fm9', label: 'Struggles to manage materials with both hands simultaneously', desc: 'e.g., holding paper steady while writing, using two hands for construction tasks' },
+      { id: 'fm10', label: 'Strong hand dominance not established, or inconsistently switches hands', desc: 'May switch mid-task or show uncertainty about which hand to use', hasNotes: true },
+    ]
+  },
+  'sec-handwriting': {
+    title: 'Handwriting & Written Output',
+    items: [
+      { id: 'hw1', label: 'Letter formation is inconsistent, reversed, or hard to read', desc: 'Not age-appropriate reversals; persists beyond typical developmental window', hasNotes: true },
+      { id: 'hw2', label: 'Written work is difficult to read compared to verbal ability', desc: 'Large gap between what student can say and what is legible on paper', hasNotes: true },
+      { id: 'hw3', label: 'Letter or word spacing is unusual (too crowded or too spread out)' },
+      { id: 'hw4', label: 'Writing does not stay on lines or within margins' },
+      { id: 'hw5', label: 'Writing size is inconsistent or much larger/smaller than expected for grade' },
+      { id: 'hw6', label: 'Writing speed is significantly slower than peers', desc: 'Struggles to complete written tasks within typical timeframes', hasNotes: true },
+      { id: 'hw7', label: 'Erases excessively or becomes distressed about errors', hasNotes: true },
+      { id: 'hw8', label: 'Avoids or refuses written tasks; frequently requests to dictate instead' },
+      { id: 'hw9', label: 'Difficulty copying from the board or from a model', desc: 'Loses place frequently; slow; output looks very different from model' },
+    ]
+  },
+  'sec-sensory': {
+    title: 'Sensory Processing',
+    items: [
+      { id: 'sp1', label: 'Overreacts to touch (clothing tags, textures, light touch from peers)', desc: 'May resist certain fabrics, refuse to touch art materials, or react strongly to accidental contact', hasNotes: true },
+      { id: 'sp2', label: 'Underreacts to pain or temperature', desc: 'Does not notice or report injury; seems unaware of hot/cold extremes', hasNotes: true },
+      { id: 'sp3', label: 'Seeks out intense sensory input (crashes into things, hugs too hard, mouths objects)', desc: 'Appears driven to get more sensory feedback than peers', hasNotes: true },
+      { id: 'sp4', label: 'Easily distracted or overwhelmed by noises in the environment', desc: 'Covers ears, becomes dysregulated, or cannot work near classroom sounds' },
+      { id: 'sp5', label: 'Strongly bothered by smells that peers do not notice', hasNotes: true },
+      { id: 'sp6', label: 'Appears overly sensitive to visual input (lights, movement, busy spaces)' },
+      { id: 'sp7', label: 'Unusually bothered by movement (resists swings, slides, elevators, buses)', hasNotes: true },
+      { id: 'sp8', label: 'Craves movement; cannot stay still even when motivated to do so', desc: 'Different from typical attention needs — a physical, driven quality', hasNotes: true },
+      { id: 'sp9', label: 'Chews on clothing, pencils, or non-food items consistently', hasNotes: true },
+      { id: 'sp10', label: 'Difficulty with transitions between activities or spaces', desc: 'Particularly high distress; not solely attention-related' },
+      { id: 'sp11', label: 'Picky eating that significantly limits participation in school meals/snacks', desc: 'Beyond typical food preferences; may be tied to texture or sensory sensitivities', hasNotes: true },
+    ]
+  },
+  'sec-motor': {
+    title: 'Body Awareness & Gross Motor Coordination',
+    items: [
+      { id: 'gm1', label: 'Appears clumsy, bumps into things, or frequently falls', desc: 'More than typical; may not notice own body in space relative to others', hasNotes: true },
+      { id: 'gm2', label: 'Difficulty with PE or recess activities that require coordination', desc: 'Catching, kicking, balancing, or skipping significantly behind peers', hasNotes: true },
+      { id: 'gm3', label: 'Poor core strength or posture during seated work', desc: 'Slouches, leans heavily on desk, or cannot sit upright for expected periods', hasNotes: true },
+      { id: 'gm4', label: 'Difficulty navigating stairs, curbs, or uneven surfaces safely' },
+      { id: 'gm5', label: 'Unusual way of moving (toe walking, W-sitting, wide gait)', hasNotes: true },
+      { id: 'gm6', label: 'Struggles with bilateral coordination (activities needing both sides of the body)', desc: 'e.g., jumping jacks, riding a bike, using utensils, clapping patterns' },
+      { id: 'gm7', label: 'Difficulty crossing midline during tasks', desc: 'Turns body instead of reaching across; switches hands at midpoint' },
+      { id: 'gm8', label: 'Seems unaware of others\' personal space; stands too close or makes physical contact unintentionally' },
+    ]
+  },
+  'sec-selfcare': {
+    title: 'Self-Care & Daily Living Skills',
+    items: [
+      { id: 'sc1', label: 'Needs more adult support with dressing/undressing than same-age peers', desc: 'Coats, shoes, snow pants, backpack — tasks typical for grade level', hasNotes: true },
+      { id: 'sc2', label: 'Struggles to manage lunch (opening packaging, utensil use, staying tidy)', hasNotes: true },
+      { id: 'sc3', label: 'Difficulty with bathroom management or hygiene tasks at school', hasNotes: true },
+      { id: 'sc4', label: 'Struggles to organize personal belongings (backpack, cubby, desk)', desc: 'Not explained by attention alone; has a physical/motor component', hasNotes: true },
+      { id: 'sc5', label: 'Takes significantly longer than peers to complete daily routines (pack up, unpack, tidy materials)' },
+      { id: 'sc6', label: 'Spills or drops materials frequently in ways that interfere with learning' },
+      { id: 'sc7', label: 'Parent has shared concerns about self-care routines at home', hasNotes: true },
+    ]
+  },
+  'sec-regulation': {
+    title: 'Attention, Organization & Self-Regulation',
+    items: [
+      { id: 'ar1', label: 'Difficulty regulating arousal level — frequently too high or too low energy for learning', hasNotes: true },
+      { id: 'ar2', label: 'Struggles to transition between activities, especially sensory-heavy ones', desc: 'e.g., coming inside from recess, moving from art to math' },
+      { id: 'ar3', label: 'Emotional reactions seem disproportionate and hard to de-escalate', desc: 'Particularly if triggered by sensory or physical experiences', hasNotes: true },
+      { id: 'ar4', label: 'Difficulty sustaining attention to task even with accommodations in place', hasNotes: true },
+      { id: 'ar5', label: 'Very easily fatigued by fine motor or physical tasks' },
+      { id: 'ar6', label: 'Difficulty organizing workspace, materials, or multi-step tasks', desc: 'Goes beyond typical organizational challenges; has a physical/motor quality' },
+      { id: 'ar7', label: 'Struggles to plan and sequence motor tasks (gets lost in steps)', desc: 'e.g., difficulty with multi-step art projects, science labs, or building tasks' },
+      { id: 'ar8', label: 'Poor frustration tolerance specifically around fine motor or physical tasks', hasNotes: true },
+      { id: 'ar9', label: 'Avoidance behaviors appear tied to motor difficulty rather than motivation', hasNotes: true },
+    ]
+  },
+  'sec-social': {
+    title: 'Social Participation & Learning Environment Engagement',
+    items: [
+      { id: 'so1', label: 'Avoids or withdraws from activities requiring fine motor or physical skill', desc: 'May isolate during choice time, art, PE, or playground' },
+      { id: 'so2', label: 'Peers notice or comment on physical differences (grip, coordination, appearance of work)', hasNotes: true },
+      { id: 'so3', label: 'Student expresses frustration, shame, or negative self-talk about their work or abilities', hasNotes: true },
+      { id: 'so4', label: 'Difficulty participating in group work requiring shared materials or physical coordination' },
+      { id: 'so5', label: 'Motor or sensory needs interfere with participation in school routines or events', desc: 'e.g., assemblies, field trips, lunch, recess' },
+      { id: 'so6', label: 'Student appears unaware of how their behavior affects others (bumping, grabbing, invading space)', hasNotes: true },
+    ]
+  }
+};
+
+const state = {}; // { itemId: { checked: bool, note: string, freq: string } }
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function renderSections() {
+  Object.entries(sections).forEach(([secId, sec]) => {
+    const card = document.getElementById(secId);
+    const body = card.querySelector('.section-body');
+    body.innerHTML = sec.items.map(item => renderItem(secId, item)).join('');
+  });
+}
+
+function renderItem(secId, item) {
+  const freqOpts = ['Rarely', 'Sometimes', 'Often', 'Almost Always'];
+  const freqHtml = `
+    <div style="margin-top:6px;">
+      <span style="font-size:10.5px;color:var(--ink4);font-weight:600;display:block;margin-bottom:4px;">How often?</span>
+      <div class="freq-row">
+        ${freqOpts.map(f => `
+          <div class="freq-opt">
+            <input type="radio" name="freq_${item.id}" id="freq_${item.id}_${f}" value="${f}" onchange="setFreq('${item.id}','${f}')">
+            <label for="freq_${item.id}_${f}">${f}</label>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+
+  const notesHtml = item.hasNotes ? `
+    <div class="notes-toggle" onclick="toggleNotes('${item.id}')">
+      <span>+ Add note</span>
+    </div>
+    <div class="notes-area" id="notes_${item.id}">
+      ${freqHtml}
+      <textarea placeholder="Add context, specific examples, or observations..." oninput="setNote('${item.id}',this.value)" style="margin-top:8px;"></textarea>
+    </div>` : '';
+
+  return `
+    <div class="check-item" id="item_${item.id}">
+      <div class="custom-cb" id="cb_${item.id}" onclick="toggleCheck('${item.id}','${secId}')">
+        <span class="ck">✓</span>
+      </div>
+      <div class="check-content">
+        <div class="check-label" onclick="toggleCheck('${item.id}','${secId}')">${item.label}</div>
+        ${item.desc ? `<div class="check-desc">${item.desc}</div>` : ''}
+        ${notesHtml}
+      </div>
+    </div>`;
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────────────
+
+function toggleCheck(itemId, secId) {
+  if (!state[itemId]) state[itemId] = { checked: false, note: '', freq: '' };
+  state[itemId].checked = !state[itemId].checked;
+
+  const cb = document.getElementById('cb_' + itemId);
+  const row = document.getElementById('item_' + itemId);
+
+  if (state[itemId].checked) {
+    cb.classList.add('checked');
+    row.classList.add('checked');
+    // auto-open notes if has notes field
+    const notesArea = document.getElementById('notes_' + itemId);
+    if (notesArea) notesArea.classList.add('open');
+  } else {
+    cb.classList.remove('checked');
+    row.classList.remove('checked');
+  }
+  updateProgress();
+  updateSectionCount(secId);
+}
+
+function toggleNotes(itemId) {
+  const area = document.getElementById('notes_' + itemId);
+  if (area) area.classList.toggle('open');
+}
+
+function setNote(itemId, val) {
+  if (!state[itemId]) state[itemId] = { checked: false, note: '', freq: '' };
+  state[itemId].note = val;
+}
+
+function setFreq(itemId, val) {
+  if (!state[itemId]) state[itemId] = { checked: false, note: '', freq: '' };
+  state[itemId].freq = val;
+}
+
+function toggleSection(secId) {
+  const card = document.getElementById(secId);
+  card.classList.toggle('open');
+}
+
+function updateProgress() {
+  let total = 0, checked = 0;
+  Object.values(sections).forEach(sec => {
+    sec.items.forEach(item => {
+      total++;
+      if (state[item.id] && state[item.id].checked) checked++;
+    });
+  });
+  const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = checked + ' flagged';
+  document.getElementById('progressFill').style.background =
+    checked === 0 ? 'var(--bdr2)' : checked < 5 ? 'var(--blu)' : checked < 12 ? 'var(--amb)' : 'var(--red)';
+}
+
+function updateSectionCount(secId) {
+  const sec = sections[secId];
+  const checkedCount = sec.items.filter(item => state[item.id] && state[item.id].checked).length;
+  const cnt = document.getElementById('cnt-' + secId.replace('sec-', ''));
+  if (cnt) {
+    cnt.textContent = checkedCount + ' / ' + sec.items.length;
+    if (checkedCount > 0) cnt.classList.add('has-checks');
+    else cnt.classList.remove('has-checks');
+  }
+}
+
+// ─── SUMMARY ─────────────────────────────────────────────────────────────────
+
+function generateSummary() {
+  const name = document.getElementById('studentName').value.trim() || 'Student';
+  const grade = document.getElementById('grade').value || '';
+  const teacher = document.getElementById('teacherName').value.trim() || '';
+  const date = document.getElementById('dateCompleted').value;
+  const primaryConcern = document.getElementById('primaryConcern').value.trim();
+  const priorOT = document.getElementById('priorOT').value;
+  const parentConcerns = document.getElementById('parentConcerns').value;
+  const accommodations = document.getElementById('accommodations').value.trim();
+  const contextWhen = document.getElementById('contextWhen').value.trim();
+  const additionalNotes = document.getElementById('additionalNotes').value.trim();
+
+  // Count flagged
+  let totalFlagged = 0;
+  let totalNotes = 0;
+  let sectionsWithConcerns = 0;
+
+  Object.values(sections).forEach(sec => {
+    let secHas = false;
+    sec.items.forEach(item => {
+      if (state[item.id] && state[item.id].checked) {
+        totalFlagged++;
+        secHas = true;
+        if (state[item.id].note) totalNotes++;
+      }
+    });
+    if (secHas) sectionsWithConcerns++;
+  });
+
+  // Subtitle
+  let sub = name;
+  if (grade) sub += ' · ' + grade;
+  if (teacher) sub += ' · ' + teacher;
+  if (date) sub += ' · ' + new Date(date + 'T00:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('summarySubtitle').textContent = sub;
+
+  // Stats
+  document.getElementById('sumTotal').textContent = totalFlagged;
+  document.getElementById('sumTotal').className = 'sum-stat-val ' + (totalFlagged >= 10 ? 'red' : totalFlagged >= 5 ? '' : 'grn');
+  document.getElementById('sumSections').textContent = sectionsWithConcerns;
+  document.getElementById('sumNotes').textContent = totalNotes;
+
+  // Concerns list
+  let concernsHTML = '';
+  if (primaryConcern) {
+    concernsHTML += `<div class="concern-section-title">Teacher's Primary Concern</div>`;
+    concernsHTML += `<div class="concern-item" style="font-style:italic;">${primaryConcern}</div>`;
+  }
+
+  Object.entries(sections).forEach(([secId, sec]) => {
+    const flagged = sec.items.filter(item => state[item.id] && state[item.id].checked);
+    if (flagged.length === 0) return;
+
+    concernsHTML += `<div class="concern-section-title">${sec.title} (${flagged.length} item${flagged.length > 1 ? 's' : ''})</div>`;
+    flagged.forEach(item => {
+      const itemState = state[item.id] || {};
+      concernsHTML += `<div>
+        <div class="concern-item">${item.label}${itemState.freq ? ` <span style="font-size:11px;color:var(--red);margin-left:4px;">[${itemState.freq}]</span>` : ''}</div>
+        ${itemState.note ? `<div class="concern-note">${itemState.note}</div>` : ''}
+      </div>`;
+    });
+  });
+
+  if (!concernsHTML) {
+    concernsHTML = `<div style="font-size:13px;color:var(--ink4);font-style:italic;">No items flagged. Please return to the checklist and mark applicable concerns.</div>`;
+  }
+  document.getElementById('concernsList').innerHTML = concernsHTML;
+
+  // Urgency
+  let urgencyHTML = '';
+  if (totalFlagged === 0) {
+    urgencyHTML = '';
+  } else if (totalFlagged <= 4 && sectionsWithConcerns <= 2) {
+    urgencyHTML = `<div class="urgency-band routine">
+      <div class="urgency-icon">ℹ️</div>
+      <div class="urgency-content">
+        <div class="urgency-label">Routine Screening Recommended</div>
+        <div class="urgency-text">A small number of concerns noted in a limited number of areas. Recommended for standard OT screening process — no urgent escalation indicated at this time.</div>
+      </div>
+    </div>`;
+  } else if (totalFlagged <= 10 || sectionsWithConcerns <= 4) {
+    urgencyHTML = `<div class="urgency-band priority">
+      <div class="urgency-icon">⚠️</div>
+      <div class="urgency-content">
+        <div class="urgency-label">Priority Screening Recommended</div>
+        <div class="urgency-text">Multiple concerns noted across several areas. Consider prioritizing this student's OT screening. LET team should review before the appointment and discuss with parents prior to the screening date.</div>
+      </div>
+    </div>`;
+  } else {
+    urgencyHTML = `<div class="urgency-band urgent">
+      <div class="urgency-icon">🚨</div>
+      <div class="urgency-content">
+        <div class="urgency-label">Urgent Review Recommended</div>
+        <div class="urgency-text">Significant concerns flagged across multiple domains. This student should be prioritized for OT screening. Consider scheduling a pre-screening LET consultation and notifying the family before the appointment.</div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('urgencyBand').innerHTML = urgencyHTML;
+
+  // Additional context
+  let ctxHTML = '';
+  if (priorOT && priorOT !== 'Unknown / not sure') {
+    ctxHTML += `<div style="font-size:12.5px;color:var(--ink2);margin-bottom:6px;"><strong>Prior OT services:</strong> ${priorOT}</div>`;
+  }
+  if (parentConcerns && parentConcerns !== 'Not discussed') {
+    ctxHTML += `<div style="font-size:12.5px;color:var(--ink2);margin-bottom:6px;"><strong>Parent concerns:</strong> ${parentConcerns}</div>`;
+  }
+  if (accommodations) {
+    ctxHTML += `<div style="font-size:12.5px;color:var(--ink2);margin-bottom:6px;"><strong>Supports already in place:</strong> ${accommodations}</div>`;
+  }
+  if (contextWhen) {
+    ctxHTML += `<div style="font-size:12.5px;color:var(--ink2);margin-bottom:6px;"><strong>When concerns are most notable:</strong> ${contextWhen}</div>`;
+  }
+  if (additionalNotes) {
+    ctxHTML += `<div style="font-size:12.5px;color:var(--ink2);margin-bottom:6px;"><strong>Additional notes:</strong> ${additionalNotes}</div>`;
+  }
+
+  if (ctxHTML) {
+    document.getElementById('additionalContextSection').innerHTML = `
+      <div class="add-notes-label">Additional Context from Teacher</div>
+      <div class="add-notes-text">${ctxHTML}</div>`;
+  } else {
+    document.getElementById('additionalContextSection').innerHTML = '';
+  }
+
+  // Show panel
+  const panel = document.getElementById('summaryPanel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetAll() {
+  if (!confirm('Reset the entire form? All entries will be cleared.')) return;
+  Object.keys(state).forEach(k => delete state[k]);
+  document.querySelectorAll('input[type=text], input[type=date], textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('.custom-cb').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.notes-area').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('input[type=radio]').forEach(el => el.checked = false);
+  document.getElementById('summaryPanel').classList.remove('visible');
+  updateProgress();
+  Object.keys(sections).forEach(secId => updateSectionCount(secId));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+renderSections();
+updateProgress();
+
+// Set today's date
+document.getElementById('dateCompleted').valueAsDate = new Date();
+
+</script>
+</body>
+</html>
